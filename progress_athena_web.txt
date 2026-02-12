@@ -80,3 +80,28 @@ Sprint 5 Review: [ ] NOT PASSED
 - Review: SKIPPED (per-task review runs after regular tasks)
 - Next: US-002: Error handling middleware and API utilities
 ---
+
+## Iteration 2 - US-002: Error handling middleware and API utilities
+- Created middleware/error-handler.js with complete error handling suite
+- Implemented asyncHandler wrapper to catch promise rejections without try/catch
+- Added notFoundHandler for 404 responses on unknown API routes
+- Added global errorHandler with proper status codes and JSON responses
+- Implemented requestLogger middleware for method/path/status/duration logging
+- Updated server.js to wire all middleware in correct order
+- Created comprehensive tests for all error scenarios (sync, async, custom status, 404)
+- Manual verification confirmed 404 handler returns proper JSON
+- All 6 tests passing (4 new error handler tests + 2 existing health tests)
+- Learnings for future iterations:
+  - Error middleware must be registered LAST in Express (after all routes)
+  - 404 handler goes before error handler but after all route handlers
+  - Test routes gated by NODE_ENV !== 'production' for safety
+  - Consistent error response format: { error: string, status: number }
+  - Request logger uses res.end override pattern to capture timing
+
+**Summary:**
+- Task: US-002: Error handling middleware and API utilities
+- Files: middleware/error-handler.js, server.js, tests/routes/error-handler.test.js
+- Tests: PASS (6/6 tests passing)
+- Review: PENDING (per-task review runs next)
+- Next: Linus review of US-002, then US-003
+---

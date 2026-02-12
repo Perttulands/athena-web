@@ -8,6 +8,7 @@ import {
   errorHandler,
   requestLogger
 } from './middleware/error-handler.js';
+import beadsRouter from './routes/beads.js';
 
 const app = express();
 
@@ -20,6 +21,9 @@ app.use(requestLogger);
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
+
+// API routes
+app.use('/api/beads', beadsRouter);
 
 // Test routes for error handling (only in non-production)
 if (process.env.NODE_ENV !== 'production') {
