@@ -1,0 +1,82 @@
+## Athena Web — Progress Tracker
+## PRD: PRD_ATHENA_WEB.md
+## Repo: $HOME/athena-web
+## Port: 9000
+
+current_task=
+iteration=0
+max_iterations=5
+status=not_started
+
+---
+
+### Sprint 1: Backend Foundation (US-001 → US-010)
+- [ ] US-001 Project initialization and Express server setup
+- [ ] US-002 Error handling middleware and API utilities
+- [ ] US-003 Beads service and API endpoint
+- [ ] US-004 Tmux service and agents API endpoints
+- [ ] US-005 Docs service and API endpoints
+- [ ] US-006 Runs service and API endpoint
+- [ ] US-007 Ralph service and API endpoint
+- [ ] US-008 Status endpoint (dashboard aggregate)
+- [ ] US-009 SSE streaming endpoint
+- [ ] US-010 systemd service file and startup validation
+Sprint 1 Review: [ ] NOT PASSED
+
+### Sprint 2: Frontend Foundation (US-011 → US-016)
+- [ ] US-011 HTML shell and CSS design tokens
+- [ ] US-012 Component CSS library
+- [ ] US-013 Client-side router and page framework
+- [ ] US-014 API client and SSE client modules
+- [ ] US-015 Reusable UI component library (JS)
+- [ ] US-016 Page-specific CSS and responsive layout
+Sprint 2 Review: [ ] NOT PASSED
+
+### Sprint 3: Dashboard & Real-Time (US-017 → US-021)
+- [ ] US-017 Oracle page — stat cards and layout
+- [ ] US-018 Oracle page — agent status cards and activity feed
+- [ ] US-019 Oracle page — Ralph progress display
+- [ ] US-020 SSE integration — live dashboard updates
+- [ ] US-021 Pull-to-refresh and mobile interactions
+Sprint 3 Review: [ ] NOT PASSED
+
+### Sprint 4: Feature Views (US-022 → US-028)
+- [ ] US-022 Beads page — list view with filters
+- [ ] US-023 Beads page — detail view (bottom sheet)
+- [ ] US-024 Agents page — live agent monitor
+- [ ] US-025 Agents page — output view and kill action
+- [ ] US-026 Scrolls page — document browser with tree navigation
+- [ ] US-027 Scrolls page — edit mode
+- [ ] US-028 Chronicle page — run history with filters
+Sprint 4 Review: [ ] NOT PASSED
+
+### Sprint 5: Polish & Mobile (US-029 → US-034)
+- [ ] US-029 Micro-animations and transitions
+- [ ] US-030 PWA setup (manifest, service worker, icons)
+- [ ] US-031 Performance optimization
+- [ ] US-032 Owl SVG icon and marble texture assets
+- [ ] US-033 Accessibility and final UX polish
+- [ ] US-034 Integration testing and production readiness
+Sprint 5 Review: [ ] NOT PASSED
+
+## Iteration 1 - US-001: Project initialization and Express server setup
+- Initialized npm project with Express 5.x, CORS, and dotenv dependencies
+- Created config.js with environment-based configuration for workspace path, state path, beads CLI, and port
+- Implemented server.js with Express app and /api/health endpoint
+- Created test infrastructure with tests/setup.js providing request helpers
+- Tests for health endpoint and config module - all passing
+- Server successfully starts on port 9000 and responds to health checks
+- Zero npm vulnerabilities confirmed
+- Learnings for future iterations:
+  - Node.js 24 native fetch works perfectly for test requests
+  - ES module cache-busting with query strings for config testing
+  - Express 5.x is stable and ready for production use
+  - Using type: "module" throughout keeps code modern and clean
+
+**Summary:**
+- Task: US-001: Project initialization and Express server setup
+- Files: package.json, server.js, config.js, tests/setup.js, tests/routes/health.test.js, tests/config.test.js
+- Tests: PASS (5/5 tests passing)
+- Review: SKIPPED (per-task review runs after regular tasks)
+- Next: US-002: Error handling middleware and API utilities
+---

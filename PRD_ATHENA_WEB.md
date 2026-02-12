@@ -276,7 +276,7 @@ Goal: Working Express server with all API endpoints returning real data. Tests f
 
 ---
 
-- [ ] **US-002** Error handling middleware and API utilities
+- [x] **US-002** Error handling middleware and API utilities
 
   **Scope:** Global error handler middleware that catches async errors and returns JSON `{ error: message, status: code }`. Async route wrapper to avoid try/catch in every handler. 404 handler for undefined API routes. Request logging middleware (minimal — method, path, status, duration).
 
