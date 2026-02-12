@@ -1,0 +1,20 @@
+{
+  "name": "athena-web",
+  "version": "1.0.0",
+  "description": "Athena Web - The Temple: Personal command interface for AI coding agent swarm",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test tests/**/*.test.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": ["athena", "agents", "swarm", "dashboard"],
+  "author": "Perttu",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.0.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7"
+  }
+}
