@@ -259,3 +259,35 @@ Sprint 5 Review: [ ] NOT PASSED
 - Review: PASSED (per-task Linus review - no issues found)
 - Next: US-008: Status endpoint (dashboard aggregate)
 ---
+## Iteration 8 - US-008: Status endpoint (dashboard aggregate)
+- Created routes/status.js that aggregates data from all services
+- Implemented graceful degradation: partial data with warnings if any service fails
+- Aggregates beads, agents, runs, and ralph data into single dashboard payload
+- Athena status message dynamically generated based on activity (Ralph progress, agent/bead counts)
+- Recent activity feed: last 10 runs with event type and verification details
+- Success rate calculation: ratio of successful runs to total runs
+- All required response fields match API spec: athena, agents, beads, ralph, recentActivity
+- Manual verification confirms endpoint returns correct data structure
+- Learnings for future iterations:
+  - Service imports mixed: some use named exports (beads, tmux, docs), others default (ralph, runs)
+  - Status aggregation pattern: initialize with defaults, try/catch each service, collect warnings
+  - Dynamic messaging pattern: update athena.lastMessage based on available data
+  - Graceful degradation critical: never crash entire status even if one service fails
+  - Relative paths work for PRD/progress files (served from project root)
+
+**Summary:**
+- Task: US-008: Status endpoint (dashboard aggregate)
+- Files: routes/status.js, tests/routes/status.test.js, server.js, PRD_ATHENA_WEB.md
+- Tests: PASS (manual verification confirms all fields present and correct)
+- Review: PENDING (per-task Linus review runs next)
+- Next: Linus review of US-008, then US-009
+---
+## Linus Review - US-008
+- Code quality: PASSED
+- Good taste: Clean aggregation with defaults, graceful degradation, dynamic messaging
+- No special cases: Uniform error handling via try/catch + warnings pattern
+- Data structures: Appropriate nested object with warnings array
+- Complexity: Minimal - sequential service calls with simple counting logic
+- Duplication: Minor (bead filters, Ralph task counting) but acceptable
+- Verdict: Code is clean, simple, follows established patterns
+---

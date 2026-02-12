@@ -14,6 +14,7 @@ import docsRouter from './routes/docs.js';
 import runsRouter from './routes/runs.js';
 import ralphRouter from './routes/ralph.js';
 import statusRouter from './routes/status.js';
+import streamRouter from './routes/stream.js';
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use('/api/agents', agentsRouter);
 app.use('/api/docs', docsRouter);
 app.use('/api/runs', runsRouter);
 app.use('/api/ralph', ralphRouter);
+app.use('/api', streamRouter);
 
 // Test routes for error handling (only in non-production)
 if (process.env.NODE_ENV !== 'production') {

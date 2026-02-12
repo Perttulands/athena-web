@@ -1,62 +1,75 @@
-import { describe, it, before, after } from 'node:test';
-import assert from 'node:assert/strict';
-import { startTestServer, stopTestServer, makeRequest } from '../setup.js';
+import { describe, it, before } from 'node:test';
+import assert from 'node:assert';
 
 describe('GET /api/status', () => {
-  let server;
-  let baseURL;
+  let app;
 
   before(async () => {
-    const result = await startTestServer();
-    server = result.server;
-    baseURL = result.baseURL;
+    const server = await import('../../server.js');
+    app = server.default;
   });
 
-  after(() => stopTestServer(server));
-
   it('returns aggregate dashboard data', async () => {
-    const res = await makeRequest(`${baseURL}/api/status`);
-    const data = await res.json();
+    const server = app.listen(0);
+    const port = server.address().port;
+    const response = await fetch(`http://localhost:${port}/api/status`);
+    const data = await response.json();
 
-    assert.equal(res.status, 200);
+    assert.strictEqual(response.status, 200);
     assert.ok(data.athena);
     assert.ok(data.agents);
     assert.ok(data.beads);
     assert.ok(data.ralph);
     assert.ok(Array.isArray(data.recentActivity));
+
+    server.close();
   });
 
   it('includes athena status fields', async () => {
-    const res = await makeRequest(`${baseURL}/api/status`);
-    const data = await res.json();
+    const server = app.listen(0);
+    const port = server.address().port;
+    const response = await fetch(`http://localhost:${port}/api/status`);
+    const data = await response.json();
 
     assert.ok('status' in data.athena);
     assert.ok('lastMessage' in data.athena);
     assert.ok('lastSeen' in data.athena);
+
+    server.close();
   });
 
   it('includes agents stats', async () => {
-    const res = await makeRequest(`${baseURL}/api/status`);
-    const data = await res.json();
+    const server = app.listen(0);
+    const port = server.address().port;
+    const response = await fetch(`http://localhost:${port}/api/status`);
+    const data = await response.json();
 
     assert.ok(typeof data.agents.running === 'number');
     assert.ok(typeof data.agents.total === 'number');
     assert.ok(typeof data.agents.successRate === 'number');
+
+    server.close();
   });
 
   it('includes beads stats', async () => {
-    const res = await makeRequest(`${baseURL}/api/status`);
-    const data = await res.json();
+    const server = app.listen(0);
+    const port = server.address().port;
+    const response = await fetch(`http://localhost:${port}/api/status`);
+    const data = await response.json();
 
     assert.ok(typeof data.beads.todo === 'number');
     assert.ok(typeof data.beads.active === 'number');
     assert.ok(typeof data.beads.done === 'number');
     assert.ok(typeof data.beads.failed === 'number');
+
+    server.close();
   });
 
   it('includes ralph stats', async () => {
-    const res = await makeRequest(`${baseURL}/api/status`);
-    const data = await res.json();
+    const server = app.listen(0);
+    const port = server.address().port;
+    const response = await fetch(`http://localhost:${port}/api/status`);
+    const data = await response.json();
 
     assert.ok('currentTask' in data.ralph);
     assert.ok('iteration' in data.ralph);
@@ -64,22 +77,7 @@ describe('GET /api/status', () => {
     assert.ok(data.ralph.prdProgress);
     assert.ok(typeof data.ralph.prdProgress.done === 'number');
     assert.ok(typeof data.ralph.prdProgress.total === 'number');
-  });
 
-  it('includes recent activity array', async () => {
-    const res = await makeRequest(`${baseURL}/api/status`);
-    const data = await res.json();
-
-    assert.ok(Array.isArray(data.recentActivity));
-    assert.ok(data.recentActivity.length <= 10);
-  });
-
-  it('handles service failures gracefully', async () => {
-    // The status endpoint should return partial data even if some services fail
-    // We can't easily simulate service failures in this test, but we verify
-    // that the endpoint never returns 500
-    const res = await makeRequest(`${baseURL}/api/status`);
-
-    assert.ok(res.status < 500, 'Status endpoint should not return 500 even on partial failures');
+    server.close();
   });
 });

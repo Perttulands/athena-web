@@ -1,8 +1,8 @@
 // Service for interacting with beads CLI (br)
-import { exec } from 'node:child_process';
+import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 /**
  * List beads from br CLI
@@ -15,7 +15,7 @@ const execAsync = promisify(exec);
 export async function listBeads(filters = {}) {
   try {
     // Execute br list --json
-    const { stdout, stderr } = await execAsync('br list --json', {
+    const { stdout, stderr } = await execFileAsync('br', ['list', '--json'], {
       timeout: 5000, // 5 second timeout
       encoding: 'utf8'
     });
