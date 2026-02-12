@@ -351,7 +351,7 @@ Goal: Working Express server with all API endpoints returning real data. Tests f
 
 ---
 
-- [ ] **US-007** Ralph service and API endpoint
+- [x] **US-007** Ralph service and API endpoint
 
   **Scope:** Service that parses a PRD markdown file for checkbox tasks (`- [ ]` / `- [x]`) and reads a progress file (`progress_*.txt`) for current iteration info. Route: `GET /api/ralph`.
 
