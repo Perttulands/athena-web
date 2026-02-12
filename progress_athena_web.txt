@@ -196,3 +196,39 @@ Sprint 5 Review: [ ] NOT PASSED
 - Express 5 adaptation: Middleware pattern elegantly works around path-to-regexp limitations
 - Verdict: Code is secure, simple, follows established patterns
 ---
+
+## Iteration 6 - US-006: Runs service and API endpoint
+- Created services/runs-service.js with state file reading and merging
+- Implemented listRuns() function that reads state/runs/*.json and state/results/*.json
+- Merges run + result data by bead ID matching filename
+- Supports filtering by status (success/failed), date (YYYY-MM-DD), and agent
+- Sorts by most recent first (descending by started_at)
+- Graceful degradation: returns empty array when directories don't exist
+- Skips malformed JSON files with console warning
+- Created routes/runs.js with GET /api/runs endpoint
+- Query param support: ?status=success&date=2026-02-12&agent=claude
+- All 10 tests passing (8 service tests + 2 route tests)
+- Learnings for future iterations:
+  - State file reading pattern established: try/catch on directory, skip malformed JSONs
+  - Merging pattern: read run file, then try to read corresponding result file by same filename
+  - Filter chain pattern: sort first, then apply filters sequentially
+  - Graceful JSON parsing: catch per-file, warn but continue processing
+  - Test isolation: dynamic temp directories with timestamps prevent conflicts
+
+**Summary:**
+- Task: US-006: Runs service and API endpoint
+- Files: services/runs-service.js, routes/runs.js, tests/services/runs-service.test.js, tests/routes/runs.test.js, server.js
+- Tests: PASS (10/10 tests passing)
+- Review: PENDING (per-task review runs next)
+- Next: Linus review of US-006, then US-007
+---
+
+## Linus Review - US-006
+- Code quality: PASSED
+- Good taste: Clean separation of service/route, simple merge pattern, graceful errors
+- No special cases: Uniform error handling, straightforward filter logic
+- Data structures: Appropriate arrays and objects, immutable filter chain
+- Complexity: Minimal - single-purpose functions, clear sequential processing
+- Duplication: None found (nested try/catch has different semantics, appropriate)
+- Verdict: Code is clean, simple, follows established patterns
+---
