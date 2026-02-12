@@ -147,3 +147,62 @@ Perfect! Now let me output the complete summary to console:
 ===========================================
   Iteration 4 of 25
 ===========================================
+Linus Review for US-004:
+
+**Good taste:** ✅ 
+- Service cleanly separates tmux CLI interaction from routes
+- Helper functions (`formatDuration`, `tmuxExec`) are simple and single-purpose
+- Routes are minimal - just delegation to service
+
+**No special cases:** ✅
+- Error handling is uniform: all errors return same `{ error: true, message: "..." }` structure
+- Empty results handled consistently (empty array, not null or special codes)
+- No special-case logic for different error types
+
+**Data structures:** ✅
+- Arrays for list results (agents)
+- Objects for single results (output, kill response)
+- Appropriate choice for the domain
+
+**Complexity:** ✅
+- Each function has single responsibility
+- No nested conditionals or complex logic
+- Loop in `listAgents()` is straightforward sequential processing
+
+**Duplication:** ✅
+- `tmuxExec` wrapper eliminates duplicated error handling
+- No copy-pasted code between functions
+- Consistent pattern across all three exports
+
+**Verdict: PASSED** - Code is clean, simple, follows established patterns. No issues found.
+
+Now let me output the complete iteration notes to console and mark the review as passed:
+
+## Iteration 4 - US-004: Tmux service and agents API endpoints
+- Created services/tmux-service.js with complete tmux session management
+- Implemented listAgents(), getOutput(), killAgent() functions
+- Created routes/agents.js with three endpoints: GET /api/agents, GET /api/agents/:name/output, POST /api/agents/:name/kill
+- Graceful error handling for non-existent sessions (returns 404 with error JSON)
+- Session parsing extracts bead ID from agent- prefix, calculates running time, captures output
+- Context percentage detection from output (if present)
+- All 28 tests passing (11 new tests added)
+- Learnings for future iterations:
+  - ES module mocking requires different strategy - used dynamic imports and graceful testing
+  - Tmux commands use socket path /tmp/openclaw-coding-agents.sock
+  - Running time formatting: converts seconds to human-readable (e.g., "12m", "2h 5m")
+  - Session filtering at service layer (agent- prefix) keeps routes clean
+  - Consistent error response pattern: { error: true, message: "..." }
+
+**Summary:**
+- Task: US-004: Tmux service and agents API endpoints
+- Files: services/tmux-service.js, routes/agents.js, tests/services/tmux-service.test.js, tests/routes/agents.test.js, server.js
+- Tests: PASS (28/28 tests passing)
+- Review: PASSED
+- Next: US-005: Docs service and API endpoints
+---
+
+<review-passed/>
+
+===========================================
+  Iteration 5 of 25
+===========================================

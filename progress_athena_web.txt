@@ -138,3 +138,26 @@ Sprint 5 Review: [ ] NOT PASSED
 - Duplication: None found
 - Verdict: Code is clean, simple, follows established patterns
 ---
+
+## Iteration 4 - US-004: Tmux service and agents API endpoints
+- Created services/tmux-service.js with complete tmux session management
+- Implemented listAgents(), getOutput(), killAgent() functions
+- Created routes/agents.js with three endpoints: GET /api/agents, GET /api/agents/:name/output, POST /api/agents/:name/kill
+- Graceful error handling for non-existent sessions (returns 404 with error JSON)
+- Session parsing extracts bead ID from agent- prefix, calculates running time, captures output
+- Context percentage detection from output (if present)
+- All 28 tests passing (11 new tests added)
+- Learnings for future iterations:
+  - ES module mocking requires different strategy - used dynamic imports and graceful testing
+  - Tmux commands use socket path /tmp/openclaw-coding-agents.sock
+  - Running time formatting: converts seconds to human-readable (e.g., "12m", "2h 5m")
+  - Session filtering at service layer (agent- prefix) keeps routes clean
+  - Consistent error response pattern: { error: true, message: "..." }
+
+**Summary:**
+- Task: US-004: Tmux service and agents API endpoints
+- Files: services/tmux-service.js, routes/agents.js, tests/services/tmux-service.test.js, tests/routes/agents.test.js, server.js
+- Tests: PASS (28/28 tests passing)
+- Review: PENDING (per-task review runs next)
+- Next: Linus review of US-004, then US-005
+---

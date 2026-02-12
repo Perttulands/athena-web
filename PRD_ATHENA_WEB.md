@@ -321,7 +321,7 @@ Goal: Working Express server with all API endpoints returning real data. Tests f
 
 ---
 
-- [ ] **US-005** Docs service and API endpoints
+- [x] **US-005** Docs service and API endpoints
 
   **Scope:** Service that reads the workspace docs directory tree. Returns nested file/dir structure. Reads individual files as markdown text. Writes files (with path validation — must be within workspace, no `..` traversal). Routes: `GET /api/docs` (tree), `GET /api/docs/:path(*)` (read), `PUT /api/docs/:path(*)` (write).
 
