@@ -11,9 +11,9 @@ const config = {
   workspacePath: process.env.WORKSPACE_PATH ||
     join(homedir(), '.openclaw', 'workspace'),
 
-  // State path: ${workspacePath}/state
+  // State path: ${workspacePath}/state (can be overridden for testing)
   get statePath() {
-    return join(this.workspacePath, 'state');
+    return process.env.STATE_PATH || join(this.workspacePath, 'state');
   },
 
   // Beads CLI command
