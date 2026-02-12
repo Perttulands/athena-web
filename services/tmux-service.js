@@ -1,7 +1,7 @@
-import { exec } from 'node:child_process';
+import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 const TMUX_SOCKET = '/tmp/openclaw-coding-agents.sock';
 
@@ -20,10 +20,11 @@ function formatDuration(seconds) {
 
 /**
  * Execute tmux command with the configured socket
+ * @param {string[]} args - Array of tmux command arguments
  */
-async function tmuxExec(command) {
+async function tmuxExec(args) {
   try {
-    const { stdout, stderr } = await execAsync(`tmux -S ${TMUX_SOCKET} ${command}`);
+    const { stdout, stderr } = await execFileAsync('tmux', ['-S', TMUX_SOCKET, ...args]);
     return { stdout: stdout.trim(), stderr: stderr.trim(), error: null };
   } catch (error) {
     return { stdout: '', stderr: error.message, error };
@@ -36,7 +37,7 @@ async function tmuxExec(command) {
  */
 export async function listAgents() {
   // Get list of sessions
-  const { stdout, error } = await tmuxExec('list-sessions -F "#{session_name} #{session_created}"');
+  const { stdout, error } = await tmuxExec(['list-sessions', '-F', '#{session_name} #{session_created}']);
 
   if (error || !stdout) {
     return [];
@@ -59,7 +60,7 @@ export async function listAgents() {
     const runningTime = formatDuration(runningSeconds);
 
     // Capture last 50 lines of output
-    const { stdout: output } = await tmuxExec(`capture-pane -t ${name} -p -S -50`);
+    const { stdout: output } = await tmuxExec(['capture-pane', '-t', name, '-p', '-S', '-50']);
 
     // Extract bead ID from session name (e.g., agent-bd-279 -> bd-279)
     const bead = name.replace('agent-', '');
@@ -91,7 +92,7 @@ export async function listAgents() {
  * @param {number} lines - Number of lines to capture (default 200)
  */
 export async function getOutput(name, lines = 200) {
-  const { stdout, error } = await tmuxExec(`capture-pane -t ${name} -p -S -${lines}`);
+  const { stdout, error } = await tmuxExec(['capture-pane', '-t', name, '-p', '-S', `-${lines}`]);
 
   if (error) {
     return {
@@ -112,7 +113,7 @@ export async function getOutput(name, lines = 200) {
  * @param {string} name - Session name to kill
  */
 export async function killAgent(name) {
-  const { error } = await tmuxExec(`kill-session -t ${name}`);
+  const { error } = await tmuxExec(['kill-session', '-t', name]);
 
   if (error) {
     return {
