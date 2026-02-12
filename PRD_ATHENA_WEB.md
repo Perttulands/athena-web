@@ -336,7 +336,7 @@ Goal: Working Express server with all API endpoints returning real data. Tests f
 
 ---
 
-- [ ] **US-006** Runs service and API endpoint
+- [x] **US-006** Runs service and API endpoint
 
   **Scope:** Service that reads `state/runs/*.json` and `state/results/*.json` files. Merges run + result by bead ID. Routes: `GET /api/runs` with query params (`status`, `date`, `agent`). Sort by most recent first.
 

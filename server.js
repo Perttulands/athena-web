@@ -11,6 +11,7 @@ import {
 import beadsRouter from './routes/beads.js';
 import agentsRouter from './routes/agents.js';
 import docsRouter from './routes/docs.js';
+import runsRouter from './routes/runs.js';
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/beads', beadsRouter);
 app.use('/api/agents', agentsRouter);
 app.use('/api/docs', docsRouter);
+app.use('/api/runs', runsRouter);
 
 // Test routes for error handling (only in non-production)
 if (process.env.NODE_ENV !== 'production') {
