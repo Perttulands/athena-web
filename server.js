@@ -9,6 +9,7 @@ import {
   requestLogger
 } from './middleware/error-handler.js';
 import beadsRouter from './routes/beads.js';
+import agentsRouter from './routes/agents.js';
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.get('/api/health', (req, res) => {
 
 // API routes
 app.use('/api/beads', beadsRouter);
+app.use('/api/agents', agentsRouter);
 
 // Test routes for error handling (only in non-production)
 if (process.env.NODE_ENV !== 'production') {

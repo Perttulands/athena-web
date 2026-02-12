@@ -117,3 +117,33 @@ Now let me output the progress notes and review result:
 ===========================================
   Iteration 3 of 25
 ===========================================
+Perfect! Now let me output the complete summary to console:
+
+## Iteration 3 - US-003: Beads service and API endpoint
+- Created services/beads-service.js with br CLI integration
+- Implemented listBeads() function with filtering (status, priority) and sorting
+- Graceful degradation: returns empty array when br is not initialized or not found
+- Created routes/beads.js with GET /api/beads endpoint
+- Query param support: ?status=active&priority=1&sort=updated
+- Comprehensive test coverage for service and route
+- All 17 tests passing (11 new tests)
+- Manual verification confirms endpoint works correctly
+- Learnings for future iterations:
+  - br CLI returns error JSON when not initialized - handled gracefully
+  - Service layer properly isolates CLI interaction from routes
+  - Filtering and sorting logic cleanly separated in service
+  - Consistent pattern established for query param handling
+
+**Summary:**
+- Task: US-003: Beads service and API endpoint
+- Files: services/beads-service.js, routes/beads.js, tests/services/beads-service.test.js, tests/routes/beads.test.js, server.js
+- Tests: PASS (17/17 tests passing)
+- Review: PASSED
+- Next: US-004: Tmux service and agents API endpoints
+---
+
+<review-passed/>
+
+===========================================
+  Iteration 4 of 25
+===========================================

@@ -302,7 +302,7 @@ Goal: Working Express server with all API endpoints returning real data. Tests f
 
 ---
 
-- [ ] **US-004** Tmux service and agents API endpoints
+- [x] **US-004** Tmux service and agents API endpoints
 
   **Scope:** Service that queries tmux for sessions prefixed with `agent-`. For each session: capture last N lines of output, calculate running time, detect if alive. Routes: `GET /api/agents` (list all), `GET /api/agents/:name/output` (full recent output), `POST /api/agents/:name/kill` (kill session with tmux kill-session).
 
