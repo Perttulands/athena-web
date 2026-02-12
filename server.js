@@ -13,6 +13,7 @@ import agentsRouter from './routes/agents.js';
 import docsRouter from './routes/docs.js';
 import runsRouter from './routes/runs.js';
 import ralphRouter from './routes/ralph.js';
+import statusRouter from './routes/status.js';
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // API routes
+app.use('/api/status', statusRouter);
 app.use('/api/beads', beadsRouter);
 app.use('/api/agents', agentsRouter);
 app.use('/api/docs', docsRouter);
