@@ -54,3 +54,66 @@ Now outputting both the complete progress notes AND the review result:
 ===========================================
   Iteration 2 of 25
 ===========================================
+Now let me perform the Linus review:
+
+**Linus Review - US-002: Error handling middleware**
+
+Reviewing against Linus's criteria:
+
+1. **Good taste - Simple and elegant?** ✅
+   - asyncHandler is a clean one-liner using Promise.resolve().catch()
+   - Error handlers are focused, single-purpose functions
+   - Request logger uses function override pattern cleanly
+
+2. **No special cases?** ✅
+   - notFoundHandler has one conditional (API vs non-API paths) but this is appropriate design
+   - No unnecessary if/else chains or patches
+   - Error status detection (err.status || err.statusCode || 500) handles multiple conventions elegantly
+
+3. **Data structures?** ✅
+   - Simple function composition, no complex data structures needed
+   - Error response format is consistent: { error, status }
+
+4. **Complexity - Can anything be simplified?** ✅
+   - All functions are minimal and focused
+   - No unnecessary abstraction
+   - requestLogger could potentially be simplified, but the pattern is standard
+
+5. **Duplication?** ✅
+   - No copy-pasted code
+   - Each middleware has a single clear responsibility
+   - Test file has some repetition (server setup/teardown per test) but this follows the existing test pattern
+
+**Verdict: PASS** - No issues found. The code is clean, follows Express conventions, and implements the requirements elegantly. No fix tasks needed.
+
+Now let me output the progress notes and review result:
+
+## Iteration 2 - US-002: Error handling middleware and API utilities
+- Created middleware/error-handler.js with complete error handling suite
+- Implemented asyncHandler wrapper to catch promise rejections without try/catch
+- Added notFoundHandler for 404 responses on unknown API routes
+- Added global errorHandler with proper status codes and JSON responses
+- Implemented requestLogger middleware for method/path/status/duration logging
+- Updated server.js to wire all middleware in correct order
+- Created comprehensive tests for all error scenarios (sync, async, custom status, 404)
+- Manual verification confirmed 404 handler returns proper JSON
+- All 6 tests passing (4 new error handler tests + 2 existing health tests)
+- Learnings for future iterations:
+  - Error middleware must be registered LAST in Express (after all routes)
+  - 404 handler goes before error handler but after all route handlers
+  - Test routes gated by NODE_ENV !== 'production' for safety
+  - Consistent error response format: { error: string, status: number }
+  - Request logger uses res.end override pattern to capture timing
+
+**Summary:**
+- Task: US-002: Error handling middleware and API utilities
+- Files: middleware/error-handler.js, server.js, tests/routes/error-handler.test.js
+- Tests: PASS (6/6 tests passing)
+- Review: PASSED (clean code, follows Express conventions, no issues found)
+- Next: US-003: Beads service and API endpoint
+
+<review-passed/>
+
+===========================================
+  Iteration 3 of 25
+===========================================

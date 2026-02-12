@@ -289,7 +289,7 @@ Goal: Working Express server with all API endpoints returning real data. Tests f
 
 ---
 
-- [ ] **US-003** Beads service and API endpoint
+- [x] **US-003** Beads service and API endpoint
 
   **Scope:** Service that calls `br list --json` and parses output. Route `GET /api/beads` with query params for filtering (`status`, `priority`, `sort`). Handle CLI not found gracefully (return empty array + warning). Parse bead fields: id, title, status, priority, created, updated.
 
