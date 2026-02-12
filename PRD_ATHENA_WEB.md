@@ -368,7 +368,7 @@ Goal: Working Express server with all API endpoints returning real data. Tests f
 
 ---
 
-- [ ] **US-008** Status endpoint (dashboard aggregate)
+- [x] **US-008** Status endpoint (dashboard aggregate)
 
   **Scope:** Route `GET /api/status` that aggregates data from beads, agents, runs, and ralph services into a single dashboard payload. Includes recent activity (last 10 events from runs, sorted by time). Calls each service and assembles response. Any service failure returns partial data with warnings, never crashes.
 

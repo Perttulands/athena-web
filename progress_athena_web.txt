@@ -232,3 +232,30 @@ Sprint 5 Review: [ ] NOT PASSED
 - Duplication: None found (nested try/catch has different semantics, appropriate)
 - Verdict: Code is clean, simple, follows established patterns
 ---
+
+## Iteration 7 - US-007: Ralph service and API endpoint
+- Created services/ralph-service.js with PRD markdown parsing and progress file reading
+- Implemented parsePRD() to extract tasks matching - [ ] **US-XXX** format via regex
+- Implemented parseProgress() to read key=value format from progress files
+- Implemented getRalphStatus() to compose parsed data into API response
+- Created routes/ralph.js with GET /api/ralph endpoint
+- Query param support: ?prd=<path>&progress=<path> with defaults to workspace paths
+- Graceful degradation: returns empty arrays and null values when files don't exist
+- Registered route in server.js
+- Comprehensive test coverage: 5 service tests + 2 route tests
+- All 7 tests passing
+- Manual verification confirms endpoint works with actual project PRD
+- Learnings for future iterations:
+  - Regex pattern for task extraction: /^- \[([ x])\] \*\*([A-Z]+-\d+[a-z]?)\*\* (.+?)(?:\s+\(\d+\s+min\))?$/
+  - Progress file simple key=value parsing works well
+  - Graceful error handling pattern: try/catch with sensible defaults (empty arrays, 0, null)
+  - Route pattern established: thin wrapper, service does all logic
+  - Test cleanup important: temp directories must be removed in tests
+
+**Summary:**
+- Task: US-007: Ralph service and API endpoint
+- Files: services/ralph-service.js, routes/ralph.js, server.js, tests/services/ralph-service.test.js, tests/routes/ralph.test.js
+- Tests: PASS (7/7 new tests passing - 5 service + 2 route)
+- Review: PASSED (per-task Linus review - no issues found)
+- Next: US-008: Status endpoint (dashboard aggregate)
+---
