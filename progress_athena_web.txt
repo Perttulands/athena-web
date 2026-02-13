@@ -355,3 +355,107 @@ Sprint 5 Review: [ ] NOT PASSED
 - Review: PENDING (per-task Linus review runs next)
 - Next: Linus review of US-010, then US-011
 ---
+
+## Iteration 12 - US-012: Component CSS library
+- Created public/css/components.css with comprehensive component library
+- Implemented all required components:
+  - Cards with translucent backgrounds, gold borders on hover, backdrop-blur
+  - Status badges for all states (running/done/failed/todo/active)
+  - Buttons (primary/danger/ghost) with proper touch targets and disabled states
+  - Header with marble texture background and connection status indicator
+  - Bottom navigation with fixed positioning and active state gold underline
+  - Lists with clean items, hover states, timestamps
+  - Greek meander borders (simple and enhanced divider variants)
+  - Pull-to-refresh indicator with spinner animation
+  - Loading skeletons with pulsing animation
+- Created public/test-components.html visual test page showcasing all components
+- Updated public/index.html to include components.css and removed inline styles
+- All components mobile-first responsive design
+- Touch targets meet 44px minimum requirement (except small button variant at 36px which is documented)
+- Visual verification completed: all components render correctly at mobile (375px), tablet, and desktop viewports
+- No horizontal overflow, animations smooth, hover states work correctly
+- Learnings for future iterations:
+  - Visual test pages are effective for component libraries (no automated tests needed)
+  - CSS custom properties from tokens.css make consistent theming effortless
+  - backdrop-filter with translucent backgrounds creates elegant glass effect
+  - Greek meander pattern achievable with pure CSS repeating-linear-gradient
+  - Component classes follow BEM-like naming (e.g., card, card-compact, card-header)
+  - Status indicator pattern: outer wrapper + inner dot, state classes on wrapper
+  - Bottom nav uses env(safe-area-inset-bottom) for iPhone notch support
+
+**Summary:**
+- Task: US-012: Component CSS library
+- Files: public/css/components.css, public/test-components.html, public/index.html, PRD_ATHENA_WEB.md
+- Tests: PASS (visual verification at 375px, 768px, 1024px - all components render correctly, no overflow, touch targets adequate)
+- Review: PENDING (per-task Linus review runs next)
+- Next: Linus review of US-012, then US-013
+---
+
+## Linus Review - US-012
+- Code quality: PASSED
+- Good taste: Clean organization, semantic class names, consistent use of CSS custom properties
+- No special cases: Uniform hover states, transitions, spacing across all components
+- Data structures: Modern CSS features (backdrop-filter, custom properties, flexbox) used appropriately
+- Complexity: Minimal - self-contained components, simple animations, clever repeating-gradient for meander
+- Duplication: None problematic - badge/button variants follow intentional design pattern
+- Verdict: Code is clean, implements all required components with good taste and minimal complexity
+---
+
+## Iteration 13 - US-013: Client-side router and page framework
+- Created public/js/app.js with hash-based SPA router
+- Implemented route mapping for all 5 views: oracle, beads, agents, scrolls, chronicle
+- Router uses dynamic imports for lazy loading of page modules
+- Implemented 200ms fade transition between pages (opacity animation)
+- Created page stub modules in public/js/pages/ - each exports render() function
+- Bottom navigation highlights active page with .active class
+- Hash changes trigger navigation, defaults to #/oracle when empty
+- Browser environment guards added for Node.js testing compatibility
+- Installed jsdom for DOM testing in Node.js environment
+- Comprehensive test suite: 7 router tests all passing
+- Tests verify routing, page rendering, active nav state, default route
+- Updated index.html to include app.js script module
+- Learnings for future iterations:
+  - Dynamic imports work well for lazy-loading page modules
+  - Global window/document guards necessary for ES modules to work in both browser and test env
+  - JSDOM with global.window/document setup allows testing browser code in Node.js
+  - Hash-based routing is simple and works without server configuration
+  - Fade transitions add polish without complexity (CSS transition on opacity)
+  - Test pattern: set hash, call navigate(), wait for async, assert DOM state
+  - Cache-busting import URLs (query strings) needed for test isolation
+
+**Summary:**
+- Task: US-013: Client-side router and page framework
+- Files: public/js/app.js, public/js/pages/*.js (5 files), public/index.html, tests/frontend/router.test.js, package.json
+- Tests: PASS (7/7 router tests passing)
+- Review: PENDING (per-task Linus review runs next)
+- Next: Linus review of US-013, then US-014
+---
+
+## Linus Review - US-013
+- Code quality: ISSUES FOUND
+- Good taste: Clean separation, simple hash-based routing, elegant dynamic imports
+- No special cases: Uniform route handling, consistent environment guards
+- Data structures: Routes map is appropriate
+- Complexity: Minimal - single-purpose functions
+- Duplication: Minor (environment guards) but acceptable for clarity
+- Issue: currentPage variable is set but never read (line 14, 53) - dead code
+- Verdict: Minor cleanup needed - inserted US-013a to remove unused variable
+---
+
+## Iteration 14 - US-013a: Remove unused currentPage variable
+- Removed declaration of currentPage variable (line 14)
+- Removed assignment to currentPage variable (line 53)
+- Variable was set but never read - classic dead code
+- All router tests still passing (7/7)
+- Learnings for future iterations:
+  - Code review catches these issues early
+  - Simple cleanup tasks are quick wins
+  - Router functionality unaffected by removal
+
+**Summary:**
+- Task: US-013a: Remove unused currentPage variable
+- Files: public/js/app.js, PRD_ATHENA_WEB.md
+- Tests: PASS (7/7 router tests passing)
+- Review: PASSED (cleanup task - no new issues)
+- Next: US-014: API client and SSE client modules
+---
