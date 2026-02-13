@@ -721,7 +721,7 @@ Goal: All five views fully functional with real data.
 
 ---
 
-- [ ] **US-024** Agents page — live agent monitor
+- [x] **US-024** Agents page — live agent monitor
 
   **Scope:** Implement `js/pages/agents.js`:
   - **Agent cards:** Each card shows: session name, bead ID link, status indicator (green pulse = running, gray = stopped), running time (live counter), last 3 lines of output (monospace, truncated), context % as horizontal bar.
