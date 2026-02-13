@@ -1,6 +1,6 @@
 # Athena Web - Deployment Infrastructure Complete ✅
 
-Production deployment infrastructure for ahjo-1 server is ready.
+Production deployment infrastructure for $HOSTNAME server is ready.
 
 ## What Was Created
 
@@ -157,7 +157,7 @@ See **QUICKSTART.md** for 5-minute deployment guide.
 
 ## Next Steps
 
-1. **Deploy to ahjo-1**
+1. **Deploy to $HOSTNAME**
    ```bash
    # Follow INSTALL.md or QUICKSTART.md
    ```
@@ -260,7 +260,7 @@ OpenClaw Workspace
 
 ## Deployment Ready! 🚀
 
-All infrastructure files are created and ready for deployment to ahjo-1.
+All infrastructure files are created and ready for deployment to $HOSTNAME.
 
 **Start here:** `deployment/QUICKSTART.md` for fast deployment  
 **Or detailed:** `deployment/INSTALL.md` for step-by-step guide  

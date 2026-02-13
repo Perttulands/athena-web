@@ -2,7 +2,7 @@
 
 ## What Was Created
 
-This deployment package prepares athena-web for production on ahjo-1 with enterprise-grade security, performance, and monitoring.
+This deployment package prepares athena-web for production on $HOSTNAME with enterprise-grade security, performance, and monitoring.
 
 ### Configuration Files
 
@@ -366,7 +366,7 @@ After deployment:
 4. **Monitor performance** - Response times, memory usage
 5. **Set up backups** - Schedule workspace backups
 6. **Enable health monitoring** - Install systemd timer
-7. **Update DNS** (if needed) - Point athena.local to ahjo-1
+7. **Update DNS** (if needed) - Point athena.local to $HOSTNAME
 
 ## Support Resources
 
@@ -381,7 +381,7 @@ After deployment:
 - [ ] Node.js 24.x installed
 - [ ] Nginx installed
 - [ ] Tailscale connected
-- [ ] User `perttu` has sudo access
+- [ ] User `$USER` has sudo access
 - [ ] Repository cloned to `$HOME/athena-web`
 
 ### Deployment

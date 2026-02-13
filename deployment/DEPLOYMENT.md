@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide covers deploying Athena Web to production on ahjo-1 with Nginx reverse proxy, SSL/TLS, and systemd service management. The application will be accessible at `https://athena.local` on your Tailscale network.
+This guide covers deploying Athena Web to production on $HOSTNAME with Nginx reverse proxy, SSL/TLS, and systemd service management. The application will be accessible at `https://athena.local` on your Tailscale network.
 
 ## Architecture
 
@@ -19,11 +19,11 @@ This guide covers deploying Athena Web to production on ahjo-1 with Nginx revers
 
 ### System Requirements
 
-- **Server**: ahjo-1 (Ubuntu/Debian Linux)
+- **Server**: $HOSTNAME (Ubuntu/Debian Linux)
 - **Node.js**: v24.x or higher
 - **Nginx**: Latest stable version
 - **Network**: Tailscale configured and connected
-- **User**: perttu with sudo privileges
+- **User**: $USER with sudo privileges
 
 ### Verification
 
@@ -217,7 +217,7 @@ The service runs with strict security restrictions:
 
 ```bash
 # Application files
-chown -R perttu:perttu $HOME/athena-web
+chown -R $USER:$USER $HOME/athena-web
 
 # SSL certificates
 chmod 600 /etc/ssl/private/athena.local.key
@@ -247,8 +247,8 @@ The application runs in production mode with:
 
 ```bash
 # Increase file descriptor limits
-echo "perttu soft nofile 65536" | sudo tee -a /etc/security/limits.conf
-echo "perttu hard nofile 65536" | sudo tee -a /etc/security/limits.conf
+echo "$USER soft nofile 65536" | sudo tee -a /etc/security/limits.conf
+echo "$USER hard nofile 65536" | sudo tee -a /etc/security/limits.conf
 
 # Optimize TCP settings (add to /etc/sysctl.conf)
 sudo tee -a /etc/sysctl.conf <<EOF
@@ -359,7 +359,7 @@ sudo ss -tlnp | grep :9000
 ls -la $HOME/.openclaw/workspace
 
 # 3. Permission issues
-sudo chown -R perttu:perttu $HOME/athena-web
+sudo chown -R $USER:$USER $HOME/athena-web
 ```
 
 ### Nginx Issues

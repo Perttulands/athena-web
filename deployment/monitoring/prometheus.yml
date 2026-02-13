@@ -26,14 +26,14 @@ scrape_configs:
       - targets: ['localhost:9001']
         labels:
           service: 'athena-web'
-          instance: 'ahjo-1'
+          instance: '<YOUR_HOSTNAME>'
 
   # Node exporter for system metrics
   - job_name: 'node'
     static_configs:
       - targets: ['localhost:9100']
         labels:
-          instance: 'ahjo-1'
+          instance: '<YOUR_HOSTNAME>'
 
   # Nginx metrics (if using nginx-prometheus-exporter)
   - job_name: 'nginx'
@@ -41,7 +41,7 @@ scrape_configs:
       - targets: ['localhost:9113']
         labels:
           service: 'nginx'
-          instance: 'ahjo-1'
+          instance: '<YOUR_HOSTNAME>'
 
   # Self-monitoring
   - job_name: 'prometheus'

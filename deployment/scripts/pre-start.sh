@@ -10,18 +10,19 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-APP_DIR="$HOME/athena-web"
-WORKSPACE_PATH="$HOME/.openclaw/workspace"
+APP_DIR="${APP_DIR:-$HOME/athena-web}"
+WORKSPACE_PATH="${WORKSPACE_PATH:-$HOME/.openclaw/workspace}"
 LOG_DIR="$APP_DIR/logs"
 BACKUP_DIR="$APP_DIR/backups"
+EXPECTED_USER="${SERVICE_USER:-${USER:-$(id -un)}}"
 
 echo "=========================================="
 echo "Athena Web - Pre-start Checks"
 echo "=========================================="
 
 # Check if running as correct user
-if [ "$(whoami)" != "perttu" ]; then
-    echo -e "${RED}✗ Must run as user 'perttu'${NC}"
+if [ "$(whoami)" != "$EXPECTED_USER" ]; then
+    echo -e "${RED}✗ Must run as user '$EXPECTED_USER'${NC}"
     exit 1
 fi
 echo -e "${GREEN}✓ Running as correct user${NC}"

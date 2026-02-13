@@ -5,16 +5,16 @@ Use this checklist to ensure a complete and successful production deployment.
 ## Pre-Deployment
 
 ### System Requirements
-- [ ] Server: ahjo-1 accessible via SSH
+- [ ] Server: $HOSTNAME accessible via SSH
 - [ ] OS: Ubuntu/Debian Linux (updated)
 - [ ] Node.js: v24.x or higher installed
-- [ ] User: `perttu` with sudo privileges
+- [ ] User: `$USER` with sudo privileges
 - [ ] Network: Tailscale installed and connected
 - [ ] Git: Repository cloned to `$HOME/athena-web`
 
 **Verification Commands:**
 ```bash
-ssh perttu@ahjo-1
+ssh $USER@$HOSTNAME
 node --version  # Should be v24.x+
 tailscale status  # Should show "online"
 ```
@@ -146,7 +146,7 @@ npm test
 ## Security Hardening
 
 ### File Permissions
-- [ ] App directory: `chown -R perttu:perttu $HOME/athena-web`
+- [ ] App directory: `chown -R $USER:$USER $HOME/athena-web`
 - [ ] SSL key secure: `sudo chmod 600 /etc/ssl/private/athena.local.key`
 - [ ] SSL cert readable: `sudo chmod 644 /etc/ssl/certs/athena.local.crt`
 - [ ] Env file secure: `sudo chmod 600 /etc/athena-web/env`

@@ -1,6 +1,6 @@
 # Athena Web - Production Deployment Guide
 
-Complete infrastructure for deploying Athena Web to production on ahjo-1 server with Tailscale.
+Complete infrastructure for deploying Athena Web to production on $HOSTNAME server with Tailscale.
 
 ## Quick Start
 
@@ -350,7 +350,7 @@ sudo systemctl reload nginx
 ls -la $HOME/.openclaw/workspace
 
 # Fix permissions
-sudo chown -R perttu:perttu $HOME/.openclaw/workspace
+sudo chown -R $USER:$USER $HOME/.openclaw/workspace
 sudo chmod -R 755 $HOME/.openclaw/workspace
 ```
 

@@ -1,10 +1,10 @@
-# Athena Web - Installation Guide for ahjo-1
+# Athena Web - Installation Guide for $HOSTNAME
 
-Step-by-step installation instructions for deploying Athena Web to the ahjo-1 server.
+Step-by-step installation instructions for deploying Athena Web to the $HOSTNAME server.
 
 ## Prerequisites
 
-- Ubuntu/Debian Linux (ahjo-1 server)
+- Ubuntu/Debian Linux ($HOSTNAME server)
 - Node.js 24.x or higher
 - Nginx installed
 - Sudo/root access
@@ -345,11 +345,11 @@ sudo tail -f /var/log/nginx/error.log
 
 ```bash
 # Fix application permissions
-sudo chown -R perttu:perttu $HOME/athena-web
+sudo chown -R $USER:$USER $HOME/athena-web
 chmod 755 $HOME/athena-web
 
 # Fix workspace permissions
-sudo chown -R perttu:perttu $HOME/.openclaw/workspace
+sudo chown -R $USER:$USER $HOME/.openclaw/workspace
 chmod 755 $HOME/.openclaw/workspace
 
 # Fix log directory

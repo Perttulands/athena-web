@@ -406,7 +406,11 @@ export function createBottomSheet({
     activeElement = document.activeElement;
 
     document.body.appendChild(overlay);
-    requestAnimationFrame(() => {
+    const scheduleFrame = typeof window !== 'undefined' &&
+      typeof window.requestAnimationFrame === 'function'
+      ? window.requestAnimationFrame.bind(window)
+      : (callback) => setTimeout(callback, 0);
+    scheduleFrame(() => {
       overlay.classList.add('open');
     });
 
