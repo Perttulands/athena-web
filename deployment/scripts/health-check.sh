@@ -21,6 +21,7 @@ NC='\033[0m'
 URL="https://athena.local"
 SLACK_WEBHOOK=""
 FAILED=0
+APP_DIR="${APP_DIR:-$HOME/athena-web}"
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -177,7 +178,7 @@ fi
 
 # Check 10: Disk space
 echo -n "Checking disk space... "
-DISK_USAGE=$(df -h $HOME/athena-web | awk 'NR==2 {print $5}' | sed 's/%//')
+DISK_USAGE=$(df -h "$APP_DIR" | awk 'NR==2 {print $5}' | sed 's/%//')
 
 if [[ $DISK_USAGE -lt 80 ]]; then
   echo -e "${GREEN}✓ ${DISK_USAGE}% used${NC}"

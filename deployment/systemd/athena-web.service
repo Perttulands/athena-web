@@ -8,17 +8,17 @@ Wants=network-online.target
 Type=simple
 User=perttu
 Group=perttu
-WorkingDirectory=$HOME/athena-web
+WorkingDirectory=~/athena-web
 
 # Environment
 Environment=NODE_ENV=production
 Environment=PORT=9000
-Environment=PATH=$HOME/.local/bin:$HOME/.npm-global/bin:/usr/local/bin:/usr/bin:/bin
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
 EnvironmentFile=-/etc/athena-web/env
 
 # Execution
-ExecStartPre=$HOME/athena-web/deployment/scripts/pre-start.sh
-ExecStart=/usr/bin/node $HOME/athena-web/server.js
+ExecStartPre=/usr/bin/bash -lc ./deployment/scripts/pre-start.sh
+ExecStart=/usr/bin/node server.js
 ExecReload=/bin/kill -HUP $MAINPID
 
 # Restart policies
@@ -38,9 +38,7 @@ NoNewPrivileges=true
 # Must see the shared tmux socket at /tmp/openclaw-coding-agents.sock
 PrivateTmp=false
 ProtectSystem=strict
-ProtectHome=read-only
-ReadWritePaths=$HOME/.openclaw/workspace
-ReadWritePaths=$HOME/athena-web/logs
+ProtectHome=false
 
 # Process management
 KillMode=mixed

@@ -398,7 +398,7 @@ Goal: Working Express server with all API endpoints returning real data. Tests f
 
 - [x] **US-010** systemd service file and startup validation
 
-  **Scope:** Create `athena-web.service` systemd unit file. Runs as user `perttu`. Working directory is the project root. Starts with `node server.js`. Restarts on failure. Environment file for config overrides. Write install/uninstall instructions in a comment block at top of the service file.
+  **Scope:** Create `athena-web.service` systemd unit file. Runs as user `$USER`. Working directory is the project root. Starts with `node server.js`. Restarts on failure. Environment file for config overrides. Write install/uninstall instructions in a comment block at top of the service file.
 
   **TDD Phases:**
   - **RED:** Write test that validates the service file exists and contains required directives (ExecStart, WorkingDirectory, Restart, User).

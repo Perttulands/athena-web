@@ -8,7 +8,7 @@
 #      sudo mkdir -p /etc/athena-web
 #      sudo nano /etc/athena-web/env
 #      # Add environment variables:
-#      #   WORKSPACE_PATH=$HOME/.openclaw/workspace
+#      #   WORKSPACE_PATH=~/.openclaw/workspace
 #      #   PORT=9000
 #
 #   3. Reload systemd daemon:
@@ -48,7 +48,7 @@ Documentation=https://github.com/perttu/athena-web
 Type=simple
 User=perttu
 Group=perttu
-WorkingDirectory=$HOME/athena-web
+WorkingDirectory=~/athena-web
 ExecStart=/usr/bin/node server.js
 Restart=on-failure
 RestartSec=5
@@ -59,8 +59,7 @@ StandardError=journal
 # Default values can be overridden in /etc/athena-web/env
 Environment="NODE_ENV=production"
 Environment="PORT=9000"
-Environment="WORKSPACE_PATH=$HOME/.openclaw/workspace"
-Environment="PATH=$HOME/.local/bin:$HOME/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="PATH=/usr/local/bin:/usr/bin:/bin"
 EnvironmentFile=-/etc/athena-web/env
 
 # Security hardening
@@ -68,8 +67,7 @@ NoNewPrivileges=true
 # Must see the shared tmux socket at /tmp/openclaw-coding-agents.sock
 PrivateTmp=false
 ProtectSystem=strict
-ProtectHome=read-only
-ReadWritePaths=$HOME/.openclaw/workspace
+ProtectHome=false
 
 # Additional security restrictions
 ProtectKernelTunables=true

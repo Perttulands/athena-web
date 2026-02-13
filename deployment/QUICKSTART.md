@@ -1,6 +1,6 @@
 # Athena Web - Production Deployment Quickstart
 
-Fast deployment guide for ahjo-1 server. For detailed instructions, see INSTALL.md.
+Fast deployment guide for $HOSTNAME server. For detailed instructions, see INSTALL.md.
 
 ## Prerequisites Check
 

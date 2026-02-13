@@ -1,5 +1,5 @@
 #!/bin/bash
-# Athena Web Deployment Script for ahjo-1
+# Athena Web Deployment Script
 #
 # Usage:
 #   ./deploy.sh [--skip-deps] [--skip-ssl] [--skip-nginx] [--skip-systemd]
@@ -23,12 +23,15 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-PROJECT_DIR="$HOME/athena-web"
+PROJECT_DIR="${PROJECT_DIR:-$HOME/athena-web}"
 DOMAIN="athena.local"
 NGINX_AVAILABLE="/etc/nginx/sites-available"
 NGINX_ENABLED="/etc/nginx/sites-enabled"
 SYSTEMD_DIR="/etc/systemd/system"
 ENV_DIR="/etc/athena-web"
+CURRENT_HOST="$(hostname)"
+TARGET_HOST="${DEPLOY_TARGET_HOST:-$CURRENT_HOST}"
+TARGET_USER="${DEPLOY_TARGET_USER:-${USER:-$(id -un)}}"
 
 # Parse arguments
 SKIP_DEPS=false
@@ -53,9 +56,9 @@ echo -e "${BLUE}🦉 Athena Web Deployment Script${NC}"
 echo -e "${BLUE}================================${NC}"
 echo ""
 
-# Check if running on ahjo-1
-if [[ "$(hostname)" != "ahjo-1" ]]; then
-  echo -e "${YELLOW}⚠️  Warning: Not running on ahjo-1 (current: $(hostname))${NC}"
+# Check host target
+if [[ "$CURRENT_HOST" != "$TARGET_HOST" ]]; then
+  echo -e "${YELLOW}⚠️  Warning: Not running on target host '$TARGET_HOST' (current: $CURRENT_HOST)${NC}"
   read -p "Continue anyway? [y/N]: " -n 1 -r
   echo
   if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -64,8 +67,8 @@ if [[ "$(hostname)" != "ahjo-1" ]]; then
 fi
 
 # Check if running as correct user
-if [[ "$USER" != "perttu" ]]; then
-  echo -e "${RED}❌ Error: This script should be run as user 'perttu'${NC}"
+if [[ "${USER:-$(id -un)}" != "$TARGET_USER" ]]; then
+  echo -e "${RED}❌ Error: This script should be run as user '$TARGET_USER'${NC}"
   exit 1
 fi
 

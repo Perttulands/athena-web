@@ -333,7 +333,7 @@ Sprint 5 Review: [x] PASSED
 ## Iteration 10 - US-010: systemd service file and startup validation
 - Created athena-web.service systemd unit file with complete configuration
 - Included [Unit], [Service], and [Install] sections with all required directives
-- Service runs as user perttu, working directory set to project root
+- Service runs as user $USER, working directory set to project root
 - ExecStart runs node server.js, Restart=on-failure with 5s delay
 - Environment variable support: inline defaults + optional /etc/athena-web/env file
 - Comprehensive install/uninstall instructions in comment block at top of file
