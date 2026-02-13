@@ -11,6 +11,7 @@ import {
 import {
   responseTime,
   compressionHeaders,
+  gzipCompression,
   apiETag,
   requestTimeout,
   memoryMonitor
@@ -25,9 +26,23 @@ import streamRouter from './routes/stream.js';
 
 const app = express();
 
+// Security headers
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+  );
+  next();
+});
+
 // Performance middleware
 app.use(responseTime);
 app.use(compressionHeaders);
+app.use(gzipCompression);
 app.use(requestTimeout(30000)); // 30 second timeout
 
 // Development monitoring
@@ -48,6 +63,11 @@ app.use(express.static('public'));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
+// Convenience alias used by deployment probes
+app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 

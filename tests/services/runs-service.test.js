@@ -136,6 +136,13 @@ describe('runs-service', () => {
     assert.ok(runs.every(r => r.agent === 'claude'));
   });
 
+  it('should filter by bead id', async () => {
+    const runs = await listRuns({ bead: 'bd-280' });
+
+    assert.equal(runs.length, 1);
+    assert.equal(runs[0].bead, 'bd-280');
+  });
+
   it('should filter by date', async () => {
     const runs = await listRuns({ date: '2026-02-12' });
 

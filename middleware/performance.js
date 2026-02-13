@@ -1,6 +1,7 @@
 /**
  * Performance monitoring and optimization middleware
  */
+import { gzipSync } from 'node:zlib';
 
 /**
  * Response time header middleware
@@ -25,6 +26,56 @@ export const responseTime = (req, res, next) => {
 export const compressionHeaders = (req, res, next) => {
   // Set Vary header for better caching with compression
   res.setHeader('Vary', 'Accept-Encoding');
+  next();
+};
+
+/**
+ * Lightweight gzip compression middleware.
+ * Compresses JSON/text responses when client supports gzip.
+ */
+export const gzipCompression = (req, res, next) => {
+  if (req.method === 'HEAD' || req.path.includes('/stream')) {
+    return next();
+  }
+
+  const acceptEncoding = String(req.headers['accept-encoding'] || '');
+  if (!acceptEncoding.includes('gzip')) {
+    return next();
+  }
+
+  const originalSend = res.send.bind(res);
+
+  res.send = function patchedSend(body) {
+    if (res.headersSent || res.getHeader('Content-Encoding')) {
+      return originalSend(body);
+    }
+
+    const contentType = String(res.getHeader('Content-Type') || '');
+    const isCompressibleType = contentType.includes('application/json')
+      || contentType.includes('text/')
+      || contentType.includes('application/javascript')
+      || contentType.includes('image/svg+xml');
+
+    if (!isCompressibleType) {
+      return originalSend(body);
+    }
+
+    const sourceBuffer = Buffer.isBuffer(body)
+      ? body
+      : Buffer.from(String(body ?? ''), 'utf8');
+
+    if (sourceBuffer.length < 1024) {
+      return originalSend(body);
+    }
+
+    const compressed = gzipSync(sourceBuffer);
+    res.setHeader('Content-Encoding', 'gzip');
+    res.setHeader('Content-Length', compressed.length);
+    res.setHeader('Vary', 'Accept-Encoding');
+
+    return originalSend(compressed);
+  };
+
   next();
 };
 

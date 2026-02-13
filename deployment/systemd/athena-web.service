@@ -1,0 +1,54 @@
+[Unit]
+Description=Athena Web - OpenClaw Workspace Interface
+Documentation=https://github.com/yourusername/athena-web
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=perttu
+Group=perttu
+WorkingDirectory=$HOME/athena-web
+
+# Environment
+Environment=NODE_ENV=production
+Environment=PORT=9000
+EnvironmentFile=-/etc/athena-web/env
+
+# Execution
+ExecStartPre=$HOME/athena-web/deployment/scripts/pre-start.sh
+ExecStart=/usr/bin/node $HOME/athena-web/server.js
+ExecReload=/bin/kill -HUP $MAINPID
+
+# Restart policies
+Restart=always
+RestartSec=10
+StartLimitInterval=300
+StartLimitBurst=5
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+MemoryMax=512M
+CPUQuota=200%
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=$HOME/.openclaw/workspace
+ReadWritePaths=$HOME/athena-web/logs
+
+# Process management
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=athena-web
+
+[Install]
+WantedBy=multi-user.target

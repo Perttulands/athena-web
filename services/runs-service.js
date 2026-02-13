@@ -4,7 +4,7 @@ import config from '../config.js';
 
 /**
  * Reads and merges run and result JSON files from state directories
- * @param {Object} filters - Query filters { status, date, agent }
+ * @param {Object} filters - Query filters { status, date, agent, bead }
  * @returns {Promise<Array>} - Array of run objects sorted by most recent first
  */
 async function listRuns(filters = {}) {
@@ -73,6 +73,10 @@ async function listRuns(filters = {}) {
 
   if (filters.agent) {
     filtered = filtered.filter(r => r.agent === filters.agent);
+  }
+
+  if (filters.bead) {
+    filtered = filtered.filter(r => r.bead === filters.bead);
   }
 
   if (filters.date) {

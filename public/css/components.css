@@ -221,6 +221,7 @@
 .app-header {
   background: var(--bg-surface);
   background-image:
+    url('/assets/marble-texture.svg'),
     linear-gradient(
       135deg,
       rgba(255, 255, 255, 0.02) 0%,
@@ -229,6 +230,8 @@
       rgba(0, 0, 0, 0.02) 75%,
       rgba(0, 0, 0, 0.03) 100%
     );
+  background-size: 320px 320px, cover;
+  background-repeat: repeat, no-repeat;
   padding: var(--space-md) 0;
   position: sticky;
   top: 0;
@@ -679,6 +682,88 @@
 }
 
 /* ============================================
+   BOTTOM SHEET
+   ============================================ */
+
+.bottom-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: grid;
+  align-items: end;
+  pointer-events: none;
+}
+
+.bottom-sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.bottom-sheet {
+  position: relative;
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
+  border: 1px solid rgba(212, 165, 116, 0.2);
+  border-bottom: none;
+  background: var(--bg-surface);
+  min-height: 28vh;
+  max-height: calc(100vh - var(--nav-height) - env(safe-area-inset-top, 0));
+  transform: translateY(106%);
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  padding: var(--space-sm) var(--space-md) calc(var(--space-md) + env(safe-area-inset-bottom, 0));
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+}
+
+.bottom-sheet-overlay.open {
+  pointer-events: auto;
+}
+
+.bottom-sheet-overlay.open .bottom-sheet-backdrop {
+  opacity: 1;
+}
+
+.bottom-sheet-overlay.open .bottom-sheet {
+  transform: translateY(0);
+}
+
+.bottom-sheet-handle {
+  width: 46px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: rgba(212, 165, 116, 0.45);
+  justify-self: center;
+  margin: var(--space-xs) 0 var(--space-sm);
+}
+
+.bottom-sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.bottom-sheet-title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+}
+
+.bottom-sheet-body {
+  overflow: auto;
+  padding-bottom: var(--space-sm);
+}
+
+body.sheet-open {
+  overflow: hidden;
+}
+
+/* ============================================
    TOASTS
    ============================================ */
 
@@ -717,4 +802,23 @@
 
 .toast-info {
   border-left-color: var(--info);
+}
+
+/* ============================================
+   INSTALL BANNER
+   ============================================ */
+
+.install-banner {
+  margin-bottom: var(--space-md);
+}
+
+.install-banner p {
+  margin: 0 0 var(--space-sm);
+  color: var(--text-secondary);
+}
+
+.install-banner-actions {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: flex-end;
 }

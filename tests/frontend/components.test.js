@@ -111,4 +111,24 @@ describe('UI Components', () => {
     await new Promise(resolve => setTimeout(resolve, 25));
     assert.strictEqual(document.querySelector('#toast-container').children.length, 0);
   });
+
+  it('createBottomSheet should open and close with body scroll lock', async () => {
+    const sheet = components.createBottomSheet({
+      title: 'Bead details',
+      content: 'Sheet content'
+    });
+
+    sheet.open();
+    await new Promise(resolve => setTimeout(resolve, 20));
+
+    assert.ok(document.querySelector('.bottom-sheet-overlay'));
+    assert.ok(document.body.classList.contains('sheet-open'));
+    assert.ok(document.querySelector('.bottom-sheet').textContent.includes('Sheet content'));
+
+    sheet.close();
+    await new Promise(resolve => setTimeout(resolve, 250));
+
+    assert.strictEqual(document.querySelector('.bottom-sheet-overlay'), null);
+    assert.strictEqual(document.body.classList.contains('sheet-open'), false);
+  });
 });

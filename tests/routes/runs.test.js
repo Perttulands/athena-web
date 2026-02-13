@@ -51,4 +51,21 @@ describe('GET /api/runs', () => {
 
     server.close();
   });
+
+  it('should accept bead query param', async (t) => {
+    if (!socketsAllowed) {
+      t.skip('Local sockets are blocked in this environment');
+      return;
+    }
+
+    const server = app.listen(0);
+    const port = server.address().port;
+    const response = await fetch(`http://localhost:${port}/api/runs?bead=bd-123`);
+
+    assert.strictEqual(response.status, 200);
+    const data = await response.json();
+    assert.ok(Array.isArray(data));
+
+    server.close();
+  });
 });

@@ -5,6 +5,7 @@
 
 const BADGE_CLASS_BY_STATUS = {
   running: 'badge-running',
+  stopped: 'badge-todo',
   done: 'badge-done',
   failed: 'badge-failed',
   todo: 'badge-todo',
@@ -26,6 +27,13 @@ function appendContent(container, content) {
     return;
   }
   container.textContent = String(content);
+}
+
+function getFocusableElements(scope) {
+  if (!scope) return [];
+  return Array.from(scope.querySelectorAll(
+    'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  ));
 }
 
 export function createBadge(status) {
@@ -188,6 +196,7 @@ export function createLoadingSkeleton(type = 'card') {
 }
 
 function closeDialog(dialog) {
+  if (!dialog) return;
   dialog.remove();
 }
 
@@ -196,6 +205,7 @@ export function createConfirmDialog({ title, message, onConfirm } = {}) {
   dialog.className = 'confirm-dialog-overlay';
   dialog.setAttribute('role', 'dialog');
   dialog.setAttribute('aria-modal', 'true');
+  dialog.tabIndex = -1;
 
   const panel = document.createElement('div');
   panel.className = 'confirm-dialog card';
@@ -217,12 +227,14 @@ export function createConfirmDialog({ title, message, onConfirm } = {}) {
   cancelButton.type = 'button';
   cancelButton.className = 'btn btn-ghost';
   cancelButton.textContent = 'Cancel';
+  cancelButton.setAttribute('aria-label', 'Cancel confirmation');
   cancelButton.addEventListener('click', () => closeDialog(dialog));
 
   const confirmButton = document.createElement('button');
   confirmButton.type = 'button';
   confirmButton.className = 'btn btn-danger';
   confirmButton.textContent = 'Confirm';
+  confirmButton.setAttribute('aria-label', 'Confirm action');
   confirmButton.addEventListener('click', () => {
     if (typeof onConfirm === 'function') {
       onConfirm();
@@ -240,7 +252,218 @@ export function createConfirmDialog({ title, message, onConfirm } = {}) {
     }
   });
 
+  dialog.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeDialog(dialog);
+    }
+  });
+
+  setTimeout(() => {
+    cancelButton.focus();
+  }, 0);
+
   return dialog;
+}
+
+export function createBottomSheet({
+  title = '',
+  content = null,
+  closeOnBackdrop = true,
+  showCloseButton = true,
+  className = '',
+  onClose = null,
+  labelledBy = null
+} = {}) {
+  const overlay = document.createElement('div');
+  overlay.className = 'bottom-sheet-overlay';
+
+  const backdrop = document.createElement('button');
+  backdrop.type = 'button';
+  backdrop.className = 'bottom-sheet-backdrop';
+  backdrop.setAttribute('aria-label', 'Close panel');
+
+  const panel = document.createElement('section');
+  panel.className = `bottom-sheet ${className}`.trim();
+  panel.setAttribute('role', 'dialog');
+  panel.setAttribute('aria-modal', 'true');
+  panel.tabIndex = -1;
+
+  const handle = document.createElement('div');
+  handle.className = 'bottom-sheet-handle';
+  handle.setAttribute('aria-hidden', 'true');
+  panel.appendChild(handle);
+
+  const header = document.createElement('header');
+  header.className = 'bottom-sheet-header';
+
+  const heading = document.createElement('h2');
+  heading.className = 'bottom-sheet-title';
+  heading.textContent = String(title || 'Details');
+
+  const headingId = labelledBy || `sheet-title-${Math.random().toString(36).slice(2, 8)}`;
+  heading.id = headingId;
+  panel.setAttribute('aria-labelledby', headingId);
+
+  header.appendChild(heading);
+
+  const closeButton = document.createElement('button');
+  closeButton.type = 'button';
+  closeButton.className = 'btn btn-ghost btn-sm bottom-sheet-close';
+  closeButton.textContent = 'Close';
+  closeButton.setAttribute('aria-label', 'Close panel');
+
+  if (showCloseButton) {
+    header.appendChild(closeButton);
+  }
+
+  panel.appendChild(header);
+
+  const body = document.createElement('div');
+  body.className = 'bottom-sheet-body';
+  panel.appendChild(body);
+
+  function setContent(nextContent) {
+    body.innerHTML = '';
+    appendContent(body, nextContent);
+  }
+
+  setContent(content);
+
+  overlay.append(backdrop, panel);
+
+  let isOpen = false;
+  let activeElement = null;
+  let touchStartY = 0;
+  let touchCurrentY = 0;
+
+  function lockBodyScroll(lock) {
+    if (!document?.body) return;
+    if (lock) {
+      document.body.classList.add('sheet-open');
+    } else {
+      document.body.classList.remove('sheet-open');
+    }
+  }
+
+  function focusFirst() {
+    const focusables = getFocusableElements(panel);
+    if (focusables.length > 0) {
+      focusables[0].focus();
+      return;
+    }
+    panel.focus();
+  }
+
+  function onKeyDown(event) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      close();
+      return;
+    }
+
+    if (event.key !== 'Tab') return;
+
+    const focusables = getFocusableElements(panel);
+    if (focusables.length === 0) return;
+
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  function onTouchStart(event) {
+    touchStartY = event.touches?.[0]?.clientY || 0;
+    touchCurrentY = touchStartY;
+  }
+
+  function onTouchMove(event) {
+    touchCurrentY = event.touches?.[0]?.clientY || touchCurrentY;
+    const delta = Math.max(0, touchCurrentY - touchStartY);
+    if (delta > 0) {
+      panel.style.transform = `translateY(${Math.min(delta, 140)}px)`;
+    }
+  }
+
+  function onTouchEnd() {
+    const delta = touchCurrentY - touchStartY;
+    panel.style.transform = '';
+    if (delta > 80) {
+      close();
+    }
+  }
+
+  function open() {
+    if (isOpen) return;
+    isOpen = true;
+    activeElement = document.activeElement;
+
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => {
+      overlay.classList.add('open');
+    });
+
+    lockBodyScroll(true);
+    panel.addEventListener('keydown', onKeyDown);
+    panel.addEventListener('touchstart', onTouchStart, { passive: true });
+    panel.addEventListener('touchmove', onTouchMove, { passive: true });
+    panel.addEventListener('touchend', onTouchEnd, { passive: true });
+
+    setTimeout(() => {
+      focusFirst();
+    }, 30);
+  }
+
+  function close() {
+    if (!isOpen) return;
+    isOpen = false;
+
+    overlay.classList.remove('open');
+    panel.removeEventListener('keydown', onKeyDown);
+    panel.removeEventListener('touchstart', onTouchStart);
+    panel.removeEventListener('touchmove', onTouchMove);
+    panel.removeEventListener('touchend', onTouchEnd);
+
+    lockBodyScroll(false);
+
+    setTimeout(() => {
+      overlay.remove();
+      if (activeElement && typeof activeElement.focus === 'function') {
+        activeElement.focus();
+      }
+      if (typeof onClose === 'function') {
+        onClose();
+      }
+    }, 220);
+  }
+
+  if (closeOnBackdrop) {
+    backdrop.addEventListener('click', close);
+  }
+
+  closeButton.addEventListener('click', close);
+
+  return {
+    element: overlay,
+    panel,
+    body,
+    open,
+    close,
+    setContent,
+    setTitle(nextTitle) {
+      heading.textContent = String(nextTitle || 'Details');
+    },
+    isOpen() {
+      return isOpen;
+    }
+  };
 }
 
 function getOrCreateToastContainer() {
@@ -278,5 +501,6 @@ export default {
   createStatBox,
   createLoadingSkeleton,
   createConfirmDialog,
+  createBottomSheet,
   createToast
 };

@@ -701,7 +701,7 @@ Goal: All five views fully functional with real data.
 
 ---
 
-- [ ] **US-023** Beads page — detail view (bottom sheet)
+- [x] **US-023** Beads page — detail view (bottom sheet)
 
   **Scope:** Tap a bead card to open a detail bottom sheet (mobile pattern — slides up from bottom):
   - Full title, ID, status badge
