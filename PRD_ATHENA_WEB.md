@@ -683,7 +683,7 @@ Goal: All five views fully functional with real data.
 
 ---
 
-- [ ] **US-022** Beads page — list view with filters
+- [x] **US-022** Beads page — list view with filters
 
   **Scope:** Implement `js/pages/beads.js`:
   - **Filter bar (top):** Status tabs (All / Todo / Active / Done / Failed) — sticky on scroll

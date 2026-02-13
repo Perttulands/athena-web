@@ -538,3 +538,56 @@ Sprint 5 Review: [ ] NOT PASSED
 - Review: Pending
 - Next: US-021 pull-to-refresh and mobile gestures
 ---
+## Iteration 22 - US-021: Pull-to-refresh and mobile interactions
+- Created public/js/gestures.js with touch gesture utilities
+  - enablePullToRefresh() for pull-down refresh with 60px threshold
+  - enableSwipe() for horizontal swipe detection (left/right)
+  - Haptic feedback support via navigator.vibrate
+  - Passive event listeners for better scroll performance
+- Added pull-to-refresh to Oracle page
+  - Refreshes all dashboard data (status, agents, ralph)
+  - Shows spinner indicator during pull gesture
+  - Refactored data loading into refreshData() function for reuse
+  - Clean cleanup function returns both pull-to-refresh and SSE cleanups
+- Added swipe-to-reveal kill button on agent cards
+  - Swipe left reveals red kill button (80px wide)
+  - Swipe right hides the button
+  - Kill action with confirmation dialog via createConfirmDialog
+  - Agent card wrapped in .agent-card-wrapper for swipe container
+  - Card slides left with CSS transform, button revealed underneath
+- Enhanced components.css with gesture styles
+  - .pull-refresh-indicator with spinner animation
+  - .agent-card-wrapper with swipe transform states (.swiped-left)
+  - .agent-kill-button positioned absolutely in wrapper
+  - Smooth CSS transitions for all gestures (transform, opacity)
+- Comprehensive test coverage (8/8 passing)
+  - Pull-to-refresh detection tests (threshold, scroll position, indicator)
+  - Swipe gesture detection tests (left, right, distance, vertical filtering)
+  - JSDOM setup for browser environment in Node.js tests
+  - TouchEvent mocking for gesture simulation
+- Learnings for future iterations:
+  - Touch events require browser environment guards (typeof window !== 'undefined')
+  - Passive listeners critical for scroll performance (no preventDefault)
+  - Pull-to-refresh must check scrollTop === 0 to avoid triggering mid-scroll
+  - Swipe detection needs both horizontal distance threshold and vertical limit
+  - CSS transform on card with absolute-positioned button behind = clean reveal
+  - Cleanup functions essential for gesture listeners (prevent memory leaks)
+  - Agent cards now wrapped in div.agent-card-wrapper (not direct card elements)
+  - Oracle page mount() now returns combined cleanup (pull-to-refresh + SSE)
+
+**Summary:**
+- Task: US-021: Pull-to-refresh and mobile interactions
+- Files: public/js/gestures.js, public/js/pages/oracle.js, public/css/components.css, tests/frontend/gestures.test.js, PRD_ATHENA_WEB.md, progress_athena_web.txt
+- Tests: PASS (8/8 gestures tests passing)
+- Review: PENDING (per-task Linus review runs next)
+- Next: Linus review of US-021, then US-022
+---
+## Linus Review - US-021
+- Code quality: PASSED
+- Good taste: Clean separation of gesture utilities, elegant cleanup pattern, good refactoring of refreshData()
+- No special cases: Edge cases handled through design (scrollTop check, threshold comparisons), not patches
+- Data structures: Appropriate touch coordinate tracking, state flags, cleanup closures
+- Complexity: Minimal - single-purpose gesture functions, small focused handlers
+- Duplication: None problematic - consistent event listener patterns throughout
+- Verdict: Code is clean, simple, follows established patterns. Ready for next task.
+---

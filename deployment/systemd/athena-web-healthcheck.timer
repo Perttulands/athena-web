@@ -1,0 +1,26 @@
+# Athena Web Health Check Timer
+# Runs health check every 5 minutes
+#
+# Installation:
+#   sudo cp athena-web-healthcheck.service /etc/systemd/system/
+#   sudo cp athena-web-healthcheck.timer /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable athena-web-healthcheck.timer
+#   sudo systemctl start athena-web-healthcheck.timer
+#
+# Check status:
+#   sudo systemctl status athena-web-healthcheck.timer
+#   sudo systemctl list-timers athena-web-healthcheck
+
+[Unit]
+Description=Athena Web Health Check Timer
+Requires=athena-web-healthcheck.service
+
+[Timer]
+# Run every 5 minutes
+OnBootSec=2min
+OnUnitActiveSec=5min
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target
