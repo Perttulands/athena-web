@@ -8,6 +8,13 @@ import {
   errorHandler,
   requestLogger
 } from './middleware/error-handler.js';
+import {
+  responseTime,
+  compressionHeaders,
+  apiETag,
+  requestTimeout,
+  memoryMonitor
+} from './middleware/performance.js';
 import beadsRouter from './routes/beads.js';
 import agentsRouter from './routes/agents.js';
 import docsRouter from './routes/docs.js';
@@ -18,10 +25,23 @@ import streamRouter from './routes/stream.js';
 
 const app = express();
 
-// Middleware
+// Performance middleware
+app.use(responseTime);
+app.use(compressionHeaders);
+app.use(requestTimeout(30000)); // 30 second timeout
+
+// Development monitoring
+if (config.nodeEnv !== 'production') {
+  app.use(memoryMonitor);
+}
+
+// Core middleware
 app.use(cors());
 app.use(express.json());
 app.use(requestLogger);
+
+// ETag support for API responses
+app.use('/api', apiETag);
 
 // Serve static files from public directory
 app.use(express.static('public'));
