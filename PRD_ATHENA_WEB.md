@@ -511,7 +511,7 @@ Goal: Complete HTML/CSS foundation with the design system implemented. Navigatio
 
 ---
 
-- [ ] **US-015** Reusable UI component library (JS)
+- [x] **US-015** Reusable UI component library (JS)
 
   **Scope:** Create `js/components.js` with factory functions for common UI elements:
   - `createCard({ title, body, status, footer })` — returns card DOM element
@@ -533,7 +533,7 @@ Goal: Complete HTML/CSS foundation with the design system implemented. Navigatio
 
 ---
 
-- [ ] **US-016** Page-specific CSS and responsive layout
+- [x] **US-016** Page-specific CSS and responsive layout
 
   **Scope:** Create `css/pages.css` with styles specific to each page view:
   - **Oracle:** stat grid (2x2 on mobile, 4-across on desktop), activity feed, agent status cards
@@ -573,7 +573,7 @@ Goal: The Oracle (dashboard) page is fully functional with live data. SSE pushes
 
 ---
 
-- [ ] **US-017** Oracle page — stat cards and layout
+- [x] **US-017** Oracle page — stat cards and layout
 
   **Scope:** Implement `js/pages/oracle.js` fully. On load, fetch `/api/status`. Display:
   - **Header section:** Athena's last message in a styled quote block, with timestamp
@@ -590,7 +590,7 @@ Goal: The Oracle (dashboard) page is fully functional with live data. SSE pushes
 
 ---
 
-- [ ] **US-018** Oracle page — agent status cards and activity feed
+- [x] **US-018** Oracle page — agent status cards and activity feed
 
   **Scope:** Below the stat grid on Oracle page:
   - **Active agents section:** Card per running agent showing name, bead ID, running time, last output line (truncated), context % as colored bar. Tap card to navigate to Agents page.
@@ -605,7 +605,7 @@ Goal: The Oracle (dashboard) page is fully functional with live data. SSE pushes
 
 ---
 
-- [ ] **US-019** Oracle page — Ralph progress display
+- [x] **US-019** Oracle page — Ralph progress display
 
   **Scope:** Ralph section on Oracle page:
   - **Progress bar:** Visual bar showing PRD completion (X of Y tasks done). Gold fill.
@@ -623,7 +623,7 @@ Goal: The Oracle (dashboard) page is fully functional with live data. SSE pushes
 
 ---
 
-- [ ] **US-020** SSE integration — live dashboard updates
+- [x] **US-020** SSE integration — live dashboard updates
 
   **Scope:** Wire SSE events to update the Oracle page in real-time without full refresh:
   - `agent_status` event → update agent cards (add/remove/update status)
@@ -644,7 +644,7 @@ Goal: The Oracle (dashboard) page is fully functional with live data. SSE pushes
 
 ---
 
-- [ ] **US-021** Pull-to-refresh and mobile interactions
+- [x] **US-021** Pull-to-refresh and mobile interactions
 
   **Scope:** Implement pull-to-refresh on the Oracle page (and establish pattern for other pages):
   - Touch start tracking at top of scroll

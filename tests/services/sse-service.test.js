@@ -95,6 +95,99 @@ describe('SSE Service', () => {
 
     assert.strictEqual(service.clients.size, 0, 'Should remove failed client');
   });
+
+  it('should broadcast updates when filesystem watcher fires', async () => {
+    const watcherCallbacks = new Map();
+    const closedWatchers = [];
+
+    const customService = new SSEService({
+      statePath: '/tmp/athena-state',
+      watchFn: (directoryPath, callback) => {
+        watcherCallbacks.set(directoryPath, callback);
+        return {
+          close() {
+            closedWatchers.push(directoryPath);
+          }
+        };
+      },
+      listAgentsFn: async () => [],
+      listBeadsFn: async () => ([
+        { status: 'active' },
+        { status: 'done' }
+      ]),
+      listRunsFn: async () => ([
+        { bead: 'bd-1', started_at: '2026-02-13T10:00:00Z', exit_code: 0 }
+      ]),
+      getRalphStatusFn: async () => ({
+        activeTask: 'US-020',
+        currentIteration: 3,
+        maxIterations: 6,
+        prdProgress: { done: 4, total: 10 },
+        tasks: []
+      }),
+      agentPollIntervalMs: 1000000
+    });
+
+    const events = [];
+    const originalBroadcast = customService.broadcast.bind(customService);
+    customService.broadcast = (type, data) => {
+      events.push({ type, data });
+      originalBroadcast(type, data);
+    };
+
+    customService.startMonitoring();
+    const runsWatcher = watcherCallbacks.get('/tmp/athena-state/runs');
+    assert.ok(runsWatcher, 'Runs directory should be watched');
+
+    runsWatcher('change', 'bd-1.json');
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    assert.ok(events.some(event => event.type === 'bead_update'));
+    assert.ok(events.some(event => event.type === 'activity'));
+    assert.ok(events.some(event => event.type === 'ralph_progress'));
+
+    customService.stopMonitoring();
+    assert.ok(closedWatchers.includes('/tmp/athena-state/runs'));
+    assert.ok(closedWatchers.includes('/tmp/athena-state/results'));
+  });
+
+  it('should broadcast agent_status only when agent snapshot changes', async () => {
+    const snapshots = [
+      [{ name: 'agent-bd-1', status: 'running', bead: 'bd-1', runningTime: '2m', contextPercent: 10 }],
+      [{ name: 'agent-bd-1', status: 'running', bead: 'bd-1', runningTime: '2m', contextPercent: 10 }],
+      [{ name: 'agent-bd-1', status: 'running', bead: 'bd-1', runningTime: '3m', contextPercent: 12 }]
+    ];
+    let callCount = 0;
+
+    const customService = new SSEService({
+      listAgentsFn: async () => snapshots[Math.min(callCount++, snapshots.length - 1)],
+      watchFn: () => ({ close() {} }),
+      listBeadsFn: async () => [],
+      listRunsFn: async () => [],
+      getRalphStatusFn: async () => ({
+        activeTask: null,
+        currentIteration: 0,
+        maxIterations: 0,
+        prdProgress: { done: 0, total: 0 },
+        tasks: []
+      })
+    });
+
+    const agentEvents = [];
+    customService.broadcast = (type, data) => {
+      if (type === 'agent_status') {
+        agentEvents.push(data);
+      }
+    };
+
+    await customService.pollAgentStatus();
+    await customService.pollAgentStatus();
+    await customService.pollAgentStatus();
+
+    assert.strictEqual(agentEvents.length, 2, 'Should broadcast first and changed snapshots only');
+    assert.strictEqual(agentEvents[0].running, 1);
+    assert.strictEqual(agentEvents[1].agents[0].runningTime, '3m');
+  });
 });
 
 // Helper to create mock response object

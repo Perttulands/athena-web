@@ -11,6 +11,8 @@ const routes = {
   '/chronicle': () => import('./pages/chronicle.js'),
 };
 
+let currentUnmount = null;
+
 /**
  * Navigate to a route
  */
@@ -31,6 +33,10 @@ async function navigate() {
   // Fade out current page
   const appEl = document.querySelector('#app');
   if (appEl) {
+    if (typeof currentUnmount === 'function') {
+      currentUnmount();
+      currentUnmount = null;
+    }
     appEl.style.opacity = '0';
   }
 
@@ -44,6 +50,14 @@ async function navigate() {
 
     if (appEl) {
       appEl.innerHTML = html;
+
+      if (typeof pageModule.mount === 'function') {
+        const unmount = await pageModule.mount(appEl);
+        if (typeof unmount === 'function') {
+          currentUnmount = unmount;
+        }
+      }
+
       // Fade in new page
       appEl.style.opacity = '1';
     }

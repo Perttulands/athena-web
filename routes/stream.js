@@ -18,6 +18,7 @@ router.get('/stream', (req, res) => {
   // Start heartbeat on first client connection
   if (sseService.clients.size === 0 && process.env.NODE_ENV !== 'test') {
     sseService.startHeartbeat();
+    sseService.startMonitoring();
   }
 
   // Add this client to the service
@@ -33,6 +34,7 @@ router.get('/stream', (req, res) => {
     // Stop heartbeat when no clients connected
     if (sseService.clients.size === 0) {
       sseService.stopHeartbeat();
+      sseService.stopMonitoring();
     }
   });
 });

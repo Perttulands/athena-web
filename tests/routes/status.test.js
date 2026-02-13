@@ -1,15 +1,23 @@
 import { describe, it, before } from 'node:test';
 import assert from 'node:assert';
+import { canListen } from '../setup.js';
 
 describe('GET /api/status', () => {
   let app;
+  let socketsAllowed = true;
 
   before(async () => {
     const server = await import('../../server.js');
     app = server.default;
+    socketsAllowed = await canListen();
   });
 
-  it('returns aggregate dashboard data', async () => {
+  it('returns aggregate dashboard data', async (t) => {
+    if (!socketsAllowed) {
+      t.skip('Local sockets are blocked in this environment');
+      return;
+    }
+
     const server = app.listen(0);
     const port = server.address().port;
     const response = await fetch(`http://localhost:${port}/api/status`);
@@ -25,7 +33,12 @@ describe('GET /api/status', () => {
     server.close();
   });
 
-  it('includes athena status fields', async () => {
+  it('includes athena status fields', async (t) => {
+    if (!socketsAllowed) {
+      t.skip('Local sockets are blocked in this environment');
+      return;
+    }
+
     const server = app.listen(0);
     const port = server.address().port;
     const response = await fetch(`http://localhost:${port}/api/status`);
@@ -38,7 +51,12 @@ describe('GET /api/status', () => {
     server.close();
   });
 
-  it('includes agents stats', async () => {
+  it('includes agents stats', async (t) => {
+    if (!socketsAllowed) {
+      t.skip('Local sockets are blocked in this environment');
+      return;
+    }
+
     const server = app.listen(0);
     const port = server.address().port;
     const response = await fetch(`http://localhost:${port}/api/status`);
@@ -51,7 +69,12 @@ describe('GET /api/status', () => {
     server.close();
   });
 
-  it('includes beads stats', async () => {
+  it('includes beads stats', async (t) => {
+    if (!socketsAllowed) {
+      t.skip('Local sockets are blocked in this environment');
+      return;
+    }
+
     const server = app.listen(0);
     const port = server.address().port;
     const response = await fetch(`http://localhost:${port}/api/status`);
@@ -65,7 +88,12 @@ describe('GET /api/status', () => {
     server.close();
   });
 
-  it('includes ralph stats', async () => {
+  it('includes ralph stats', async (t) => {
+    if (!socketsAllowed) {
+      t.skip('Local sockets are blocked in this environment');
+      return;
+    }
+
     const server = app.listen(0);
     const port = server.address().port;
     const response = await fetch(`http://localhost:${port}/api/status`);

@@ -1,11 +1,51 @@
 // Test setup and helpers for Athena Web
 
 import { strict as assert } from 'node:assert';
+import { createServer } from 'node:net';
+
+let listenCapability;
+
+/**
+ * Detect whether this environment allows binding local ports.
+ */
+export async function canListen() {
+  if (listenCapability !== undefined) {
+    return listenCapability;
+  }
+
+  listenCapability = await new Promise((resolve) => {
+    const probe = createServer();
+    let settled = false;
+
+    const finish = (value) => {
+      if (settled) return;
+      settled = true;
+      resolve(value);
+    };
+
+    probe.once('error', () => {
+      finish(false);
+    });
+
+    probe.listen(0, '127.0.0.1', () => {
+      // Give the event loop a beat so sandbox-denied sockets can surface
+      setTimeout(() => {
+        probe.close(() => finish(true));
+      }, 20);
+    });
+  });
+
+  return listenCapability;
+}
 
 /**
  * Makes a request to the test server
  */
 export async function request(app, path, options = {}) {
+  if (!(await canListen())) {
+    return { response: null, data: null, status: null, skipped: true };
+  }
+
   const server = app.listen(0); // Random port
   const port = server.address().port;
 
@@ -28,6 +68,9 @@ export async function request(app, path, options = {}) {
  * Assert that response has expected status and data
  */
 export function assertResponse(result, expectedStatus, expectedData) {
+  assert.equal(result.skipped, false,
+    'Request skipped because sockets are unavailable in this environment');
+
   assert.equal(result.status, expectedStatus,
     `Expected status ${expectedStatus}, got ${result.status}`);
 

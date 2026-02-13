@@ -1,9 +1,15 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import app from '../../server.js';
+import { canListen } from '../setup.js';
 
 describe('GET /api/stream', () => {
-  it('should respond with SSE headers', async () => {
+  it('should respond with SSE headers', async (t) => {
+    if (!(await canListen())) {
+      t.skip('Local sockets are blocked in this environment');
+      return;
+    }
+
     // For SSE testing, we need to use a different approach
     // Make a request to the stream endpoint
     const server = app.listen(0);
@@ -33,7 +39,12 @@ describe('GET /api/stream', () => {
     assert.ok(true, 'SSE endpoint accepts connections');
   });
 
-  it('should handle multiple concurrent connections', async () => {
+  it('should handle multiple concurrent connections', async (t) => {
+    if (!(await canListen())) {
+      t.skip('Local sockets are blocked in this environment');
+      return;
+    }
+
     const server = app.listen(0);
     const port = server.address().port;
     const url = `http://localhost:${port}/api/stream`;
