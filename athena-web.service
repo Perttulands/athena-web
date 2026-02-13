@@ -1,0 +1,73 @@
+# Athena Web systemd service
+#
+# Installation instructions:
+#   1. Copy this file to /etc/systemd/system/:
+#      sudo cp athena-web.service /etc/systemd/system/
+#
+#   2. Create environment file at /etc/athena-web/env (optional):
+#      sudo mkdir -p /etc/athena-web
+#      sudo nano /etc/athena-web/env
+#      # Add environment variables:
+#      #   WORKSPACE_PATH=$HOME/.openclaw/workspace
+#      #   PORT=9000
+#
+#   3. Reload systemd daemon:
+#      sudo systemctl daemon-reload
+#
+#   4. Enable service to start on boot:
+#      sudo systemctl enable athena-web
+#
+#   5. Start the service:
+#      sudo systemctl start athena-web
+#
+#   6. Check status:
+#      sudo systemctl status athena-web
+#
+#   7. View logs:
+#      sudo journalctl -u athena-web -f
+#
+# Uninstall instructions:
+#   1. Stop the service:
+#      sudo systemctl stop athena-web
+#
+#   2. Disable the service:
+#      sudo systemctl disable athena-web
+#
+#   3. Remove the service file:
+#      sudo rm /etc/systemd/system/athena-web.service
+#
+#   4. Reload systemd daemon:
+#      sudo systemctl daemon-reload
+
+[Unit]
+Description=Athena Web - AI Agent Swarm Command Interface
+After=network.target
+Documentation=https://github.com/perttu/athena-web
+
+[Service]
+Type=simple
+User=perttu
+Group=perttu
+WorkingDirectory=$HOME/athena-web
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+# Environment configuration
+# Default values can be overridden in /etc/athena-web/env
+Environment="NODE_ENV=production"
+Environment="PORT=9000"
+Environment="WORKSPACE_PATH=$HOME/.openclaw/workspace"
+EnvironmentFile=-/etc/athena-web/env
+
+# Security hardening (optional - uncomment to enable)
+# NoNewPrivileges=true
+# PrivateTmp=true
+# ProtectSystem=strict
+# ProtectHome=read-only
+# ReadWritePaths=$HOME/athena-web
+
+[Install]
+WantedBy=multi-user.target
