@@ -496,7 +496,7 @@ Goal: Complete HTML/CSS foundation with the design system implemented. Navigatio
 
 ---
 
-- [ ] **US-014** API client and SSE client modules
+- [x] **US-014** API client and SSE client modules
 
   **Scope:** Create `js/api.js` — thin fetch wrapper. All API calls go through it. Handles errors uniformly (shows toast or inline error). Methods: `api.get(path)`, `api.post(path, body)`, `api.put(path, body)`. Base URL auto-detected.
 
