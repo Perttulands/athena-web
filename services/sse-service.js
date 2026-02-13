@@ -1,14 +1,40 @@
 import EventEmitter from 'node:events';
+import { watch } from 'node:fs';
+import { join } from 'node:path';
+import config from '../config.js';
+import { listAgents } from './tmux-service.js';
+import { listBeads } from './beads-service.js';
+import runsService from './runs-service.js';
+import ralphService from './ralph-service.js';
 
 /**
  * SSE Service - Singleton event emitter for server-sent events
  * Manages client connections and broadcasts real-time updates
  */
 class SSEService extends EventEmitter {
-  constructor() {
+  constructor(options = {}) {
     super();
     this.clients = new Set();
     this.heartbeatInterval = null;
+    this.agentPollInterval = null;
+    this.watchers = [];
+    this.monitoring = false;
+
+    this.watchFn = options.watchFn || watch;
+    this.listAgentsFn = options.listAgentsFn || listAgents;
+    this.listBeadsFn = options.listBeadsFn || listBeads;
+    this.listRunsFn = options.listRunsFn || runsService.listRuns;
+    this.getRalphStatusFn = options.getRalphStatusFn || ralphService.getRalphStatus;
+
+    this.statePath = options.statePath || config.statePath;
+    this.workspacePath = options.workspacePath || config.workspacePath;
+    this.agentPollIntervalMs = options.agentPollIntervalMs || 10000;
+
+    this.prdPath = options.prdPath || join(this.workspacePath, 'PRD_ATHENA_WEB.md');
+    this.progressPath = options.progressPath || join(this.workspacePath, 'progress_athena_web.txt');
+
+    this.lastAgentsSnapshot = null;
+    this.lastRunSignature = null;
   }
 
   /**
@@ -95,12 +121,159 @@ class SSEService extends EventEmitter {
     }
   }
 
+  async pollAgentStatus() {
+    try {
+      const agents = await this.listAgentsFn();
+      const snapshot = JSON.stringify(agents.map(agent => ({
+        name: agent.name,
+        status: agent.status,
+        bead: agent.bead,
+        runningTime: agent.runningTime,
+        contextPercent: agent.contextPercent
+      })));
+
+      if (snapshot === this.lastAgentsSnapshot) {
+        return;
+      }
+
+      this.lastAgentsSnapshot = snapshot;
+
+      this.broadcast('agent_status', {
+        timestamp: new Date().toISOString(),
+        agents,
+        running: agents.filter(agent => agent.status === 'running').length,
+        total: agents.length
+      });
+    } catch (error) {
+      console.warn('SSE agent polling failed:', error.message);
+    }
+  }
+
+  async broadcastBeadUpdate(metadata = {}) {
+    try {
+      const beads = await this.listBeadsFn();
+      const payload = {
+        timestamp: new Date().toISOString(),
+        todo: beads.filter(bead => bead.status === 'todo').length,
+        active: beads.filter(bead => bead.status === 'active').length,
+        done: beads.filter(bead => bead.status === 'done').length,
+        failed: beads.filter(bead => bead.status === 'failed').length,
+        ...metadata
+      };
+
+      this.broadcast('bead_update', payload);
+    } catch (error) {
+      console.warn('SSE bead update failed:', error.message);
+    }
+  }
+
+  async broadcastLatestActivity(metadata = {}) {
+    try {
+      const runs = await this.listRunsFn();
+      if (!Array.isArray(runs) || runs.length === 0) return;
+
+      const latest = runs[0];
+      const signature = `${latest.bead}|${latest.started_at}|${latest.exit_code}`;
+      if (signature === this.lastRunSignature) return;
+      this.lastRunSignature = signature;
+
+      const success = latest.exit_code === 0;
+      this.broadcast('activity', {
+        timestamp: new Date().toISOString(),
+        time: latest.started_at || new Date().toISOString(),
+        type: success ? 'agent_complete' : 'agent_failed',
+        message: `Agent ${latest.bead || latest.agent || 'unknown'} ${success ? 'completed' : 'failed'}`,
+        ...metadata
+      });
+    } catch (error) {
+      console.warn('SSE activity update failed:', error.message);
+    }
+  }
+
+  async broadcastRalphProgress(metadata = {}) {
+    try {
+      const ralph = await this.getRalphStatusFn(this.prdPath, this.progressPath);
+      this.broadcast('ralph_progress', {
+        timestamp: new Date().toISOString(),
+        currentTask: ralph.activeTask,
+        currentIteration: ralph.currentIteration,
+        maxIterations: ralph.maxIterations,
+        prdProgress: ralph.prdProgress,
+        tasks: Array.isArray(ralph.tasks) ? ralph.tasks : [],
+        ...metadata
+      });
+    } catch (error) {
+      console.warn('SSE Ralph update failed:', error.message);
+    }
+  }
+
+  onStateChange(source, eventType, filename) {
+    const metadata = {
+      source,
+      eventType,
+      file: filename || null
+    };
+
+    void this.broadcastBeadUpdate(metadata);
+    void this.broadcastLatestActivity(metadata);
+    void this.broadcastRalphProgress(metadata);
+  }
+
+  addDirectoryWatcher(source, directoryPath) {
+    try {
+      const watcher = this.watchFn(directoryPath, (eventType, filename) => {
+        this.onStateChange(source, eventType, filename);
+      });
+      this.watchers.push(watcher);
+    } catch (error) {
+      // Missing directory is normal in bootstrapped environments.
+      if (error.code !== 'ENOENT') {
+        console.warn(`SSE failed to watch ${directoryPath}:`, error.message);
+      }
+    }
+  }
+
+  startMonitoring() {
+    if (this.monitoring) return;
+    this.monitoring = true;
+
+    this.addDirectoryWatcher('runs', join(this.statePath, 'runs'));
+    this.addDirectoryWatcher('results', join(this.statePath, 'results'));
+
+    void this.pollAgentStatus();
+    this.agentPollInterval = setInterval(() => {
+      void this.pollAgentStatus();
+    }, this.agentPollIntervalMs);
+  }
+
+  stopMonitoring() {
+    if (!this.monitoring) return;
+    this.monitoring = false;
+
+    if (this.agentPollInterval) {
+      clearInterval(this.agentPollInterval);
+      this.agentPollInterval = null;
+    }
+
+    this.watchers.forEach((watcher) => {
+      try {
+        watcher.close();
+      } catch {
+        // no-op
+      }
+    });
+    this.watchers = [];
+  }
+
   /**
    * Cleanup - for testing
    */
   cleanup() {
+    this.stopMonitoring();
     this.stopHeartbeat();
     this.clients.clear();
+    this.lastAgentsSnapshot = null;
+    this.lastRunSignature = null;
   }
 }
 

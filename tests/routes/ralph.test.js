@@ -1,11 +1,13 @@
-import { describe, it, before } from 'node:test';
+import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { writeFile, mkdir, rm } from 'node:fs/promises';
 import { join } from 'node:path';
+import { canListen } from '../setup.js';
 
 describe('GET /api/ralph', () => {
   let app;
   let tempDir;
+  let socketsAllowed = true;
 
   before(async () => {
     // Create temp directory for test files
@@ -35,9 +37,21 @@ status=running
     // Import server after env is set
     const server = await import('../../server.js');
     app = server.default;
+    socketsAllowed = await canListen();
   });
 
-  it('should return ralph status with custom paths', async () => {
+  after(async () => {
+    if (tempDir) {
+      await rm(tempDir, { recursive: true, force: true });
+    }
+  });
+
+  it('should return ralph status with custom paths', async (t) => {
+    if (!socketsAllowed) {
+      t.skip('Local sockets are blocked in this environment');
+      return;
+    }
+
     const server = app.listen(0);
     const port = server.address().port;
 
@@ -64,11 +78,14 @@ status=running
 
     server.close();
 
-    // Cleanup
-    await rm(tempDir, { recursive: true, force: true });
   });
 
-  it('should use default paths when not specified', async () => {
+  it('should use default paths when not specified', async (t) => {
+    if (!socketsAllowed) {
+      t.skip('Local sockets are blocked in this environment');
+      return;
+    }
+
     const server = app.listen(0);
     const port = server.address().port;
 

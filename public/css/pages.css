@@ -1,0 +1,400 @@
+/* Athena Web - Page-specific responsive layouts */
+
+.page-shell {
+  padding: var(--space-lg) 0 calc(var(--space-xl) + env(safe-area-inset-bottom, 0));
+}
+
+.page-header {
+  margin-bottom: var(--space-lg);
+}
+
+.page-title {
+  margin: 0 0 var(--space-xs);
+}
+
+.page-subtitle {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.page-section {
+  margin-bottom: var(--space-lg);
+}
+
+.section-title {
+  font-size: var(--font-size-lg);
+  margin: 0 0 var(--space-sm);
+}
+
+.section-subtitle {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  margin: 0 0 var(--space-md);
+}
+
+.empty-state {
+  padding: var(--space-lg);
+  border: 1px dashed rgba(212, 165, 116, 0.2);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+/* ============================================
+   ORACLE PAGE
+   ============================================ */
+
+.oracle-message-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.oracle-message-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(212, 165, 116, 0.14), transparent 55%);
+  pointer-events: none;
+}
+
+.oracle-message-quote {
+  margin: 0;
+  padding-left: var(--space-md);
+  border-left: 3px solid rgba(212, 165, 116, 0.4);
+}
+
+.oracle-message-text {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-loose);
+}
+
+.oracle-message-meta {
+  margin-top: var(--space-sm);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-mono);
+}
+
+.oracle-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+}
+
+.oracle-stat-grid .stat-box[data-stat-tone='gold'] .stat-value {
+  color: var(--gold-bright);
+}
+
+.oracle-stat-grid .stat-box[data-stat-tone='success'] .stat-value {
+  color: var(--success);
+}
+
+.oracle-columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+}
+
+.oracle-agent-grid {
+  display: grid;
+  gap: var(--space-md);
+  grid-template-columns: 1fr;
+}
+
+.agent-status-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  cursor: pointer;
+}
+
+.agent-status-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.agent-status-meta {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.agent-status-output {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.agent-status-context {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.agent-status-context-bar {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-full);
+  height: 8px;
+  overflow: hidden;
+}
+
+.agent-status-context-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--success), var(--gold));
+  transition: width var(--transition-base);
+}
+
+.agent-status-context-value {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  min-width: 48px;
+  text-align: right;
+}
+
+.oracle-activity-card .card-body {
+  padding: 0;
+}
+
+.oracle-activity-list {
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.ralph-progress {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.ralph-progress-track {
+  height: 12px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.ralph-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-bright));
+  width: 0;
+  transition: width var(--transition-base);
+}
+
+.ralph-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.ralph-current-task {
+  border: 1px solid rgba(212, 165, 116, 0.2);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(212, 165, 116, 0.06);
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.ralph-current-task-id {
+  font-family: var(--font-mono);
+  color: var(--gold-bright);
+  font-size: var(--font-size-sm);
+}
+
+.ralph-upcoming-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.ralph-upcoming-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--text-secondary);
+}
+
+.ralph-upcoming-check {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(212, 165, 116, 0.35);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--gold);
+}
+
+.ralph-upcoming-item.done .ralph-upcoming-check {
+  background: rgba(126, 200, 155, 0.15);
+  border-color: rgba(126, 200, 155, 0.5);
+  color: var(--success);
+}
+
+/* ============================================
+   BEADS PAGE
+   ============================================ */
+
+.page-beads .beads-layout {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.page-beads .filter-bar {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.page-beads .beads-list {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.page-beads .bead-detail-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0));
+  background: var(--bg-surface);
+  border-top: 1px solid rgba(212, 165, 116, 0.2);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: var(--space-lg);
+  transform: translateY(110%);
+  transition: transform var(--transition-base);
+  z-index: var(--z-modal);
+}
+
+.page-beads .bead-detail-sheet.open {
+  transform: translateY(0);
+}
+
+/* ============================================
+   AGENTS PAGE
+   ============================================ */
+
+.page-agents .agents-layout {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.page-agents .agents-grid {
+  display: grid;
+  gap: var(--space-md);
+  grid-template-columns: 1fr;
+}
+
+.page-agents .agent-output-sheet {
+  position: fixed;
+  inset: auto 0 calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0)) 0;
+  max-height: 70vh;
+  overflow-y: auto;
+  background: var(--bg-surface);
+  border-top: 1px solid rgba(212, 165, 116, 0.25);
+  transform: translateY(110%);
+  transition: transform var(--transition-base);
+  z-index: var(--z-modal);
+  padding: var(--space-lg);
+}
+
+.page-agents .agent-output-sheet.open {
+  transform: translateY(0);
+}
+
+/* ============================================
+   SCROLLS PAGE
+   ============================================ */
+
+.page-scrolls .scrolls-layout {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.page-scrolls .scrolls-sidebar {
+  border: 1px solid rgba(212, 165, 116, 0.14);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+
+.page-scrolls .scrolls-content {
+  border: 1px solid rgba(212, 165, 116, 0.14);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  min-height: 50vh;
+}
+
+.page-scrolls .scrolls-edit-mode textarea {
+  width: 100%;
+  min-height: 45vh;
+}
+
+/* ============================================
+   CHRONICLE PAGE
+   ============================================ */
+
+.page-chronicle .chronicle-layout {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.page-chronicle .chronicle-filters {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.page-chronicle .chronicle-table-wrap {
+  overflow-x: auto;
+  border: 1px solid rgba(212, 165, 116, 0.14);
+  border-radius: var(--radius-md);
+}
+
+/* ============================================
+   BREAKPOINTS
+   ============================================ */
+
+@media (min-width: 768px) {
+  .oracle-agent-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page-beads .beads-layout,
+  .page-agents .agents-layout,
+  .page-chronicle .chronicle-layout {
+    gap: var(--space-lg);
+  }
+}
+
+@media (min-width: 1024px) {
+  .oracle-stat-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .oracle-columns {
+    grid-template-columns: 1.3fr 1fr;
+    align-items: start;
+  }
+
+  .page-scrolls .scrolls-layout {
+    grid-template-columns: 320px 1fr;
+    align-items: start;
+  }
+}

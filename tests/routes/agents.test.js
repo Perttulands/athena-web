@@ -1,16 +1,24 @@
 import { describe, it, before } from 'node:test';
 import assert from 'node:assert';
+import { canListen } from '../setup.js';
 
 describe('Agents Routes', () => {
   let app;
+  let socketsAllowed = true;
 
   before(async () => {
     const server = await import('../../server.js');
     app = server.default;
+    socketsAllowed = await canListen();
   });
 
   describe('GET /api/agents', () => {
-    it('should return list of agent sessions', async () => {
+    it('should return list of agent sessions', async (t) => {
+      if (!socketsAllowed) {
+        t.skip('Local sockets are blocked in this environment');
+        return;
+      }
+
       const server = app.listen(0);
       const port = server.address().port;
       const response = await fetch(`http://localhost:${port}/api/agents`);
@@ -23,7 +31,12 @@ describe('Agents Routes', () => {
       server.close();
     });
 
-    it('should return agent objects with required fields', async () => {
+    it('should return agent objects with required fields', async (t) => {
+      if (!socketsAllowed) {
+        t.skip('Local sockets are blocked in this environment');
+        return;
+      }
+
       const server = app.listen(0);
       const port = server.address().port;
       const response = await fetch(`http://localhost:${port}/api/agents`);
@@ -43,7 +56,12 @@ describe('Agents Routes', () => {
   });
 
   describe('GET /api/agents/:name/output', () => {
-    it('should return 404 for non-existent session', async () => {
+    it('should return 404 for non-existent session', async (t) => {
+      if (!socketsAllowed) {
+        t.skip('Local sockets are blocked in this environment');
+        return;
+      }
+
       const server = app.listen(0);
       const port = server.address().port;
       const response = await fetch(`http://localhost:${port}/api/agents/agent-nonexistent-xyz/output`);
@@ -58,7 +76,12 @@ describe('Agents Routes', () => {
   });
 
   describe('POST /api/agents/:name/kill', () => {
-    it('should return error for non-existent session', async () => {
+    it('should return error for non-existent session', async (t) => {
+      if (!socketsAllowed) {
+        t.skip('Local sockets are blocked in this environment');
+        return;
+      }
+
       const server = app.listen(0);
       const port = server.address().port;
       const response = await fetch(`http://localhost:${port}/api/agents/agent-nonexistent-xyz/kill`, {

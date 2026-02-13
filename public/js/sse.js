@@ -8,12 +8,19 @@ class SSEClient {
     this.maxReconnectDelay = 30000; // Cap at 30s
     this.reconnectTimer = null;
 
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && typeof EventSource !== 'undefined') {
       this.connect();
+    } else if (typeof window !== 'undefined') {
+      this.updateConnectionStatus(false);
     }
   }
 
   connect() {
+    if (typeof EventSource === 'undefined') {
+      this.updateConnectionStatus(false);
+      return;
+    }
+
     if (this.eventSource) {
       this.eventSource.close();
     }
@@ -26,7 +33,7 @@ class SSEClient {
       this.reconnectDelay = 1000;
     };
 
-    this.eventSource.onerror = (error) => {
+    this.eventSource.onerror = () => {
       this.updateConnectionStatus(false);
       this.eventSource.close();
       this.scheduleReconnect();
@@ -35,7 +42,14 @@ class SSEClient {
     // Register listeners for known event types
     ['agent_status', 'bead_update', 'ralph_progress', 'activity', 'heartbeat'].forEach(type => {
       this.eventSource.addEventListener(type, (event) => {
-        const data = JSON.parse(event.data);
+        let data = {};
+        if (event.data) {
+          try {
+            data = JSON.parse(event.data);
+          } catch {
+            data = { raw: event.data };
+          }
+        }
         this.dispatch(type, data);
       });
     });
@@ -47,6 +61,10 @@ class SSEClient {
     }
 
     this.reconnectTimer = setTimeout(() => {
+      if (typeof EventSource === 'undefined') {
+        this.reconnectTimer = null;
+        return;
+      }
       this.connect();
       // Exponential backoff with cap
       this.reconnectDelay = Math.min(this.reconnectDelay * 2, this.maxReconnectDelay);
@@ -73,6 +91,12 @@ class SSEClient {
       this.listeners[eventType] = [];
     }
     this.listeners[eventType].push(callback);
+  }
+
+  off(eventType, callback) {
+    const callbacks = this.listeners[eventType];
+    if (!callbacks || callbacks.length === 0) return;
+    this.listeners[eventType] = callbacks.filter(handler => handler !== callback);
   }
 
   dispatch(eventType, data) {
