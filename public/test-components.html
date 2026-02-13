@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Component Test - Athena Web</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+
+  <style>
+    body {
+      padding-bottom: 2rem;
+    }
+    .test-section {
+      margin-bottom: var(--space-2xl);
+      padding: var(--space-xl);
+      background: var(--bg-surface);
+      border-radius: var(--radius-md);
+    }
+    .test-section h2 {
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-md);
+      border-bottom: 2px solid var(--gold);
+    }
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--space-lg);
+      margin-top: var(--space-lg);
+    }
+    .test-item {
+      padding: var(--space-md);
+      background: var(--bg-deep);
+      border-radius: var(--radius-sm);
+    }
+    .test-item h4 {
+      margin-bottom: var(--space-md);
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" style="padding-top: var(--space-2xl);">
+    <h1 style="text-align: center; margin-bottom: var(--space-2xl);">Component Library Test Page</h1>
+
+    <!-- Cards Section -->
+    <section class="test-section">
+      <h2>Cards</h2>
+      <div class="test-grid">
+        <div class="test-item">
+          <h4>Standard Card</h4>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Agent Status</h3>
+            </div>
+            <div class="card-body">
+              <p>This is a standard card with header, body, and footer sections. Hover to see the gold border glow effect.</p>
+            </div>
+            <div class="card-footer">
+              <span class="text-secondary">Updated 2m ago</span>
+              <span class="badge badge-running">Running</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="test-item">
+          <h4>Compact Card</h4>
+          <div class="card card-compact">
+            <h4 style="margin-bottom: var(--space-sm);">Quick Info</h4>
+            <p class="text-secondary" style="margin: 0;">A more compact card variant with less padding for dense layouts.</p>
+          </div>
+        </div>
+
+        <div class="test-item">
+          <h4>Card with Multiple Badges</h4>
+          <div class="card">
+            <div class="card-body">
+              <h4 style="margin-bottom: var(--space-sm);">Bead bd-279</h4>
+              <p class="text-secondary" style="margin-bottom: var(--space-md); font-size: var(--font-size-sm);">Add retry logic to dispatch</p>
+              <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+                <span class="badge badge-done">Done</span>
+                <span class="badge badge-active">Priority 1</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Badges Section -->
+    <section class="test-section">
+      <h2>Badges</h2>
+      <div class="test-item">
+        <h4>All Badge States</h4>
+        <div style="display: flex; gap: var(--space-md); flex-wrap: wrap; align-items: center;">
+          <span class="badge badge-running">Running</span>
+          <span class="badge badge-done">Done</span>
+          <span class="badge badge-failed">Failed</span>
+          <span class="badge badge-todo">Todo</span>
+          <span class="badge badge-active">Active</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Buttons Section -->
+    <section class="test-section">
+      <h2>Buttons</h2>
+      <div class="test-grid">
+        <div class="test-item">
+          <h4>Primary Buttons</h4>
+          <div style="display: flex; gap: var(--space-md); flex-wrap: wrap;">
+            <button class="btn btn-primary">Primary Action</button>
+            <button class="btn btn-primary" disabled>Disabled</button>
+          </div>
+        </div>
+
+        <div class="test-item">
+          <h4>Danger Buttons</h4>
+          <div style="display: flex; gap: var(--space-md); flex-wrap: wrap;">
+            <button class="btn btn-danger">Kill Agent</button>
+            <button class="btn btn-danger" disabled>Disabled</button>
+          </div>
+        </div>
+
+        <div class="test-item">
+          <h4>Ghost Buttons</h4>
+          <div style="display: flex; gap: var(--space-md); flex-wrap: wrap;">
+            <button class="btn btn-ghost">Cancel</button>
+            <button class="btn btn-ghost btn-sm">Small Ghost</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Header Section -->
+    <section class="test-section">
+      <h2>Header (with marble texture)</h2>
+      <div class="app-header" style="position: static;">
+        <div class="container flex-between">
+          <div class="header-brand flex-row items-center gap-sm">
+            <span class="header-owl" role="img" aria-label="owl">🦉</span>
+            <h1 class="header-title">Athena</h1>
+          </div>
+          <div class="header-status">
+            <span class="status-indicator connected" title="Connected">
+              <span class="status-dot"></span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: var(--space-lg);">
+        <h4 style="margin-bottom: var(--space-sm);">Disconnected State</h4>
+        <div class="app-header" style="position: static;">
+          <div class="container flex-between">
+            <div class="header-brand flex-row items-center gap-sm">
+              <span class="header-owl" role="img" aria-label="owl">🦉</span>
+              <h1 class="header-title">Athena</h1>
+            </div>
+            <div class="header-status">
+              <span class="status-indicator disconnected" title="Disconnected">
+                <span class="status-dot"></span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom Navigation Section -->
+    <section class="test-section">
+      <h2>Bottom Navigation</h2>
+      <div class="bottom-nav" style="position: static; border: 1px solid rgba(212, 165, 116, 0.2);">
+        <a href="#" class="nav-item active">
+          <span class="nav-icon">🏛️</span>
+          <span class="nav-label">Oracle</span>
+        </a>
+        <a href="#" class="nav-item">
+          <span class="nav-icon">⚪</span>
+          <span class="nav-label">Beads</span>
+        </a>
+        <a href="#" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span class="nav-label">Agents</span>
+        </a>
+        <a href="#" class="nav-item">
+          <span class="nav-icon">📜</span>
+          <span class="nav-label">Scrolls</span>
+        </a>
+        <a href="#" class="nav-item">
+          <span class="nav-icon">⏱️</span>
+          <span class="nav-label">Chronicle</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Lists Section -->
+    <section class="test-section">
+      <h2>Lists</h2>
+      <div class="test-item">
+        <h4>Activity List</h4>
+        <ul class="list">
+          <li class="list-item">
+            <div class="list-item-content">
+              <div style="font-weight: var(--font-weight-medium);">Agent bd-279 completed</div>
+              <div class="list-item-meta">
+                <span class="timestamp">10:30:42</span>
+                <span class="badge badge-done">Success</span>
+              </div>
+            </div>
+          </li>
+          <li class="list-item">
+            <div class="list-item-content">
+              <div style="font-weight: var(--font-weight-medium);">Bead bd-281 created</div>
+              <div class="list-item-meta">
+                <span class="timestamp">10:28:15</span>
+                <span class="badge badge-active">Priority 1</span>
+              </div>
+            </div>
+          </li>
+          <li class="list-item">
+            <div class="list-item-content">
+              <div style="font-weight: var(--font-weight-medium);">Agent bd-278 failed</div>
+              <div class="list-item-meta">
+                <span class="timestamp">10:25:03</span>
+                <span class="badge badge-failed">Failed</span>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Meander Border Section -->
+    <section class="test-section">
+      <h2>Greek Meander Borders</h2>
+      <div class="test-item">
+        <h4>Simple Meander Border</h4>
+        <p>Content above the border</p>
+        <div class="meander-border"></div>
+        <p>Content below the border</p>
+      </div>
+
+      <div class="test-item" style="margin-top: var(--space-lg);">
+        <h4>Meander Divider (Enhanced)</h4>
+        <p>Content above the divider with enhanced pattern</p>
+        <div class="meander-divider"></div>
+        <p>Content below the divider</p>
+      </div>
+    </section>
+
+    <!-- Pull-to-Refresh Section -->
+    <section class="test-section">
+      <h2>Pull-to-Refresh Indicator</h2>
+      <div class="test-item">
+        <div style="position: relative; height: 100px; background: var(--bg-deep); border-radius: var(--radius-md); overflow: hidden;">
+          <div class="pull-to-refresh visible">
+            <div class="pull-spinner"></div>
+          </div>
+          <div style="padding: var(--space-md); text-align: center; padding-top: var(--space-xl);">
+            <p class="text-secondary">Pull indicator visible state (above this content)</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Loading Skeleton Section -->
+    <section class="test-section">
+      <h2>Loading Skeletons</h2>
+      <div class="test-grid">
+        <div class="test-item">
+          <h4>Text Skeleton</h4>
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-text"></div>
+          <div class="skeleton skeleton-text"></div>
+          <div class="skeleton skeleton-text" style="width: 80%;"></div>
+        </div>
+
+        <div class="test-item">
+          <h4>Card Skeleton</h4>
+          <div class="skeleton skeleton-card"></div>
+        </div>
+
+        <div class="test-item">
+          <h4>Avatar + Text</h4>
+          <div style="display: flex; gap: var(--space-md); align-items: center;">
+            <div class="skeleton skeleton-avatar"></div>
+            <div style="flex: 1;">
+              <div class="skeleton skeleton-text" style="width: 60%;"></div>
+              <div class="skeleton skeleton-text" style="width: 40%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mobile Touch Target Test -->
+    <section class="test-section">
+      <h2>Touch Target Test (44px minimum)</h2>
+      <div class="test-item">
+        <p class="text-secondary" style="margin-bottom: var(--space-md);">All interactive elements should have minimum 44px touch targets. Test on mobile viewport.</p>
+        <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+          <button class="btn btn-primary btn-sm">Small Button (36px)</button>
+          <button class="btn btn-primary">Standard Button (44px)</button>
+          <span class="badge badge-running" style="cursor: pointer;">Badge (interactive)</span>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

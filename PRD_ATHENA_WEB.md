@@ -446,7 +446,7 @@ Goal: Complete HTML/CSS foundation with the design system implemented. Navigatio
 
 ---
 
-- [ ] **US-012** Component CSS library
+- [x] **US-012** Component CSS library
 
   **Scope:** Create `css/components.css` with reusable component styles:
   - **Cards:** translucent backgrounds, gold border on hover, rounded corners, backdrop-blur

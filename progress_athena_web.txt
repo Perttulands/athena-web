@@ -3,28 +3,28 @@
 ## Repo: $HOME/athena-web
 ## Port: 9000
 
-current_task=
-iteration=0
-max_iterations=5
-status=not_started
+current_task=US-012
+iteration=12
+max_iterations=25
+status=in_progress
 
 ---
 
 ### Sprint 1: Backend Foundation (US-001 → US-010)
-- [ ] US-001 Project initialization and Express server setup
-- [ ] US-002 Error handling middleware and API utilities
-- [ ] US-003 Beads service and API endpoint
-- [ ] US-004 Tmux service and agents API endpoints
-- [ ] US-005 Docs service and API endpoints
-- [ ] US-006 Runs service and API endpoint
-- [ ] US-007 Ralph service and API endpoint
-- [ ] US-008 Status endpoint (dashboard aggregate)
-- [ ] US-009 SSE streaming endpoint
-- [ ] US-010 systemd service file and startup validation
-Sprint 1 Review: [ ] NOT PASSED
+- [x] US-001 Project initialization and Express server setup
+- [x] US-002 Error handling middleware and API utilities
+- [x] US-003 Beads service and API endpoint
+- [x] US-004 Tmux service and agents API endpoints
+- [x] US-005 Docs service and API endpoints
+- [x] US-006 Runs service and API endpoint
+- [x] US-007 Ralph service and API endpoint
+- [x] US-008 Status endpoint (dashboard aggregate)
+- [x] US-009 SSE streaming endpoint
+- [x] US-010 systemd service file and startup validation
+Sprint 1 Review: [x] PASSED
 
 ### Sprint 2: Frontend Foundation (US-011 → US-016)
-- [ ] US-011 HTML shell and CSS design tokens
+- [x] US-011 HTML shell and CSS design tokens
 - [ ] US-012 Component CSS library
 - [ ] US-013 Client-side router and page framework
 - [ ] US-014 API client and SSE client modules
