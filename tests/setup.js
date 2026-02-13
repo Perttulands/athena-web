@@ -1,7 +1,7 @@
 // Test setup and helpers for Athena Web
 
 import { strict as assert } from 'node:assert';
-import { createServer } from 'node:net';
+import { createServer, Socket } from 'node:net';
 
 let listenCapability;
 
@@ -28,10 +28,28 @@ export async function canListen() {
     });
 
     probe.listen(0, '127.0.0.1', () => {
-      // Give the event loop a beat so sandbox-denied sockets can surface
-      setTimeout(() => {
+      const address = probe.address();
+      if (!address || typeof address === 'string') {
+        probe.close(() => finish(false));
+        return;
+      }
+
+      const socket = new Socket();
+      socket.setTimeout(200);
+
+      socket.once('timeout', () => {
+        socket.destroy();
+        probe.close(() => finish(false));
+      });
+
+      socket.once('error', () => {
+        probe.close(() => finish(false));
+      });
+
+      socket.connect(address.port, '127.0.0.1', () => {
+        socket.end();
         probe.close(() => finish(true));
-      }, 20);
+      });
     });
   });
 

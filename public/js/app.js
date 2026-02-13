@@ -10,6 +10,8 @@ const routes = {
   '/beads': () => import('./pages/beads.js'),
   '/agents': () => import('./pages/agents.js'),
   '/scrolls': () => import('./pages/scrolls.js'),
+  '/artifacts': () => import('./pages/artifacts.js'),
+  '/inbox': () => import('./pages/inbox.js'),
   '/chronicle': () => import('./pages/chronicle.js')
 };
 
@@ -201,7 +203,10 @@ export function init() {
   navigate();
 }
 
-if (typeof document !== 'undefined') {
+const shouldAutoInit = typeof document !== 'undefined' &&
+  !(typeof window !== 'undefined' && window.__ATHENA_DISABLE_AUTO_INIT__ === true);
+
+if (shouldAutoInit) {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {

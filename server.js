@@ -23,6 +23,8 @@ import runsRouter from './routes/runs.js';
 import ralphRouter from './routes/ralph.js';
 import statusRouter from './routes/status.js';
 import streamRouter from './routes/stream.js';
+import artifactsRouter from './routes/artifacts.js';
+import inboxRouter from './routes/inbox.js';
 
 const app = express();
 
@@ -78,6 +80,8 @@ app.use('/api/agents', agentsRouter);
 app.use('/api/docs', docsRouter);
 app.use('/api/runs', runsRouter);
 app.use('/api/ralph', ralphRouter);
+app.use('/api/artifacts', artifactsRouter);
+app.use('/api/inbox', inboxRouter);
 app.use('/api', streamRouter);
 
 // Test routes for error handling (only in non-production)
