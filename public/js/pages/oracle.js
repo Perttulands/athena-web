@@ -560,10 +560,15 @@ function subscribeToSSE(scope, state) {
 export function render() {
   return `
     <div class="container page-shell page-oracle">
-      <header class="page-header">
-        <h1 class="page-title">Oracle</h1>
-        <p class="page-subtitle">Temple telemetry and live swarm activity.</p>
-      </header>
+      <section class="oracle-hero" role="img" aria-label="Oracle fire burning in Athena's temple">
+        <div class="oracle-hero-overlay">
+          <div class="oracle-hero-content">
+            <p class="oracle-hero-kicker">Temple Of Athena</p>
+            <h1 class="page-title oracle-hero-title">Oracle</h1>
+            <p class="page-subtitle oracle-hero-subtitle">Temple telemetry and live swarm activity.</p>
+          </div>
+        </div>
+      </section>
 
       <section class="page-section">
         <article class="card oracle-message-card">
@@ -648,11 +653,18 @@ export async function mount(root) {
     ralph: normalizeRalph(null)
   };
 
+  if (typeof api?.clearCache === 'function') {
+    api.clearCache();
+  }
+
   // Initial data load
   await refreshData(scope, state);
 
   // Enable pull-to-refresh
   const cleanupPullToRefresh = enablePullToRefresh(scope, async () => {
+    if (typeof api?.clearCache === 'function') {
+      api.clearCache();
+    }
     await refreshData(scope, state);
   });
 

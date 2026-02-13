@@ -41,10 +41,14 @@ describe('beads-service', () => {
       const beads = await listBeads({ status: 'active' });
 
       assert.ok(Array.isArray(beads));
-      // If beads returned, all should match filter
+      // If beads returned, all should match active/open semantics
       beads.forEach(bead => {
-        if (bead.status) {
-          assert.strictEqual(bead.status, 'active');
+        if (bead.status || bead.canonicalStatus) {
+          assert.ok(
+            bead.status === 'active' ||
+            bead.status === 'open' ||
+            bead.canonicalStatus === 'active'
+          );
         }
       });
     });

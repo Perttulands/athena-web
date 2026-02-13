@@ -1,9 +1,9 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import config from '../config.js';
 
 const execFileAsync = promisify(execFile);
-
-const TMUX_SOCKET = '/tmp/openclaw-coding-agents.sock';
+const TMUX_SOCKET = config.tmuxSocket;
 
 /**
  * Format seconds into human-readable duration (e.g., "12m", "2h 5m")
@@ -24,7 +24,7 @@ function formatDuration(seconds) {
  */
 async function tmuxExec(args) {
   try {
-    const { stdout, stderr } = await execFileAsync('tmux', ['-S', TMUX_SOCKET, ...args]);
+    const { stdout, stderr } = await execFileAsync(config.tmuxCli, ['-S', TMUX_SOCKET, ...args]);
     return { stdout: stdout.trim(), stderr: stderr.trim(), error: null };
   } catch (error) {
     return { stdout: '', stderr: error.message, error };
@@ -37,7 +37,7 @@ async function tmuxExec(args) {
  */
 export async function listAgents() {
   // Get list of sessions
-  const { stdout, error } = await tmuxExec(['list-sessions', '-F', '#{session_name} #{session_created}']);
+  const { stdout, error } = await tmuxExec(['list-sessions', '-F', '#{session_name}\t#{session_created}']);
 
   if (error || !stdout) {
     return [];
@@ -48,7 +48,7 @@ export async function listAgents() {
   const now = Math.floor(Date.now() / 1000);
 
   for (const line of lines) {
-    const [name, createdTimestamp] = line.split(' ');
+    const [name, createdTimestamp] = line.split('\t');
 
     // Only include sessions starting with 'agent-'
     if (!name.startsWith('agent-')) {
@@ -92,7 +92,8 @@ export async function listAgents() {
  * @param {number} lines - Number of lines to capture (default 200)
  */
 export async function getOutput(name, lines = 200) {
-  const { stdout, error } = await tmuxExec(['capture-pane', '-t', name, '-p', '-S', `-${lines}`]);
+  const safeLines = Number.isFinite(Number(lines)) ? Math.max(1, Number(lines)) : 200;
+  const { stdout, error } = await tmuxExec(['capture-pane', '-t', name, '-p', '-S', `-${safeLines}`]);
 
   if (error) {
     return {
@@ -104,7 +105,7 @@ export async function getOutput(name, lines = 200) {
   return {
     name,
     output: stdout,
-    lines
+    lines: safeLines
   };
 }
 

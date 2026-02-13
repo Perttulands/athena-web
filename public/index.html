@@ -27,7 +27,7 @@
   <header id="app-header" class="app-header" role="banner">
     <div class="container flex-between">
       <div class="header-brand flex-row items-center gap-sm">
-        <img src="/assets/owl.svg" width="28" height="28" alt="Athena owl" class="header-owl">
+        <img src="/assets/owl-eyes.jpg" width="36" height="36" alt="Athena owl eyes" class="header-owl">
         <h1 class="header-title">Athena</h1>
       </div>
       <div class="header-status" aria-live="polite">
@@ -41,8 +41,9 @@
 
   <main id="app" class="app-main" role="main" aria-live="polite">
     <div class="container">
-      <div style="padding: 2rem; text-align: center;">
-        <p class="text-secondary">Loading...</p>
+      <div class="initial-loader" role="status" aria-live="polite" aria-label="Loading Athena">
+        <img src="/assets/owl-eyes.jpg" width="320" height="140" alt="" class="initial-loader-eyes">
+        <span class="sr-only">Loading...</span>
       </div>
     </div>
   </main>

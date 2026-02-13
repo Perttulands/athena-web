@@ -4,9 +4,14 @@ import { listBeads } from '../services/beads-service.js';
 import { listAgents } from '../services/tmux-service.js';
 import runsService from '../services/runs-service.js';
 import ralphService from '../services/ralph-service.js';
-import config from '../config.js';
 
 const router = Router();
+
+function isCanonicalStatus(bead, wanted) {
+  const status = String(bead?.status || '').toLowerCase();
+  const canonicalStatus = String(bead?.canonicalStatus || '').toLowerCase();
+  return status === wanted || canonicalStatus === wanted;
+}
 
 /**
  * GET /api/status
@@ -29,7 +34,10 @@ router.get('/', asyncHandler(async (req, res) => {
       todo: 0,
       active: 0,
       done: 0,
-      failed: 0
+      failed: 0,
+      open: 0,
+      closed: 0,
+      total: 0
     },
     ralph: {
       currentTask: null,
@@ -45,10 +53,13 @@ router.get('/', asyncHandler(async (req, res) => {
   // Fetch beads data
   try {
     const beads = await listBeads();
-    status.beads.todo = beads.filter(b => b.status === 'todo').length;
-    status.beads.active = beads.filter(b => b.status === 'active').length;
-    status.beads.done = beads.filter(b => b.status === 'done').length;
-    status.beads.failed = beads.filter(b => b.status === 'failed').length;
+    status.beads.todo = beads.filter(bead => isCanonicalStatus(bead, 'todo')).length;
+    status.beads.active = beads.filter(bead => isCanonicalStatus(bead, 'active')).length;
+    status.beads.done = beads.filter(bead => isCanonicalStatus(bead, 'done')).length;
+    status.beads.failed = beads.filter(bead => isCanonicalStatus(bead, 'failed')).length;
+    status.beads.open = beads.filter(bead => String(bead?.status || '').toLowerCase() === 'open').length;
+    status.beads.closed = beads.filter(bead => String(bead?.status || '').toLowerCase() === 'closed').length;
+    status.beads.total = beads.length;
   } catch (error) {
     warnings.push({ service: 'beads', error: error.message });
   }

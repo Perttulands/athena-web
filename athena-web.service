@@ -60,11 +60,13 @@ StandardError=journal
 Environment="NODE_ENV=production"
 Environment="PORT=9000"
 Environment="WORKSPACE_PATH=$HOME/.openclaw/workspace"
+Environment="PATH=$HOME/.local/bin:$HOME/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
 EnvironmentFile=-/etc/athena-web/env
 
 # Security hardening
 NoNewPrivileges=true
-PrivateTmp=true
+# Must see the shared tmux socket at /tmp/openclaw-coding-agents.sock
+PrivateTmp=false
 ProtectSystem=strict
 ProtectHome=read-only
 ReadWritePaths=$HOME/.openclaw/workspace
@@ -76,7 +78,7 @@ ProtectControlGroups=true
 RestrictRealtime=true
 RestrictNamespaces=true
 LockPersonality=true
-MemoryDenyWriteExecute=true
+MemoryDenyWriteExecute=false
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
 SystemCallFilter=@system-service
 SystemCallErrorNumber=EPERM

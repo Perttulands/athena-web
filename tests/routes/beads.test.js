@@ -44,10 +44,14 @@ describe('GET /api/beads', () => {
     const data = await response.json();
     assert.ok(Array.isArray(data));
 
-    // All returned beads should have status=active (if any returned)
+    // All returned beads should have active/open semantics (if any returned)
     data.forEach(bead => {
-      if (bead.status) {
-        assert.strictEqual(bead.status, 'active');
+      if (bead.status || bead.canonicalStatus) {
+        assert.ok(
+          bead.status === 'active' ||
+          bead.status === 'open' ||
+          bead.canonicalStatus === 'active'
+        );
       }
     });
 

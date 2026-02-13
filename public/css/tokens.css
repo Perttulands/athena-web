@@ -2,18 +2,18 @@
 
 :root {
   /* Colors - Background */
-  --bg-deep: #1a1a2e;
-  --bg-surface: #16213e;
-  --bg-elevated: #1f2b47;
+  --bg-deep: #050608;
+  --bg-surface: #0d0f14;
+  --bg-elevated: #171a22;
 
   /* Colors - Accent */
   --gold: #d4a574;
-  --gold-bright: #e8c07a;
+  --gold-bright: #f0c98c;
 
   /* Colors - Text */
-  --text-primary: #e8e0d0;
-  --text-secondary: #a09888;
-  --text-dim: #6a6258;
+  --text-primary: #f7f1e4;
+  --text-secondary: #d1c3ad;
+  --text-dim: #8a7a63;
 
   /* Colors - Semantic */
   --success: #7ec89b;

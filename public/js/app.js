@@ -195,11 +195,21 @@ export function init() {
     item.addEventListener('click', (event) => {
       event.preventDefault();
       const page = item.getAttribute('data-page');
-      window.location.hash = `#/${page}`;
+      const nextHash = `#/${page}`;
+
+      if (window.location.hash === nextHash) {
+        navigate();
+        return;
+      }
+
+      window.location.hash = nextHash;
     });
   });
 
   registerServiceWorker();
+  if (!window.location.hash) {
+    window.location.hash = '#/oracle';
+  }
   navigate();
 }
 
