@@ -426,7 +426,7 @@ Goal: Complete HTML/CSS foundation with the design system implemented. Navigatio
 
 ---
 
-- [ ] **US-011** HTML shell and CSS design tokens
+- [x] **US-011** HTML shell and CSS design tokens
 
   **Scope:** Create `public/index.html` as SPA shell. Include Google Fonts (Playfair Display, Inter, JetBrains Mono). Meta viewport for mobile. Create `css/reset.css` (minimal CSS reset). Create `css/tokens.css` with all CSS custom properties from design system. Create `css/base.css` with typography scale, body styling, layout primitives (container, flex utilities, grid).
 

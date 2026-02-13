@@ -23,6 +23,9 @@ app.use(cors());
 app.use(express.json());
 app.use(requestLogger);
 
+// Serve static files from public directory
+app.use(express.static('public'));
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
