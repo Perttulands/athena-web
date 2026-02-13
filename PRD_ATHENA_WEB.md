@@ -468,7 +468,7 @@ Goal: Complete HTML/CSS foundation with the design system implemented. Navigatio
 
 ---
 
-- [ ] **US-013** Client-side router and page framework
+- [x] **US-013** Client-side router and page framework
 
   **Scope:** Create `js/app.js` with hash-based SPA router. Routes: `#/oracle` (default), `#/beads`, `#/agents`, `#/scrolls`, `#/chronicle`. Router loads the corresponding page module, calls its `render()` function to inject HTML into `#app`. Bottom nav highlights active page. Page transition: fade-out old, fade-in new (200ms CSS transition).
 
