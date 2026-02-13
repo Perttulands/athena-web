@@ -76,6 +76,22 @@ describe('Agents Routes', () => {
   });
 
   describe('POST /api/agents/:name/kill', () => {
+    it('should reject invalid session names', async (t) => {
+      if (!socketsAllowed) {
+        t.skip('Local sockets are blocked in this environment');
+        return;
+      }
+
+      const server = app.listen(0);
+      const port = server.address().port;
+      const response = await fetch(`http://localhost:${port}/api/agents/../../bad/kill`, {
+        method: 'POST'
+      });
+
+      assert.strictEqual(response.status, 400);
+      server.close();
+    });
+
     it('should return error for non-existent session', async (t) => {
       if (!socketsAllowed) {
         t.skip('Local sockets are blocked in this environment');

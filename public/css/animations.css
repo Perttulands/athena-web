@@ -1,0 +1,82 @@
+/* Athena Web - Micro animations */
+
+.page-enter {
+  animation: page-fade-in 200ms ease both;
+}
+
+.card-appear {
+  opacity: 0;
+  animation: card-fade-in 260ms ease forwards;
+}
+
+.status-pulse {
+  animation: status-pulse 1.8s ease-in-out infinite;
+}
+
+.pull-refresh-indicator .spinner,
+.owl-spinner {
+  animation: owl-spin 1.2s linear infinite;
+}
+
+.meander-border,
+.meander-divider::before {
+  background-size: 220% 100%;
+  animation: meander-shimmer 3s linear infinite;
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes card-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes status-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes owl-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes meander-shimmer {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 220% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

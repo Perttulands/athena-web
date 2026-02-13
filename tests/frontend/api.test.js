@@ -46,6 +46,7 @@ describe('API Client', () => {
 
   beforeEach(() => {
     fetchMock.reset();
+    api.clearCache();
   });
 
   after(() => {

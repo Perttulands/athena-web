@@ -1,0 +1,15 @@
+# Athena Web - Cron jobs for automated backups
+# Install with: crontab -e
+# Then add these lines (adjust schedule as needed)
+
+# Daily backup at 2 AM
+0 2 * * * $HOME/athena-web/deployment/backup/backup.sh >> $HOME/athena-web/logs/backup.log 2>&1
+
+# Weekly health check on Sunday at 3 AM
+0 3 * * 0 $HOME/athena-web/deployment/scripts/health-check.sh >> $HOME/athena-web/logs/health-check.log 2>&1
+
+# Monthly log cleanup (first day of month at 1 AM)
+0 1 1 * * find $HOME/athena-web/logs -name "*.log" -mtime +90 -delete
+
+# Monitor disk space every 6 hours
+0 */6 * * * df -h $HOME/athena-web | awk 'NR==2 {if (substr($5,1,length($5)-1) > 90) print "WARNING: Disk usage is " $5}' >> $HOME/athena-web/logs/disk-monitor.log 2>&1

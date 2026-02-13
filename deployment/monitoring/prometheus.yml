@@ -1,0 +1,49 @@
+# Prometheus monitoring configuration for Athena Web
+# This is a sample configuration - adjust scrape intervals and targets as needed
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'athena-web'
+    environment: 'production'
+
+# Alertmanager configuration (optional)
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets:
+#           - localhost:9093
+
+# Rule files for alerting
+rule_files:
+  - "alerts.yml"
+
+scrape_configs:
+  # Athena Web application metrics
+  - job_name: 'athena-web'
+    static_configs:
+      - targets: ['localhost:9001']
+        labels:
+          service: 'athena-web'
+          instance: 'ahjo-1'
+
+  # Node exporter for system metrics
+  - job_name: 'node'
+    static_configs:
+      - targets: ['localhost:9100']
+        labels:
+          instance: 'ahjo-1'
+
+  # Nginx metrics (if using nginx-prometheus-exporter)
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['localhost:9113']
+        labels:
+          service: 'nginx'
+          instance: 'ahjo-1'
+
+  # Self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

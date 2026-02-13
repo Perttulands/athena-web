@@ -2,21 +2,35 @@ import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert';
 import { JSDOM } from 'jsdom';
 
-describe('Router Tests', () => {
-  let dom;
-  let window;
-  let document;
+class MockEventSource {
+  constructor() {
+    setTimeout(() => this.onopen?.(), 0);
+  }
+
+  addEventListener() {}
+  close() {}
+}
+
+function jsonResponse(payload) {
+  return {
+    ok: true,
+    async json() {
+      return payload;
+    }
+  };
+}
+
+describe('Router', () => {
   let navigate;
   let updateActiveNav;
 
   before(async () => {
-    // Create a DOM environment
-    dom = new JSDOM(`
-      <!DOCTYPE html>
+    const dom = new JSDOM(`
+      <!doctype html>
       <html>
-        <head><title>Test</title></head>
         <body>
           <main id="app"></main>
+          <div id="status-indicator"></div>
           <nav id="bottom-nav">
             <a href="#/oracle" data-page="oracle">Oracle</a>
             <a href="#/beads" data-page="beads">Beads</a>
@@ -26,98 +40,78 @@ describe('Router Tests', () => {
           </nav>
         </body>
       </html>
-    `, {
-      url: 'http://localhost:9000',
-      runScripts: 'outside-only'
-    });
+    `, { url: 'http://localhost:9000' });
 
-    window = dom.window;
-    document = window.document;
-    global.window = window;
-    global.document = document;
+    global.window = dom.window;
+    global.document = dom.window.document;
+    global.Node = dom.window.Node;
+    global.EventSource = MockEventSource;
 
-    // Import app.js with the global window/document set
-    const appModule = await import(`../../public/js/app.js?t=${Date.now()}`);
-    navigate = appModule.navigate;
-    updateActiveNav = appModule.updateActiveNav;
+    global.fetch = async (url) => {
+      if (String(url).includes('/api/status')) {
+        return jsonResponse({
+          athena: { lastMessage: 'Ready', lastSeen: '2026-02-13T10:00:00Z' },
+          agents: { running: 0, total: 0, successRate: 0 },
+          beads: { active: 0 },
+          ralph: { currentTask: null, iteration: 0, maxIterations: 0, prdProgress: { done: 0, total: 0 } },
+          recentActivity: []
+        });
+      }
+
+      if (String(url).includes('/api/ralph')) {
+        return jsonResponse({ activeTask: null, currentIteration: 0, maxIterations: 0, prdProgress: { done: 0, total: 0 }, tasks: [] });
+      }
+
+      if (String(url).includes('/api/docs')) {
+        return jsonResponse({ tree: [] });
+      }
+
+      return jsonResponse([]);
+    };
+
+    const mod = await import(`../../public/js/app.js?t=${Date.now()}`);
+    navigate = mod.navigate;
+    updateActiveNav = mod.updateActiveNav;
   });
 
   after(() => {
     delete global.window;
     delete global.document;
+    delete global.Node;
+    delete global.EventSource;
+    delete global.fetch;
   });
 
-  it('should route to oracle page by default', async () => {
-    window.location.hash = '#/oracle';
-    await navigate();
-
-    // Wait for async loading and rendering
-    await new Promise(resolve => setTimeout(resolve, 300));
-
-    const appContent = document.querySelector('#app').innerHTML;
-    assert.ok(appContent.includes('Oracle'), 'Oracle page should be rendered');
-  });
-
-  it('should route to beads page when hash changes', async () => {
-    window.location.hash = '#/beads';
-    await navigate();
-
-    await new Promise(resolve => setTimeout(resolve, 300));
-
-    const appContent = document.querySelector('#app').innerHTML;
-    assert.ok(appContent.includes('Beads'), 'Beads page should be rendered');
-  });
-
-  it('should route to agents page when hash changes', async () => {
-    window.location.hash = '#/agents';
-    await navigate();
-
-    await new Promise(resolve => setTimeout(resolve, 300));
-
-    const appContent = document.querySelector('#app').innerHTML;
-    assert.ok(appContent.includes('Agents'), 'Agents page should be rendered');
-  });
-
-  it('should route to scrolls page when hash changes', async () => {
-    window.location.hash = '#/scrolls';
-    await navigate();
-
-    await new Promise(resolve => setTimeout(resolve, 300));
-
-    const appContent = document.querySelector('#app').innerHTML;
-    assert.ok(appContent.includes('Scrolls'), 'Scrolls page should be rendered');
-  });
-
-  it('should route to chronicle page when hash changes', async () => {
-    window.location.hash = '#/chronicle';
-    await navigate();
-
-    await new Promise(resolve => setTimeout(resolve, 300));
-
-    const appContent = document.querySelector('#app').innerHTML;
-    assert.ok(appContent.includes('Chronicle'), 'Chronicle page should be rendered');
-  });
-
-  it('should highlight active nav item', async () => {
-    window.location.hash = '#/beads';
-    await navigate();
-
-    await new Promise(resolve => setTimeout(resolve, 300));
-
-    const beadsNav = document.querySelector('[data-page="beads"]');
-    const oracleNav = document.querySelector('[data-page="oracle"]');
-
-    assert.ok(beadsNav.classList.contains('active'), 'Beads nav should be active');
-    assert.ok(!oracleNav.classList.contains('active'), 'Oracle nav should not be active');
-  });
-
-  it('should default to oracle when hash is empty', async () => {
+  it('routes to oracle by default', async () => {
     window.location.hash = '';
     await navigate();
+    await new Promise((resolve) => setTimeout(resolve, 80));
 
-    await new Promise(resolve => setTimeout(resolve, 300));
+    assert.ok(document.querySelector('#app').textContent.includes('Oracle'));
+  });
 
-    const appContent = document.querySelector('#app').innerHTML;
-    assert.ok(appContent.includes('Oracle'), 'Oracle page should be rendered by default');
+  it('routes to each feature page', async () => {
+    for (const [hash, title] of [
+      ['#/beads', 'Beads'],
+      ['#/agents', 'Agents'],
+      ['#/scrolls', 'Scrolls'],
+      ['#/chronicle', 'Chronicle']
+    ]) {
+      window.location.hash = hash;
+      await navigate();
+      await new Promise((resolve) => setTimeout(resolve, 80));
+      assert.ok(document.querySelector('#app').textContent.includes(title));
+    }
+  });
+
+  it('marks active nav item', () => {
+    updateActiveNav('/beads');
+
+    const active = document.querySelector('[data-page="beads"]');
+    const inactive = document.querySelector('[data-page="oracle"]');
+
+    assert.ok(active.classList.contains('active'));
+    assert.strictEqual(active.getAttribute('aria-current'), 'page');
+    assert.ok(!inactive.classList.contains('active'));
   });
 });
