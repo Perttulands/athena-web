@@ -1,6 +1,8 @@
 // Athena Web - Express Server
 import express from 'express';
 import cors from 'cors';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import config from './config.js';
 import {
   asyncHandler,
@@ -27,6 +29,8 @@ import artifactsRouter from './routes/artifacts.js';
 import inboxRouter from './routes/inbox.js';
 
 const app = express();
+const serverDir = dirname(fileURLToPath(import.meta.url));
+const publicDir = join(serverDir, 'public');
 
 // Security headers
 app.use((req, res, next) => {
@@ -61,7 +65,7 @@ app.use(requestLogger);
 app.use('/api', apiETag);
 
 // Serve static files from public directory
-app.use(express.static('public'));
+app.use(express.static(publicDir));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -83,6 +87,15 @@ app.use('/api/ralph', ralphRouter);
 app.use('/api/artifacts', artifactsRouter);
 app.use('/api/inbox', inboxRouter);
 app.use('/api', streamRouter);
+
+// SPA fallback for non-API routes without a file extension.
+app.get(/^\/(?!api(?:\/|$)).*/, (req, res, next) => {
+  if (req.path.includes('.')) {
+    return next();
+  }
+
+  res.sendFile(join(publicDir, 'index.html'));
+});
 
 // Test routes for error handling (only in non-production)
 if (process.env.NODE_ENV !== 'production') {

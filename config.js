@@ -19,6 +19,10 @@ const config = {
   // Beads CLI command
   beadsCli: process.env.BEADS_CLI || 'br',
 
+  // tmux CLI command and socket path for coding agents
+  tmuxCli: process.env.TMUX_CLI || 'tmux',
+  tmuxSocket: process.env.TMUX_SOCKET || '/tmp/openclaw-coding-agents.sock',
+
   // Server port
   port: process.env.PORT ? parseInt(process.env.PORT, 10) : 9000,
 

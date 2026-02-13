@@ -1,11 +1,14 @@
 import EventEmitter from 'node:events';
 import { watch } from 'node:fs';
-import { join } from 'node:path';
+import { join, dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import config from '../config.js';
 import { listAgents } from './tmux-service.js';
 import { listBeads } from './beads-service.js';
 import runsService from './runs-service.js';
 import ralphService from './ralph-service.js';
+
+const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 /**
  * SSE Service - Singleton event emitter for server-sent events
@@ -30,8 +33,8 @@ class SSEService extends EventEmitter {
     this.workspacePath = options.workspacePath || config.workspacePath;
     this.agentPollIntervalMs = options.agentPollIntervalMs || 10000;
 
-    this.prdPath = options.prdPath || join(this.workspacePath, 'PRD_ATHENA_WEB.md');
-    this.progressPath = options.progressPath || join(this.workspacePath, 'progress_athena_web.txt');
+    this.prdPath = options.prdPath || join(projectRoot, 'PRD_ATHENA_WEB.md');
+    this.progressPath = options.progressPath || join(projectRoot, 'progress_athena_web.txt');
 
     this.lastAgentsSnapshot = null;
     this.lastRunSignature = null;

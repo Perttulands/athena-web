@@ -1,13 +1,29 @@
-const STATIC_CACHE = 'athena-static-v1';
+const STATIC_CACHE = 'athena-static-v2';
 const OFFLINE_URL = '/offline.html';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/offline.html',
   '/css/app.css',
+  '/css/reset.css',
+  '/css/tokens.css',
+  '/css/base.css',
+  '/css/components.css',
+  '/css/pages.css',
+  '/css/animations.css',
   '/js/app.js',
   '/js/api.js',
+  '/js/animations.js',
   '/js/components.js',
+  '/js/gestures.js',
+  '/js/markdown.js',
+  '/js/pages/oracle.js',
+  '/js/pages/beads.js',
+  '/js/pages/agents.js',
+  '/js/pages/scrolls.js',
+  '/js/pages/artifacts.js',
+  '/js/pages/inbox.js',
+  '/js/pages/chronicle.js',
   '/js/sse.js',
   '/assets/owl.svg',
   '/assets/icon-192.svg',
@@ -35,6 +51,8 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
+  const accepts = request.headers.get('accept') || '';
+  const isNavigation = request.mode === 'navigate' || accepts.includes('text/html');
 
   if (request.method !== 'GET') {
     return;
@@ -64,7 +82,13 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         })
-        .catch(() => caches.match(OFFLINE_URL));
+        .catch(() => {
+          if (isNavigation) {
+            return caches.match(OFFLINE_URL);
+          }
+
+          return Response.error();
+        });
     })
   );
 });

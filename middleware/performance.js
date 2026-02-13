@@ -10,11 +10,16 @@ import { gzipSync } from 'node:zlib';
 export const responseTime = (req, res, next) => {
   const start = process.hrtime.bigint();
 
-  res.on('finish', () => {
-    const end = process.hrtime.bigint();
-    const duration = Number(end - start) / 1e6; // Convert to milliseconds
-    res.setHeader('X-Response-Time', `${duration.toFixed(2)}ms`);
-  });
+  const originalWriteHead = res.writeHead;
+  res.writeHead = function patchedWriteHead(...args) {
+    if (!res.headersSent && !res.getHeader('X-Response-Time')) {
+      const end = process.hrtime.bigint();
+      const duration = Number(end - start) / 1e6; // Convert to milliseconds
+      res.setHeader('X-Response-Time', `${duration.toFixed(2)}ms`);
+    }
+
+    return originalWriteHead.apply(this, args);
+  };
 
   next();
 };

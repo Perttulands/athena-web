@@ -1,16 +1,19 @@
 // Artifacts Service - Read markdown files from various locations
 import { promises as fs } from 'node:fs';
-import { join, resolve, relative, basename, extname, isAbsolute } from 'node:path';
-import { homedir } from 'node:os';
+import { join, resolve, relative, basename, extname, isAbsolute, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import config from '../config.js';
 
-const workspacePath = process.env.WORKSPACE_PATH || join(homedir(), '.openclaw', 'workspace');
+const workspacePath = config.workspacePath;
+const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 // Artifact source directories
 const artifactSources = [
   { name: 'Research', path: join(workspacePath, 'docs', 'research') },
   { name: 'Results', path: join(workspacePath, 'state', 'results') },
   { name: 'Memory', path: join(workspacePath, 'memory') },
-  { name: 'PRDs', path: workspacePath, pattern: /^PRD_.*\.md$/, recursive: false }
+  { name: 'PRDs', path: workspacePath, pattern: /^PRD_.*\.md$/, recursive: false },
+  { name: 'PRDs', path: projectRoot, pattern: /^PRD_.*\.md$/, recursive: false }
 ];
 
 /**
@@ -70,6 +73,7 @@ async function scanDirectory(dirPath, options = {}) {
  */
 export async function getArtifacts() {
   const artifacts = [];
+  const seen = new Set();
 
   for (const source of artifactSources) {
     const sourcePath = resolve(source.path);
@@ -79,14 +83,20 @@ export async function getArtifacts() {
     });
 
     const items = files.map((filePath) => {
+      const resolvedFilePath = resolve(filePath);
+      if (seen.has(resolvedFilePath)) {
+        return null;
+      }
+      seen.add(resolvedFilePath);
+
       const rel = relative(sourcePath, filePath);
       return {
         category: source.name,
         name: rel,
         basename: basename(filePath),
-        encodedPath: encodeArtifactPath(filePath)
+        encodedPath: encodeArtifactPath(resolvedFilePath)
       };
-    });
+    }).filter(Boolean);
 
     artifacts.push(...items);
   }

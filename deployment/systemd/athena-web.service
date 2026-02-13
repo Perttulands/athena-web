@@ -13,6 +13,7 @@ WorkingDirectory=$HOME/athena-web
 # Environment
 Environment=NODE_ENV=production
 Environment=PORT=9000
+Environment=PATH=$HOME/.local/bin:$HOME/.npm-global/bin:/usr/local/bin:/usr/bin:/bin
 EnvironmentFile=-/etc/athena-web/env
 
 # Execution
@@ -34,7 +35,8 @@ CPUQuota=200%
 
 # Security hardening
 NoNewPrivileges=true
-PrivateTmp=true
+# Must see the shared tmux socket at /tmp/openclaw-coding-agents.sock
+PrivateTmp=false
 ProtectSystem=strict
 ProtectHome=read-only
 ReadWritePaths=$HOME/.openclaw/workspace

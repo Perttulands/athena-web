@@ -6,8 +6,18 @@ body {
   font-size: var(--font-size-base);
   line-height: var(--line-height-base);
   color: var(--text-primary);
-  background: var(--bg-deep);
+  background:
+    linear-gradient(rgba(5, 5, 7, 0.78), rgba(9, 7, 4, 0.84)),
+    url('/assets/marble-bg.jpg') center/cover fixed;
+  background-color: var(--bg-deep);
   overflow-x: hidden;
+}
+
+/* iOS Safari performance fallback while preserving desktop fixed background */
+@supports (-webkit-touch-callout: none) {
+  body {
+    background-attachment: scroll;
+  }
 }
 
 /* Typography Scale */
@@ -24,7 +34,7 @@ h2 {
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-tight);
-  color: var(--text-primary);
+  color: var(--gold-bright);
 }
 
 h3 {
@@ -32,7 +42,7 @@ h3 {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-tight);
-  color: var(--text-primary);
+  color: var(--gold);
 }
 
 h4 {
@@ -256,6 +266,16 @@ pre code {
 .hidden { display: none; }
 .block { display: block; }
 .inline-block { display: inline-block; }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
 
 /* Position Utilities */
 .relative { position: relative; }
