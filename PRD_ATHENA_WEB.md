@@ -472,6 +472,12 @@ Goal: Complete HTML/CSS foundation with the design system implemented. Navigatio
 
   **Scope:** Create `js/app.js` with hash-based SPA router. Routes: `#/oracle` (default), `#/beads`, `#/agents`, `#/scrolls`, `#/chronicle`. Router loads the corresponding page module, calls its `render()` function to inject HTML into `#app`. Bottom nav highlights active page. Page transition: fade-out old, fade-in new (200ms CSS transition).
 
+---
+
+- [x] **US-013a** Remove unused currentPage variable (5 min)
+
+  **Scope:** Remove the unused `currentPage` variable from `public/js/app.js`. It's set on line 53 but never read, making it dead code.
+
   **Navigation items (bottom bar):**
   1. Oracle (dashboard icon / temple icon)
   2. Beads (circle icon)

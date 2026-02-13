@@ -11,8 +11,6 @@ const routes = {
   '/chronicle': () => import('./pages/chronicle.js'),
 };
 
-let currentPage = null;
-
 /**
  * Navigate to a route
  */
@@ -50,7 +48,6 @@ async function navigate() {
       appEl.style.opacity = '1';
     }
 
-    currentPage = hash;
     updateActiveNav(hash);
   } catch (error) {
     console.error('Failed to load page:', error);
