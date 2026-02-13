@@ -381,7 +381,7 @@ Goal: Working Express server with all API endpoints returning real data. Tests f
 
 ---
 
-- [ ] **US-009** SSE streaming endpoint
+- [x] **US-009** SSE streaming endpoint
 
   **Scope:** Create `services/sse-service.js` as an event emitter singleton. Route `GET /api/stream` sets up SSE connection with proper headers (`Content-Type: text/event-stream`, `Cache-Control: no-cache`, `Connection: keep-alive`). Heartbeat every 30s to keep connection alive. Clients receive events as they're emitted. Service exposes `broadcast(type, data)` method used by other routes/services.
 
@@ -396,7 +396,7 @@ Goal: Working Express server with all API endpoints returning real data. Tests f
 
 ---
 
-- [ ] **US-010** systemd service file and startup validation
+- [x] **US-010** systemd service file and startup validation
 
   **Scope:** Create `athena-web.service` systemd unit file. Runs as user `perttu`. Working directory is the project root. Starts with `node server.js`. Restarts on failure. Environment file for config overrides. Write install/uninstall instructions in a comment block at top of the service file.
 
