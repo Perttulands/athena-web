@@ -291,3 +291,67 @@ Sprint 5 Review: [ ] NOT PASSED
 - Duplication: Minor (bead filters, Ralph task counting) but acceptable
 - Verdict: Code is clean, simple, follows established patterns
 ---
+
+## Iteration 9 - US-009: SSE streaming endpoint
+- Created services/sse-service.js as EventEmitter singleton for managing SSE clients
+- Implemented addClient(), removeClient(), broadcast(), sendHeartbeat() methods
+- Created routes/stream.js with GET /api/stream endpoint
+- Proper SSE headers: Content-Type text/event-stream, Cache-Control no-cache, Connection keep-alive
+- 30-second heartbeat interval to keep connections alive
+- Clean disconnect handling via res.on('close') event
+- Fixed route registration: changed to /stream in router, mount at /api in server
+- Fixed tests/routes/status.test.js import errors (startTestServer/makeRequest didn't exist)
+- Comprehensive test coverage: 7 service tests + 2 route tests all passing
+- Manual verification confirms curl -N receives heartbeat events
+- Learnings for future iterations:
+  - SSE service is singleton exported as default, instantiated once
+  - Route uses `new SSEService()` which creates instance per import (works for isolation)
+  - Heartbeat uses setInterval cleared when last client disconnects
+  - SSE format: `event: type\ndata: {...}\n\n` (double newline terminates)
+  - Mock Response for testing needs EventEmitter with write() and emit('close')
+  - Service tests can use dynamic import with query string to get fresh instances
+  - Route pattern: mount router at /api, define route as /stream → /api/stream
+
+**Summary:**
+- Task: US-009: SSE streaming endpoint
+- Files: services/sse-service.js, routes/stream.js, server.js, tests/services/sse-service.test.js, tests/routes/stream.test.js, tests/routes/status.test.js
+- Tests: PASS (47 service tests + 26 route tests = 73 total, excluding docs.test.js which has env import issue)
+- Review: PENDING (per-task Linus review runs next)
+- Next: Linus review of US-009, then US-010
+---
+
+## Linus Review - US-009
+- Code quality: PASSED
+- Good taste: Clean separation of SSEService class vs route handler
+- No special cases: Uniform error handling, graceful degradation on write failures
+- Data structures: Set for clients is optimal (O(1) operations, no duplicates)
+- Complexity: Minimal - single-purpose methods, clear lifecycle management
+- Duplication: Minor (broadcast vs sendHeartbeat loops) but acceptable for clarity
+- Verdict: Code is clean, simple, follows established patterns. Ready for next task.
+---
+
+## Iteration 10 - US-010: systemd service file and startup validation
+- Created athena-web.service systemd unit file with complete configuration
+- Included [Unit], [Service], and [Install] sections with all required directives
+- Service runs as user perttu, working directory set to project root
+- ExecStart runs node server.js, Restart=on-failure with 5s delay
+- Environment variable support: inline defaults + optional /etc/athena-web/env file
+- Comprehensive install/uninstall instructions in comment block at top of file
+- Security hardening options included (commented out by default)
+- Created tests/systemd.test.js with 8 comprehensive validation tests
+- All tests verify proper systemd service file structure and content
+- Manual validation with systemd-analyze verify passed with no errors
+- Learnings for future iterations:
+  - Regex patterns must account for hyphens in systemd values ([\w-]+ not \w+)
+  - Node.js test framework requires importing describe/it/before from node:test
+  - systemd EnvironmentFile with leading - makes file optional (no error if missing)
+  - Service file comments are perfect for operational documentation
+  - Test before GREEN: validate service file syntax doesn't exist → write failing tests → implement service file
+
+**Summary:**
+- Task: US-010: systemd service file and startup validation
+- Files: athena-web.service, tests/systemd.test.js, PRD_ATHENA_WEB.md
+- Tests: PASS (8/8 systemd tests passing)
+- Review: PENDING (per-task Linus review runs next)
+- Next: Linus review of US-010, then US-011
+---

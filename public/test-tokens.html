@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Tokens Test - Athena Web</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <style>
+    body {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section {
+      margin-bottom: 3rem;
+      padding: 1.5rem;
+      background: var(--bg-surface);
+      border-radius: 8px;
+    }
+    .section h2 {
+      margin-bottom: 1rem;
+      color: var(--gold);
+    }
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+    .color-swatch {
+      padding: 1rem;
+      border-radius: 4px;
+      text-align: center;
+      font-size: 12px;
+    }
+    .type-scale {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .type-sample {
+      padding: 0.5rem;
+      border-left: 3px solid var(--gold);
+      padding-left: 1rem;
+    }
+    .layout-sample {
+      padding: 1rem;
+      background: var(--bg-elevated);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1 style="font-family: var(--font-serif); color: var(--gold); margin-bottom: 2rem;">
+    🦉 Athena Web Design System Test
+  </h1>
+
+  <!-- Color Palette -->
+  <section class="section">
+    <h2>Color Palette</h2>
+    <div class="color-grid">
+      <div class="color-swatch" style="background: var(--bg-deep); color: var(--text-primary);">
+        --bg-deep<br>#1a1a2e
+      </div>
+      <div class="color-swatch" style="background: var(--bg-surface); color: var(--text-primary);">
+        --bg-surface<br>#16213e
+      </div>
+      <div class="color-swatch" style="background: var(--bg-elevated); color: var(--text-primary);">
+        --bg-elevated<br>#1f2b47
+      </div>
+      <div class="color-swatch" style="background: var(--gold); color: var(--bg-deep);">
+        --gold<br>#d4a574
+      </div>
+      <div class="color-swatch" style="background: var(--gold-bright); color: var(--bg-deep);">
+        --gold-bright<br>#e8c07a
+      </div>
+      <div class="color-swatch" style="background: var(--text-primary); color: var(--bg-deep);">
+        --text-primary<br>#e8e0d0
+      </div>
+      <div class="color-swatch" style="background: var(--text-secondary); color: var(--bg-deep);">
+        --text-secondary<br>#a09888
+      </div>
+      <div class="color-swatch" style="background: var(--text-dim); color: var(--text-primary);">
+        --text-dim<br>#6a6258
+      </div>
+      <div class="color-swatch" style="background: var(--success); color: var(--bg-deep);">
+        --success<br>#7ec89b
+      </div>
+      <div class="color-swatch" style="background: var(--danger); color: var(--bg-deep);">
+        --danger<br>#e07676
+      </div>
+      <div class="color-swatch" style="background: var(--warning); color: var(--bg-deep);">
+        --warning<br>#d4a574
+      </div>
+      <div class="color-swatch" style="background: var(--info); color: var(--bg-deep);">
+        --info<br>#7a9ec8
+      </div>
+    </div>
+  </section>
+
+  <!-- Typography -->
+  <section class="section">
+    <h2>Typography Scale</h2>
+    <div class="type-scale">
+      <div class="type-sample" style="font-size: 40px; font-family: var(--font-serif);">
+        Heading 1 - 40px (Playfair Display)
+      </div>
+      <div class="type-sample" style="font-size: 32px; font-family: var(--font-serif);">
+        Heading 2 - 32px (Playfair Display)
+      </div>
+      <div class="type-sample" style="font-size: 24px; font-family: var(--font-serif);">
+        Heading 3 - 24px (Playfair Display)
+      </div>
+      <div class="type-sample" style="font-size: 20px; font-family: var(--font-sans);">
+        Heading 4 - 20px (Inter)
+      </div>
+      <div class="type-sample" style="font-size: 16px; font-family: var(--font-sans);">
+        Body - 16px (Inter)
+      </div>
+      <div class="type-sample" style="font-size: 14px; font-family: var(--font-sans);">
+        Small - 14px (Inter)
+      </div>
+      <div class="type-sample" style="font-size: 12px; font-family: var(--font-sans);">
+        Tiny - 12px (Inter)
+      </div>
+      <div class="type-sample" style="font-size: 14px; font-family: var(--font-mono);">
+        Code - 14px (JetBrains Mono)
+      </div>
+    </div>
+  </section>
+
+  <!-- Layout Primitives -->
+  <section class="section">
+    <h2>Layout Primitives</h2>
+
+    <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Container</h3>
+    <div class="container layout-sample">
+      Container with max-width and auto margins
+    </div>
+
+    <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Flex Utilities</h3>
+    <div class="flex-row layout-sample" style="gap: 1rem;">
+      <div style="padding: 1rem; background: var(--bg-deep); flex: 1;">Flex Item 1</div>
+      <div style="padding: 1rem; background: var(--bg-deep); flex: 1;">Flex Item 2</div>
+      <div style="padding: 1rem; background: var(--bg-deep); flex: 1;">Flex Item 3</div>
+    </div>
+
+    <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Grid Utilities</h3>
+    <div class="grid-2" style="gap: 1rem;">
+      <div class="layout-sample">Grid Cell 1</div>
+      <div class="layout-sample">Grid Cell 2</div>
+      <div class="layout-sample">Grid Cell 3</div>
+      <div class="layout-sample">Grid Cell 4</div>
+    </div>
+  </section>
+
+  <!-- Mobile Check -->
+  <section class="section">
+    <h2>Mobile Viewport Test</h2>
+    <p>Resize your browser to 375px width to test mobile-first layout.</p>
+    <p>Current viewport width: <span id="viewport-width"></span>px</p>
+  </section>
+
+  <script>
+    // Display viewport width
+    function updateViewportWidth() {
+      document.getElementById('viewport-width').textContent = window.innerWidth;
+    }
+    updateViewportWidth();
+    window.addEventListener('resize', updateViewportWidth);
+  </script>
+</body>
+</html>

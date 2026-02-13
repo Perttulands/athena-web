@@ -10,3 +10,67 @@
 ===========================================
   Iteration 1 of 25
 ===========================================
+Now let me output the complete iteration summary to console:
+
+## Iteration 9 - US-009: SSE streaming endpoint
+- Created services/sse-service.js as EventEmitter singleton for managing SSE clients
+- Implemented addClient(), removeClient(), broadcast(), sendHeartbeat() methods
+- Created routes/stream.js with GET /api/stream endpoint
+- Proper SSE headers: Content-Type text/event-stream, Cache-Control no-cache, Connection keep-alive
+- 30-second heartbeat interval to keep connections alive
+- Clean disconnect handling via res.on('close') event
+- Fixed route registration: changed to /stream in router, mount at /api in server
+- Fixed tests/routes/status.test.js import errors (startTestServer/makeRequest didn't exist)
+- Comprehensive test coverage: 7 service tests + 2 route tests all passing
+- Manual verification confirms curl -N receives heartbeat events
+- Learnings for future iterations:
+  - SSE service is singleton exported as default, instantiated once
+  - Route uses `new SSEService()` which creates instance per import (works for isolation)
+  - Heartbeat uses setInterval cleared when last client disconnects
+  - SSE format: `event: type\ndata: {...}\n\n` (double newline terminates)
+  - Mock Response for testing needs EventEmitter with write() and emit('close')
+  - Service tests can use dynamic import with query string to get fresh instances
+  - Route pattern: mount router at /api, define route as /stream → /api/stream
+
+**Summary:**
+- Task: US-009: SSE streaming endpoint
+- Files: services/sse-service.js, routes/stream.js, server.js, tests/services/sse-service.test.js, tests/routes/stream.test.js, tests/routes/status.test.js
+- Tests: PASS (47 service tests + 26 route tests = 73 total, excluding docs.test.js which has env import issue)
+- Review: PASSED (Linus review - no issues found)
+- Next: US-010: systemd service file and startup validation
+---
+
+<review-passed/>
+
+===========================================
+  Iteration 2 of 25
+===========================================
+The criteria are mentioned in the prompt. Let me review the code I created for US-010:
+
+## Per-Task Linus Review - US-010
+
+Reviewing the systemd service file and test implementation:
+
+**Files created:**
+1. athena-web.service - systemd unit file
+2. tests/systemd.test.js - validation tests
+
+**Linus's Criteria:**
+
+1. **Good taste:** The service file is clean and well-documented. Instructions are at the top where users expect them. Configuration is straightforward with sensible defaults.
+
+2. **No special cases:** The service file uses standard systemd patterns. No workarounds or patches. Environment handling is clean with both inline defaults and optional file override.
+
+3. **Data structures:** Simple text configuration file. Tests use basic string matching and regex - appropriate for the problem.
+
+4. **Complexity:** Minimal. Service file is standard systemd syntax. Tests are straightforward validation checks.
+
+5. **Duplication:** No duplication. Each test checks a distinct aspect of the service file.
+
+**Verdict:** ✅ No issues found. The implementation is clean, simple, and follows established systemd conventions. The service file is production-ready with good documentation.
+
+<review-passed/>
+
+===========================================
+  Iteration 3 of 25
+===========================================

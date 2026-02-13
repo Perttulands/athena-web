@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Athena Web - Command interface for AI coding agent swarm">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>Athena Web</title>
+
+  <!-- Preconnect to Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+  <!-- Header -->
+  <header id="app-header" class="app-header">
+    <div class="container flex-between">
+      <div class="header-brand flex-row items-center gap-sm">
+        <span class="header-owl" role="img" aria-label="owl">🦉</span>
+        <h1 class="header-title">Athena</h1>
+      </div>
+      <div class="header-status">
+        <span class="status-indicator" id="connection-status" title="Connection status">
+          <span class="status-dot"></span>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main id="app" class="app-main">
+    <!-- Page content injected here by router -->
+    <div class="container">
+      <div style="padding: 2rem; text-align: center;">
+        <p class="text-secondary">Loading...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav id="bottom-nav" class="bottom-nav">
+    <a href="#/oracle" class="nav-item" data-page="oracle" aria-label="Oracle dashboard">
+      <span class="nav-icon">🏛️</span>
+      <span class="nav-label">Oracle</span>
+    </a>
+    <a href="#/beads" class="nav-item" data-page="beads" aria-label="Beads">
+      <span class="nav-icon">⚪</span>
+      <span class="nav-label">Beads</span>
+    </a>
+    <a href="#/agents" class="nav-item" data-page="agents" aria-label="Agents">
+      <span class="nav-icon">👥</span>
+      <span class="nav-label">Agents</span>
+    </a>
+    <a href="#/scrolls" class="nav-item" data-page="scrolls" aria-label="Scrolls">
+      <span class="nav-icon">📜</span>
+      <span class="nav-label">Scrolls</span>
+    </a>
+    <a href="#/chronicle" class="nav-item" data-page="chronicle" aria-label="Chronicle">
+      <span class="nav-icon">⏱️</span>
+      <span class="nav-label">Chronicle</span>
+    </a>
+  </nav>
+
+  <style>
+    /* Temporary inline styles - will move to components.css in next task */
+    .app-header {
+      background: var(--bg-surface);
+      padding: var(--space-md) 0;
+      position: sticky;
+      top: 0;
+      z-index: var(--z-sticky);
+      border-bottom: 1px solid rgba(212, 165, 116, 0.1);
+    }
+
+    .header-brand {
+      user-select: none;
+    }
+
+    .header-owl {
+      font-size: var(--font-size-2xl);
+      line-height: 1;
+    }
+
+    .header-title {
+      font-size: var(--font-size-xl);
+      margin: 0;
+    }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: var(--radius-full);
+      background: var(--text-dim);
+      transition: background var(--transition-base);
+    }
+
+    .status-indicator.connected .status-dot {
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+
+    .status-indicator.disconnected .status-dot {
+      background: var(--danger);
+    }
+
+    .app-main {
+      min-height: calc(100vh - var(--nav-height) - var(--bottom-nav-height));
+      padding-bottom: var(--space-xl);
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--bottom-nav-height);
+      background: var(--bg-surface);
+      border-top: 1px solid rgba(212, 165, 116, 0.1);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: var(--z-fixed);
+      padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      height: 100%;
+      color: var(--text-secondary);
+      transition: color var(--transition-base);
+      position: relative;
+      min-width: var(--touch-target-min);
+      text-decoration: none;
+    }
+
+    .nav-item:hover {
+      color: var(--gold-bright);
+    }
+
+    .nav-item.active {
+      color: var(--gold);
+    }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      background: var(--gold);
+    }
+
+    .nav-icon {
+      font-size: var(--font-size-xl);
+      line-height: 1;
+      margin-bottom: var(--space-xs);
+    }
+
+    .nav-label {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+    }
+
+    @media (max-width: 768px) {
+      .nav-label {
+        font-size: 11px;
+      }
+    }
+  </style>
+</body>
+</html>

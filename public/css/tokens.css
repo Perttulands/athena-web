@@ -1,0 +1,94 @@
+/* Athena Web Design System - CSS Custom Properties */
+
+:root {
+  /* Colors - Background */
+  --bg-deep: #1a1a2e;
+  --bg-surface: #16213e;
+  --bg-elevated: #1f2b47;
+
+  /* Colors - Accent */
+  --gold: #d4a574;
+  --gold-bright: #e8c07a;
+
+  /* Colors - Text */
+  --text-primary: #e8e0d0;
+  --text-secondary: #a09888;
+  --text-dim: #6a6258;
+
+  /* Colors - Semantic */
+  --success: #7ec89b;
+  --danger: #e07676;
+  --warning: #d4a574;
+  --info: #7a9ec8;
+
+  /* Typography - Font Families */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  /* Typography - Font Sizes */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 20px;
+  --font-size-xl: 24px;
+  --font-size-2xl: 32px;
+  --font-size-3xl: 40px;
+
+  /* Typography - Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Typography - Line Heights */
+  --line-height-tight: 1.2;
+  --line-height-base: 1.5;
+  --line-height-loose: 1.8;
+
+  /* Spacing Scale */
+  --space-xs: 0.25rem;   /* 4px */
+  --space-sm: 0.5rem;    /* 8px */
+  --space-md: 1rem;      /* 16px */
+  --space-lg: 1.5rem;    /* 24px */
+  --space-xl: 2rem;      /* 32px */
+  --space-2xl: 3rem;     /* 48px */
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 20px rgba(212, 165, 116, 0.3);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 300ms ease;
+
+  /* Z-Index Scale */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+
+  /* Layout */
+  --container-max-width: 1200px;
+  --nav-height: 64px;
+  --bottom-nav-height: 64px;
+
+  /* Touch Targets */
+  --touch-target-min: 44px;
+
+  /* Backdrop Blur */
+  --blur-sm: 5px;
+  --blur-md: 10px;
+  --blur-lg: 20px;
+}
