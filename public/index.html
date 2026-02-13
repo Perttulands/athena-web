@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="/css/reset.css">
   <link rel="stylesheet" href="/css/tokens.css">
   <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
 </head>
 <body>
   <!-- Header -->
@@ -70,126 +71,10 @@
   </nav>
 
   <style>
-    /* Temporary inline styles - will move to components.css in next task */
-    .app-header {
-      background: var(--bg-surface);
-      padding: var(--space-md) 0;
-      position: sticky;
-      top: 0;
-      z-index: var(--z-sticky);
-      border-bottom: 1px solid rgba(212, 165, 116, 0.1);
-    }
-
-    .header-brand {
-      user-select: none;
-    }
-
-    .header-owl {
-      font-size: var(--font-size-2xl);
-      line-height: 1;
-    }
-
-    .header-title {
-      font-size: var(--font-size-xl);
-      margin: 0;
-    }
-
-    .header-status {
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-    }
-
-    .status-indicator {
-      display: flex;
-      align-items: center;
-      gap: var(--space-xs);
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: var(--radius-full);
-      background: var(--text-dim);
-      transition: background var(--transition-base);
-    }
-
-    .status-indicator.connected .status-dot {
-      background: var(--success);
-      box-shadow: 0 0 8px var(--success);
-    }
-
-    .status-indicator.disconnected .status-dot {
-      background: var(--danger);
-    }
-
+    /* App-specific layout styles */
     .app-main {
       min-height: calc(100vh - var(--nav-height) - var(--bottom-nav-height));
       padding-bottom: var(--space-xl);
-    }
-
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: var(--bottom-nav-height);
-      background: var(--bg-surface);
-      border-top: 1px solid rgba(212, 165, 116, 0.1);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: var(--z-fixed);
-      padding-bottom: env(safe-area-inset-bottom, 0);
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      flex: 1;
-      height: 100%;
-      color: var(--text-secondary);
-      transition: color var(--transition-base);
-      position: relative;
-      min-width: var(--touch-target-min);
-      text-decoration: none;
-    }
-
-    .nav-item:hover {
-      color: var(--gold-bright);
-    }
-
-    .nav-item.active {
-      color: var(--gold);
-    }
-
-    .nav-item.active::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 10%;
-      right: 10%;
-      height: 2px;
-      background: var(--gold);
-    }
-
-    .nav-icon {
-      font-size: var(--font-size-xl);
-      line-height: 1;
-      margin-bottom: var(--space-xs);
-    }
-
-    .nav-label {
-      font-size: var(--font-size-xs);
-      font-weight: var(--font-weight-medium);
-    }
-
-    @media (max-width: 768px) {
-      .nav-label {
-        font-size: 11px;
-      }
     }
   </style>
 </body>
