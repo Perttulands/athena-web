@@ -21,11 +21,12 @@ function jsonResponse(payload) {
 }
 
 describe('Router', () => {
+  let dom;
   let navigate;
   let updateActiveNav;
 
   before(async () => {
-    const dom = new JSDOM(`
+    dom = new JSDOM(`
       <!doctype html>
       <html>
         <body>
@@ -36,6 +37,8 @@ describe('Router', () => {
             <a href="#/beads" data-page="beads">Beads</a>
             <a href="#/agents" data-page="agents">Agents</a>
             <a href="#/scrolls" data-page="scrolls">Scrolls</a>
+            <a href="#/artifacts" data-page="artifacts">Artifacts</a>
+            <a href="#/inbox" data-page="inbox">Inbox</a>
             <a href="#/chronicle" data-page="chronicle">Chronicle</a>
           </nav>
         </body>
@@ -46,6 +49,7 @@ describe('Router', () => {
     global.document = dom.window.document;
     global.Node = dom.window.Node;
     global.EventSource = MockEventSource;
+    global.window.__ATHENA_DISABLE_AUTO_INIT__ = true;
 
     global.fetch = async (url) => {
       if (String(url).includes('/api/status')) {
@@ -75,6 +79,7 @@ describe('Router', () => {
   });
 
   after(() => {
+    dom?.window?.close();
     delete global.window;
     delete global.document;
     delete global.Node;
@@ -95,6 +100,8 @@ describe('Router', () => {
       ['#/beads', 'Beads'],
       ['#/agents', 'Agents'],
       ['#/scrolls', 'Scrolls'],
+      ['#/artifacts', 'Artifacts'],
+      ['#/inbox', 'Inbox'],
       ['#/chronicle', 'Chronicle']
     ]) {
       window.location.hash = hash;

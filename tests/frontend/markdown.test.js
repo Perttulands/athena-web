@@ -21,4 +21,13 @@ describe('Markdown Renderer', () => {
     assert.ok(rendered.innerHTML.includes('&lt;script&gt;alert(1)&lt;/script&gt;'));
     assert.ok(!rendered.innerHTML.includes('<script>'));
   });
+
+  it('blocks javascript: links', async () => {
+    const module = await import(`../../public/js/markdown.js?t=${Date.now()}`);
+    const rendered = module.renderMarkdown('[click](javascript:alert(1))');
+
+    const link = rendered.querySelector('a');
+    assert.ok(link, 'expected a rendered link');
+    assert.strictEqual(link.getAttribute('href'), '#');
+  });
 });

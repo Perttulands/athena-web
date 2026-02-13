@@ -24,8 +24,10 @@ function jsonResponse(payload) {
 }
 
 describe('Accessibility and UX Polish', () => {
+  let dom;
+
   beforeEach(() => {
-    const dom = new JSDOM(`
+    dom = new JSDOM(`
       <!doctype html>
       <html>
       <body>
@@ -48,6 +50,7 @@ describe('Accessibility and UX Polish', () => {
     global.document = dom.window.document;
     global.Node = dom.window.Node;
     global.EventSource = MockEventSource;
+    global.window.__ATHENA_DISABLE_AUTO_INIT__ = true;
 
     global.fetch = async (url) => {
       if (String(url).includes('/api/agents')) return jsonResponse([]);
@@ -66,6 +69,7 @@ describe('Accessibility and UX Polish', () => {
   });
 
   afterEach(() => {
+    dom?.window?.close();
     delete global.window;
     delete global.document;
     delete global.Node;
