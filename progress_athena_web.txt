@@ -17,3 +17,9 @@
 - Learnings for future iterations: keep query-param validation at route boundary and keep service-layer errors canonical (`code` + `status`) so route handlers stay thin.
 **Summary:** Task: [US-TASK2] | Files: [routes/artifacts.js, services/artifact-service.js, tests/routes/artifacts.test.js, PRD_ATHENA_WEB.md] | Tests: [PASS] | Review: [PASSED] | Next: [Task 3: Artifact search endpoint]
 ---
+## Iteration 3 - Artifact search endpoint
+- Implemented `/api/artifacts/search` in `routes/artifacts.js` using `spawn('rg', args)` with args-array invocation (no shell), scoped search roots, query/root/limit validation, and structured `{ root, path, line, snippet }` results.
+- Added TDD coverage in `tests/routes/artifacts-search.test.js` for successful search matches, empty results, shell-injection-style input handling, and invalid root rejection.
+- Learnings for future iterations: when wrapping CLI search, run one root scope at a time with a global limit to keep output mapping deterministic and preserve strict root allowlisting.
+**Summary:** Task: [US-TASK3] | Files: [routes/artifacts.js, tests/routes/artifacts-search.test.js, PRD_ATHENA_WEB.md] | Tests: [PASS] | Review: [PASSED] | Next: [Task 4: Inbox service — file and text submission]
+---

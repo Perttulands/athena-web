@@ -41,7 +41,7 @@ Extend athena-web from swarm dashboard into Perttu's portal to Athena's filesyst
 - Test: each endpoint, invalid root 404, path traversal 400, missing file 404
 - Verify: `node --test "tests/routes/artifacts.test.js"`
 
-- [ ] **Task 3: Artifact search endpoint**
+- [x] **Task 3: Artifact search endpoint**
 - File: `routes/artifacts.js` (extend), `tests/routes/artifacts-search.test.js`
 - `GET /api/artifacts/search?q=<query>&roots=<csv>&limit=<n>`
 - Uses `rg` (ripgrep) subprocess scoped to allowlisted roots only
