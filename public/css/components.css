@@ -315,16 +315,14 @@
   left: 0;
   right: 0;
   height: var(--bottom-nav-height);
-  background:
-    linear-gradient(180deg, rgba(6, 7, 10, 0.62) 0%, rgba(6, 5, 4, 0.86) 100%);
-  backdrop-filter: blur(16px);
+  background: var(--bg-surface);
   border-top: 1px solid rgba(212, 165, 116, 0.35);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  z-index: var(--z-fixed);
+  z-index: 1000;
   padding-bottom: env(safe-area-inset-bottom, 0);
-  box-shadow: 0 -8px 26px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 -8px 26px rgba(0, 0, 0, 0.45);
 }
 
 .nav-item {
