@@ -72,6 +72,7 @@ export async function request(app, path, options = {}) {
     return skippedResult();
   }
 
+  const { timeoutMs = 5000, ...fetchOptions } = options;
   let server;
   try {
     server = app.listen(0); // Random port
@@ -79,15 +80,20 @@ export async function request(app, path, options = {}) {
     return skippedResult(error);
   }
 
-  try {
-    const port = server.address().port;
+  const port = server.address().port;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, timeoutMs);
 
+  try {
     const url = `http://localhost:${port}${path}`;
     const response = await fetch(url, {
-      ...options,
+      ...fetchOptions,
+      signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
-        ...options.headers
+        ...fetchOptions.headers
       }
     });
 
@@ -96,7 +102,8 @@ export async function request(app, path, options = {}) {
   } catch (error) {
     return skippedResult(error);
   } finally {
-    await new Promise((resolve) => server.close(() => resolve()));
+    clearTimeout(timeout);
+    await closeServer(server);
   }
 }
 
@@ -117,6 +124,131 @@ export function assertResponse(result, expectedStatus, expectedData) {
     assert.deepEqual(result.data, expectedData,
       `Response data doesn't match expected`);
   }
+}
+
+export function closeServer(server) {
+  if (!server || !server.listening) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve, reject) => {
+    server.close((error) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      resolve();
+    });
+  });
+}
+
+export function createHandleTracker() {
+  const servers = new Set();
+  const intervals = new Set();
+  const eventSources = new Set();
+  const watchers = new Set();
+  const abortControllers = new Set();
+  const services = new Set();
+
+  return {
+    trackServer(server) {
+      if (server) {
+        servers.add(server);
+      }
+      return server;
+    },
+
+    trackInterval(intervalId) {
+      if (intervalId) {
+        intervals.add(intervalId);
+      }
+      return intervalId;
+    },
+
+    trackEventSource(eventSource) {
+      if (eventSource) {
+        eventSources.add(eventSource);
+      }
+      return eventSource;
+    },
+
+    trackWatcher(watcher) {
+      if (watcher) {
+        watchers.add(watcher);
+      }
+      return watcher;
+    },
+
+    trackAbortController(controller) {
+      if (controller) {
+        abortControllers.add(controller);
+      }
+      return controller;
+    },
+
+    trackService(service) {
+      if (service) {
+        services.add(service);
+      }
+      return service;
+    },
+
+    async cleanup() {
+      abortControllers.forEach((controller) => {
+        try {
+          controller.abort();
+        } catch {
+          // no-op
+        }
+      });
+      abortControllers.clear();
+
+      intervals.forEach((intervalId) => clearInterval(intervalId));
+      intervals.clear();
+
+      eventSources.forEach((source) => {
+        try {
+          source.close?.();
+        } catch {
+          // no-op
+        }
+      });
+      eventSources.clear();
+
+      watchers.forEach((watcher) => {
+        try {
+          watcher.close?.();
+        } catch {
+          // no-op
+        }
+      });
+      watchers.clear();
+
+      services.forEach((service) => {
+        try {
+          service.stopMonitoring?.();
+        } catch {
+          // no-op
+        }
+
+        try {
+          service.stop?.();
+        } catch {
+          // no-op
+        }
+
+        try {
+          service.cleanup?.();
+        } catch {
+          // no-op
+        }
+      });
+      services.clear();
+
+      await Promise.all([...servers].map((server) => closeServer(server).catch(() => {})));
+      servers.clear();
+    }
+  };
 }
 
 export { assert };
