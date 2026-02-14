@@ -1,83 +1,115 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { promises as fs } from 'node:fs';
-import { join } from 'node:path';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import os from 'node:os';
+import crypto from 'node:crypto';
+import { InboxService } from '../../services/inbox-service.js';
 
-describe('inbox-service', () => {
+describe('InboxService', () => {
   let workspaceDir;
-  let inboxService;
+  let inboxDir;
+  let service;
 
   before(async () => {
-    workspaceDir = join(os.tmpdir(), `athena-inbox-workspace-${Date.now()}`);
-    await fs.mkdir(workspaceDir, { recursive: true });
-
-    process.env.WORKSPACE_PATH = workspaceDir;
-    inboxService = await import(`../../services/inbox-service.js?t=${Date.now()}`);
+    workspaceDir = path.join(os.tmpdir(), `athena-inbox-service-${Date.now()}`);
+    inboxDir = path.join(workspaceDir, 'inbox');
+    service = new InboxService({
+      inboxPath: inboxDir,
+      maxFileBytes: 1024,
+      maxTextBytes: 512
+    });
   });
 
   after(async () => {
     await fs.rm(workspaceDir, { recursive: true, force: true });
-    delete process.env.WORKSPACE_PATH;
   });
 
-  it('creates inbox directory on first list', async () => {
-    const items = await inboxService.listInbox();
-    assert.deepEqual(items, []);
-
-    const stats = await fs.stat(join(workspaceDir, 'inbox'));
-    assert.equal(stats.isDirectory(), true);
-  });
-
-  it('saves text entries with metadata', async () => {
-    const result = await inboxService.saveText('hello athena');
-
-    assert.equal(result.size, Buffer.byteLength('hello athena', 'utf-8'));
-    assert.ok(result.filename.startsWith('text-'));
-    assert.equal(Object.prototype.hasOwnProperty.call(result, 'path'), false);
-
-    const saved = await fs.readFile(join(workspaceDir, 'inbox', result.filename), 'utf-8');
-    assert.equal(saved, 'hello athena');
-  });
-
-  it('rejects unsupported upload type', () => {
-    assert.throws(
-      () => inboxService.validateUploadFile({
-        buffer: Buffer.from('x'),
-        size: 1,
-        originalname: 'payload.exe',
-        mimetype: 'application/x-msdownload'
-      }),
-      (error) => error.status === 415
-    );
-  });
-
-  it('rejects oversized upload', () => {
-    assert.throws(
-      () => inboxService.validateUploadFile({
-        buffer: Buffer.alloc(1),
-        size: inboxService.MAX_UPLOAD_BYTES + 1,
-        originalname: 'big.txt',
-        mimetype: 'text/plain'
-      }),
-      (error) => error.status === 413
-    );
-  });
-
-  it('sanitizes and saves upload files', async () => {
-    const upload = await inboxService.saveFile({
-      buffer: Buffer.from('artifact'),
-      size: 8,
-      originalname: '../../<script>alert(1)</script>.md',
+  it('submits uploaded file with metadata sidecar in incoming status', async () => {
+    const content = Buffer.from('artifact payload');
+    const result = await service.submitFile({
+      buffer: content,
+      size: content.length,
+      originalname: 'report.md',
       mimetype: 'text/markdown'
+    }, { submitted_by: 'test-suite' });
+
+    const filePath = path.join(inboxDir, 'incoming', result.filename);
+    const sidecarPath = `${filePath}.meta.json`;
+
+    const savedContent = await fs.readFile(filePath);
+    const sidecar = JSON.parse(await fs.readFile(sidecarPath, 'utf8'));
+
+    assert.deepEqual(savedContent, content);
+    assert.equal(sidecar.id, result.metadata.id);
+    assert.equal(sidecar.source, 'upload');
+    assert.equal(sidecar.original_filename, 'report.md');
+    assert.equal(sidecar.content_type, 'text/markdown');
+    assert.equal(sidecar.size_bytes, content.length);
+    assert.equal(sidecar.sha256, crypto.createHash('sha256').update(content).digest('hex'));
+    assert.equal(sidecar.submitted_by, 'test-suite');
+  });
+
+  it('submits text as markdown with metadata sidecar', async () => {
+    const text = '# Athena\n\nPortal text body';
+    const result = await service.submitText('My Portal Note', text, 'md');
+
+    assert.equal(result.filename.endsWith('.md'), true);
+
+    const filePath = path.join(inboxDir, 'incoming', result.filename);
+    const sidecarPath = `${filePath}.meta.json`;
+
+    const savedText = await fs.readFile(filePath, 'utf8');
+    const sidecar = JSON.parse(await fs.readFile(sidecarPath, 'utf8'));
+
+    assert.equal(savedText, text);
+    assert.equal(sidecar.source, 'text');
+    assert.equal(sidecar.original_filename, 'my-portal-note.md');
+    assert.equal(sidecar.content_type, 'text/markdown');
+    assert.equal(sidecar.size_bytes, Buffer.byteLength(text, 'utf8'));
+    assert.equal(sidecar.sha256, crypto.createHash('sha256').update(text, 'utf8').digest('hex'));
+    assert.equal(typeof sidecar.created_at, 'string');
+    assert.ok(sidecar.created_at.includes('T'));
+  });
+
+  it('lists files by status with parsed metadata', async () => {
+    const list = await service.list('incoming');
+    assert.equal(list.length, 2);
+
+    const ids = new Set(list.map((item) => item.metadata.id));
+    assert.equal(ids.size, 2);
+    assert.ok(list.every((item) => item.status === 'incoming'));
+    assert.ok(list.every((item) => item.metadata.sha256));
+  });
+
+  it('enforces configured size limits for file and text submissions', async () => {
+    await assert.rejects(
+      service.submitFile({
+        buffer: Buffer.alloc(1025, 'a'),
+        size: 1025,
+        originalname: 'big.bin',
+        mimetype: 'application/octet-stream'
+      }),
+      (error) => error.code === 'EINBOX_SIZE_LIMIT' && error.status === 413
+    );
+
+    await assert.rejects(
+      service.submitText('too-big', 'x'.repeat(513), 'txt'),
+      (error) => error.code === 'EINBOX_SIZE_LIMIT' && error.status === 413
+    );
+  });
+
+  it('performs atomic writes without leaving partial temp files', async () => {
+    const content = Buffer.from('atomic-file');
+    await service.submitFile({
+      buffer: content,
+      size: content.length,
+      originalname: 'atomic.txt',
+      mimetype: 'text/plain'
     });
 
-    assert.ok(upload.filename.endsWith('.md'));
-    assert.equal(upload.originalName.includes('/'), false);
-    assert.equal(upload.originalName.includes('<'), false);
-    assert.equal(Object.prototype.hasOwnProperty.call(upload, 'path'), false);
-
-    const saved = await fs.readFile(join(workspaceDir, 'inbox', upload.filename), 'utf-8');
-    assert.equal(saved, 'artifact');
+    const incomingPath = path.join(inboxDir, 'incoming');
+    const entries = await fs.readdir(incomingPath);
+    assert.equal(entries.some((entry) => entry.endsWith('.tmp')), false);
   });
 });

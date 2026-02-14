@@ -23,3 +23,10 @@
 - Learnings for future iterations: when wrapping CLI search, run one root scope at a time with a global limit to keep output mapping deterministic and preserve strict root allowlisting.
 **Summary:** Task: [US-TASK3] | Files: [routes/artifacts.js, tests/routes/artifacts-search.test.js, PRD_ATHENA_WEB.md] | Tests: [PASS] | Review: [PASSED] | Next: [Task 4: Inbox service — file and text submission]
 ---
+## Iteration 4 - Inbox service — file and text submission
+- Replaced `services/inbox-service.js` with a class-based `InboxService` supporting configurable `inboxPath`, status subdirectories (`incoming/processing/done/failed`), `submitFile`, `submitText`, and `list(status)` with `.meta.json` sidecars and SHA-256 metadata.
+- Implemented atomic writes using temp files + rename for both payload and sidecar, with cleanup to prevent partial files on failure; preserved compatibility exports (`saveText`, `saveFile`, `listInbox`, `validateUploadFile`, `MAX_UPLOAD_BYTES`) so existing inbox routes/tests remain stable.
+- Added TDD coverage in `tests/services/inbox-service.test.js` for file submit, text submit, status listing, size-limit enforcement, and no leftover temp files.
+- Learnings for future iterations: when evolving a shared service contract, keep a compatibility layer during phase transitions so route-level behavior remains stable while new class APIs are introduced.
+**Summary:** Task: [US-TASK4] | Files: [services/inbox-service.js, tests/services/inbox-service.test.js, PRD_ATHENA_WEB.md, progress_athena_web.txt] | Tests: [PASS] | Review: [PASSED] | Next: [Task 5: Inbox API routes]
+---

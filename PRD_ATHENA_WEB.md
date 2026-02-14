@@ -52,7 +52,7 @@ Extend athena-web from swarm dashboard into Perttu's portal to Athena's filesyst
 
 ## Phase 2: Inbox System
 
-- [ ] **Task 4: Inbox service — file and text submission**
+- [x] **Task 4: Inbox service — file and text submission**
 - File: `services/inbox-service.js`, `tests/services/inbox-service.test.js`
 - Config: `inboxPath` (default `~/.openclaw/workspace/inbox`), subdirs: `incoming/`, `processing/`, `done/`, `failed/`
 - `submitFile(file, metadata)` → atomic write (.tmp → rename) + `.meta.json` sidecar
