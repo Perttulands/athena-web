@@ -738,7 +738,7 @@ Goal: All five views fully functional with real data.
 
 ---
 
-- [ ] **US-025** Agents page — output view and kill action
+- [x] **US-025** Agents page — output view and kill action
 
   **Scope:** Tap agent card to expand full output view:
   - Full-screen overlay (or bottom sheet) with monospace output
@@ -756,7 +756,7 @@ Goal: All five views fully functional with real data.
 
 ---
 
-- [ ] **US-026** Scrolls page — document browser with tree navigation
+- [x] **US-026** Scrolls page — document browser with tree navigation
 
   **Scope:** Implement `js/pages/scrolls.js`:
   - **Left panel (collapsible on mobile):** File tree from `/api/docs`. Directories expandable. Files clickable.
@@ -773,7 +773,7 @@ Goal: All five views fully functional with real data.
 
 ---
 
-- [ ] **US-027** Scrolls page — edit mode
+- [x] **US-027** Scrolls page — edit mode
 
   **Scope:** Add edit capability to the Scrolls page:
   - **Edit button:** Top-right of content area. Toggles between view and edit mode.
@@ -791,7 +791,7 @@ Goal: All five views fully functional with real data.
 
 ---
 
-- [ ] **US-028** Chronicle page — run history with filters
+- [x] **US-028** Chronicle page — run history with filters
 
   **Scope:** Implement `js/pages/chronicle.js`:
   - **Filter bar:** Date picker (native input), status filter (all/success/failed), agent type filter
@@ -830,7 +830,7 @@ Goal: Production-ready. PWA. Animations. Performance. The experience is divine.
 
 ---
 
-- [ ] **US-029** Micro-animations and transitions
+- [x] **US-029** Micro-animations and transitions
 
   **Scope:** Add polish animations throughout:
   - **Page transitions:** Crossfade between pages (opacity 0→1, 200ms ease)
@@ -853,7 +853,7 @@ Goal: Production-ready. PWA. Animations. Performance. The experience is divine.
 
 ---
 
-- [ ] **US-030** PWA setup (manifest, service worker, icons)
+- [x] **US-030** PWA setup (manifest, service worker, icons)
 
   **Scope:** Make Athena Web installable as a PWA:
   - **manifest.json:** App name "Athena", theme color (midnight blue), background color (deep charcoal), display standalone, start_url "/", icons at 192px and 512px.
@@ -871,7 +871,7 @@ Goal: Production-ready. PWA. Animations. Performance. The experience is divine.
 
 ---
 
-- [ ] **US-031** Performance optimization
+- [x] **US-031** Performance optimization
 
   **Scope:** Ensure the temple loads fast:
   - **CSS concatenation:** Single `<link>` in production (concatenate all CSS files during serve, or use a simple build script)
@@ -891,7 +891,7 @@ Goal: Production-ready. PWA. Animations. Performance. The experience is divine.
 
 ---
 
-- [ ] **US-032** Owl SVG icon and marble texture assets
+- [x] **US-032** Owl SVG icon and marble texture assets
 
   **Scope:** Create the visual identity assets:
   - **Owl SVG:** Minimalist geometric owl in gold (#d4a574). Used in header, loading spinner, empty states, PWA icon. Must look sharp at 24px and 512px.
@@ -908,7 +908,7 @@ Goal: Production-ready. PWA. Animations. Performance. The experience is divine.
 
 ---
 
-- [ ] **US-033** Accessibility and final UX polish
+- [x] **US-033** Accessibility and final UX polish
 
   **Scope:** Ensure the temple is accessible:
   - **ARIA labels:** All interactive elements have aria-labels. Nav items have aria-current. Live regions for SSE updates.
@@ -928,7 +928,7 @@ Goal: Production-ready. PWA. Animations. Performance. The experience is divine.
 
 ---
 
-- [ ] **US-034** Integration testing and production readiness
+- [x] **US-034** Integration testing and production readiness
 
   **Scope:** Final validation:
   - **Integration tests:** End-to-end test that starts server, navigates all pages, verifies data displays. Uses real API calls (with test data directory).
