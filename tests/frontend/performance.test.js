@@ -1,11 +1,58 @@
-import { describe, it } from 'node:test';
+import { describe, it, afterEach, after } from 'node:test';
 import assert from 'node:assert';
+import { request as httpRequest } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { JSDOM } from 'jsdom';
 import app from '../../server.js';
 import { canListen } from '../setup.js';
 
+const trackedDoms = new Set();
+const trackedServers = new Set();
+const originalWindow = global.window;
+const originalDocument = global.document;
+const originalFetch = global.fetch;
+
+function restoreGlobal(name, value) {
+  if (value === undefined) {
+    delete global[name];
+    return;
+  }
+  global[name] = value;
+}
+
+function closeServer(server) {
+  if (!server || !server.listening) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve) => {
+    server.close(() => resolve());
+  });
+}
+
+async function cleanupTrackedHandles() {
+  for (const dom of trackedDoms) {
+    dom?.window?.close();
+  }
+  trackedDoms.clear();
+
+  await Promise.all([...trackedServers].map((server) => closeServer(server)));
+  trackedServers.clear();
+
+  restoreGlobal('window', originalWindow);
+  restoreGlobal('document', originalDocument);
+  restoreGlobal('fetch', originalFetch);
+}
+
 describe('Performance Optimizations', () => {
+  afterEach(async () => {
+    await cleanupTrackedHandles();
+  });
+
+  after(async () => {
+    await cleanupTrackedHandles();
+  });
+
   it('uses dynamic imports for route-level lazy loading', async () => {
     const appJs = await readFile('public/js/app.js', 'utf8');
     assert.ok(appJs.includes("() => import('./pages/oracle.js')"));
@@ -17,6 +64,7 @@ describe('Performance Optimizations', () => {
     const dom = new JSDOM('<!doctype html><html><body></body></html>', {
       url: 'http://localhost:9000'
     });
+    trackedDoms.add(dom);
 
     global.window = dom.window;
     global.document = dom.window.document;
@@ -39,10 +87,6 @@ describe('Performance Optimizations', () => {
     await api.get('/status');
 
     assert.strictEqual(calls, 1);
-
-    delete global.window;
-    delete global.document;
-    delete global.fetch;
   });
 
   it('returns compression-friendly headers with gzip support middleware', async (t) => {
@@ -52,15 +96,32 @@ describe('Performance Optimizations', () => {
     }
 
     const server = app.listen(0);
-    const port = server.address().port;
+    trackedServers.add(server);
 
-    const response = await fetch(`http://localhost:${port}/api/status`, {
-      headers: {
-        'Accept-Encoding': 'gzip'
-      }
-    });
+    try {
+      const port = server.address().port;
+      const headers = await new Promise((resolve, reject) => {
+        const req = httpRequest({
+          host: '127.0.0.1',
+          port,
+          path: '/api/status',
+          method: 'GET',
+          headers: {
+            'Accept-Encoding': 'gzip'
+          }
+        }, (res) => {
+          res.resume();
+          res.on('end', () => resolve(res.headers));
+        });
 
-    assert.ok(response.headers.get('vary')?.includes('Accept-Encoding'));
-    server.close();
+        req.on('error', reject);
+        req.end();
+      });
+
+      assert.ok(String(headers.vary || '').includes('Accept-Encoding'));
+    } finally {
+      trackedServers.delete(server);
+      await closeServer(server);
+    }
   });
 });
