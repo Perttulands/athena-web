@@ -4,6 +4,7 @@ import { mkdir, writeFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
+import { createHandleTracker } from '../setup.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -15,6 +16,8 @@ const testResultsDir = join(testStateDir, 'results');
 
 describe('runs-service', () => {
   let listRuns;
+  const originalStatePath = process.env.STATE_PATH;
+  const handles = createHandleTracker();
 
   before(async () => {
     // Create temp directories
@@ -84,8 +87,16 @@ describe('runs-service', () => {
   });
 
   after(async () => {
+    await handles.cleanup();
+
     // Clean up temp directory
     await rm(testStateDir, { recursive: true, force: true });
+
+    if (originalStatePath === undefined) {
+      delete process.env.STATE_PATH;
+    } else {
+      process.env.STATE_PATH = originalStatePath;
+    }
   });
 
   it('should list all runs merged with results', async () => {

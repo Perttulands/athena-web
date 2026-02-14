@@ -81,9 +81,9 @@ async function getRalphStatus(prdPath, progressPath) {
     maxIterations: 0
   };
 
-  // Calculate PRD progress
-  const done = tasks.filter(t => t.done).length;
-  const total = tasks.length;
+  // Completion counts are always derived from PRD checkbox state.
+  const completedTasks = tasks.filter(task => task.done).length;
+  const totalTasks = tasks.length;
 
   return {
     prd: tasks.length > 0 ? basename(prdPath) : null,
@@ -91,7 +91,9 @@ async function getRalphStatus(prdPath, progressPath) {
     currentIteration: progress.iteration,
     maxIterations: progress.maxIterations,
     activeTask: progress.currentTask,
-    prdProgress: { done, total }
+    completedTasks,
+    totalTasks,
+    prdProgress: { done: completedTasks, total: totalTasks }
   };
 }
 

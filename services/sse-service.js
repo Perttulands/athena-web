@@ -250,7 +250,6 @@ class SSEService extends EventEmitter {
   }
 
   stopMonitoring() {
-    if (!this.monitoring) return;
     this.monitoring = false;
 
     if (this.agentPollInterval) {
@@ -274,6 +273,13 @@ class SSEService extends EventEmitter {
   cleanup() {
     this.stopMonitoring();
     this.stopHeartbeat();
+    this.clients.forEach((client) => {
+      try {
+        client.end?.();
+      } catch {
+        // no-op
+      }
+    });
     this.clients.clear();
     this.lastAgentsSnapshot = null;
     this.lastRunSignature = null;

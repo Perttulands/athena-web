@@ -1,22 +1,28 @@
-import { describe, it, beforeEach, afterEach } from 'node:test';
+import { describe, it, beforeEach, afterEach, after } from 'node:test';
 import assert from 'node:assert';
 import EventEmitter from 'node:events';
+import { createHandleTracker } from '../setup.js';
 
 describe('SSE Service', () => {
   let SSEService;
   let service;
+  const handles = createHandleTracker();
 
   beforeEach(async () => {
     // Dynamic import to get a fresh instance each test
     const module = await import(`../../services/sse-service.js?t=${Date.now()}`);
     SSEService = module.default;
-    service = new SSEService();
+    service = handles.trackService(new SSEService());
   });
 
   afterEach(() => {
     if (service && service.cleanup) {
       service.cleanup();
     }
+  });
+
+  after(async () => {
+    await handles.cleanup();
   });
 
   it('should be an event emitter', () => {
@@ -100,7 +106,7 @@ describe('SSE Service', () => {
     const watcherCallbacks = new Map();
     const closedWatchers = [];
 
-    const customService = new SSEService({
+    const customService = handles.trackService(new SSEService({
       statePath: '/tmp/athena-state',
       watchFn: (directoryPath, callback) => {
         watcherCallbacks.set(directoryPath, callback);
@@ -126,7 +132,7 @@ describe('SSE Service', () => {
         tasks: []
       }),
       agentPollIntervalMs: 1000000
-    });
+    }));
 
     const events = [];
     const originalBroadcast = customService.broadcast.bind(customService);
@@ -135,20 +141,24 @@ describe('SSE Service', () => {
       originalBroadcast(type, data);
     };
 
-    customService.startMonitoring();
-    const runsWatcher = watcherCallbacks.get('/tmp/athena-state/runs');
-    assert.ok(runsWatcher, 'Runs directory should be watched');
+    try {
+      customService.startMonitoring();
+      const runsWatcher = watcherCallbacks.get('/tmp/athena-state/runs');
+      assert.ok(runsWatcher, 'Runs directory should be watched');
 
-    runsWatcher('change', 'bd-1.json');
-    await new Promise(resolve => setTimeout(resolve, 10));
+      runsWatcher('change', 'bd-1.json');
+      await new Promise(resolve => setTimeout(resolve, 10));
 
-    assert.ok(events.some(event => event.type === 'bead_update'));
-    assert.ok(events.some(event => event.type === 'activity'));
-    assert.ok(events.some(event => event.type === 'ralph_progress'));
+      assert.ok(events.some(event => event.type === 'bead_update'));
+      assert.ok(events.some(event => event.type === 'activity'));
+      assert.ok(events.some(event => event.type === 'ralph_progress'));
 
-    customService.stopMonitoring();
-    assert.ok(closedWatchers.includes('/tmp/athena-state/runs'));
-    assert.ok(closedWatchers.includes('/tmp/athena-state/results'));
+      customService.stopMonitoring();
+      assert.ok(closedWatchers.includes('/tmp/athena-state/runs'));
+      assert.ok(closedWatchers.includes('/tmp/athena-state/results'));
+    } finally {
+      customService.cleanup();
+    }
   });
 
   it('should broadcast agent_status only when agent snapshot changes', async () => {
@@ -159,7 +169,7 @@ describe('SSE Service', () => {
     ];
     let callCount = 0;
 
-    const customService = new SSEService({
+    const customService = handles.trackService(new SSEService({
       listAgentsFn: async () => snapshots[Math.min(callCount++, snapshots.length - 1)],
       watchFn: () => ({ close() {} }),
       listBeadsFn: async () => [],
@@ -171,7 +181,7 @@ describe('SSE Service', () => {
         prdProgress: { done: 0, total: 0 },
         tasks: []
       })
-    });
+    }));
 
     const agentEvents = [];
     customService.broadcast = (type, data) => {
@@ -180,13 +190,17 @@ describe('SSE Service', () => {
       }
     };
 
-    await customService.pollAgentStatus();
-    await customService.pollAgentStatus();
-    await customService.pollAgentStatus();
+    try {
+      await customService.pollAgentStatus();
+      await customService.pollAgentStatus();
+      await customService.pollAgentStatus();
 
-    assert.strictEqual(agentEvents.length, 2, 'Should broadcast first and changed snapshots only');
-    assert.strictEqual(agentEvents[0].running, 1);
-    assert.strictEqual(agentEvents[1].agents[0].runningTime, '3m');
+      assert.strictEqual(agentEvents.length, 2, 'Should broadcast first and changed snapshots only');
+      assert.strictEqual(agentEvents[0].running, 1);
+      assert.strictEqual(agentEvents[1].agents[0].runningTime, '3m');
+    } finally {
+      customService.cleanup();
+    }
   });
 });
 

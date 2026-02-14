@@ -1,8 +1,9 @@
-import { describe, it, before } from 'node:test';
+import { describe, it, before, after } from 'node:test';
 import { readFile } from 'fs/promises';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import assert from 'assert';
+import { createHandleTracker } from './setup.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = join(__dirname, '..');
@@ -10,6 +11,7 @@ const serviceFilePath = join(projectRoot, 'athena-web.service');
 
 describe('systemd service file', () => {
   let serviceFileContent;
+  const handles = createHandleTracker();
 
   before(async () => {
     try {
@@ -18,6 +20,10 @@ describe('systemd service file', () => {
       // File doesn't exist yet - test will fail appropriately
       serviceFileContent = '';
     }
+  });
+
+  after(async () => {
+    await handles.cleanup();
   });
 
   it('should exist', async () => {

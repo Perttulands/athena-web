@@ -1,17 +1,90 @@
-import { describe, it, beforeEach, afterEach } from 'node:test';
+import { describe, it, beforeEach, afterEach, after } from 'node:test';
 import assert from 'node:assert';
 import { readFile } from 'node:fs/promises';
 import { JSDOM } from 'jsdom';
 
 class MockEventSource {
   constructor() {
-    setTimeout(() => {
+    this.openTimer = setTimeout(() => {
       this.onopen?.();
     }, 0);
+    MockEventSource.instances.add(this);
   }
 
   addEventListener() {}
-  close() {}
+  close() {
+    if (this.openTimer) {
+      clearTimeout(this.openTimer);
+      this.openTimer = null;
+    }
+    MockEventSource.instances.delete(this);
+  }
+
+  static closeAll() {
+    for (const source of MockEventSource.instances) {
+      source.close();
+    }
+    MockEventSource.instances.clear();
+  }
+
+  static instances = new Set();
+}
+
+const nativeSetTimeout = global.setTimeout;
+const nativeClearTimeout = global.clearTimeout;
+const nativeSetInterval = global.setInterval;
+const nativeClearInterval = global.clearInterval;
+const timeoutHandles = new Set();
+const intervalHandles = new Set();
+let timerTrackingEnabled = false;
+
+function enableTimerTracking() {
+  if (timerTrackingEnabled) return;
+
+  timerTrackingEnabled = true;
+
+  global.setTimeout = (...args) => {
+    const handle = nativeSetTimeout(...args);
+    timeoutHandles.add(handle);
+    return handle;
+  };
+
+  global.clearTimeout = (handle) => {
+    timeoutHandles.delete(handle);
+    return nativeClearTimeout(handle);
+  };
+
+  global.setInterval = (...args) => {
+    const handle = nativeSetInterval(...args);
+    intervalHandles.add(handle);
+    return handle;
+  };
+
+  global.clearInterval = (handle) => {
+    intervalHandles.delete(handle);
+    return nativeClearInterval(handle);
+  };
+}
+
+function clearTrackedTimers() {
+  for (const handle of timeoutHandles) {
+    nativeClearTimeout(handle);
+  }
+  timeoutHandles.clear();
+
+  for (const handle of intervalHandles) {
+    nativeClearInterval(handle);
+  }
+  intervalHandles.clear();
+}
+
+function disableTimerTracking() {
+  if (!timerTrackingEnabled) return;
+  timerTrackingEnabled = false;
+  global.setTimeout = nativeSetTimeout;
+  global.clearTimeout = nativeClearTimeout;
+  global.setInterval = nativeSetInterval;
+  global.clearInterval = nativeClearInterval;
 }
 
 function jsonResponse(payload) {
@@ -27,6 +100,9 @@ describe('Accessibility and UX Polish', () => {
   let dom;
 
   beforeEach(() => {
+    enableTimerTracking();
+    MockEventSource.closeAll();
+
     dom = new JSDOM(`
       <!doctype html>
       <html>
@@ -69,12 +145,21 @@ describe('Accessibility and UX Polish', () => {
   });
 
   afterEach(() => {
+    MockEventSource.closeAll();
+    clearTrackedTimers();
+    disableTimerTracking();
     dom?.window?.close();
     delete global.window;
     delete global.document;
     delete global.Node;
     delete global.EventSource;
     delete global.fetch;
+  });
+
+  after(() => {
+    MockEventSource.closeAll();
+    clearTrackedTimers();
+    disableTimerTracking();
   });
 
   it('has aria labels and app shell accessibility tags', async () => {

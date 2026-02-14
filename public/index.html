@@ -82,7 +82,7 @@
   <style>
     .app-main {
       min-height: calc(100vh - var(--nav-height) - var(--bottom-nav-height));
-      padding-bottom: var(--space-xl);
+      padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
     }
   </style>
 
