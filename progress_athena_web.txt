@@ -5,7 +5,7 @@
 
 current_task=US-034
 iteration=34
-max_iterations=25
+max_iterations=35
 status=completed
 
 ---

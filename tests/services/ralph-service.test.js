@@ -92,6 +92,44 @@ status=running
     await rm(tempDir, { recursive: true, force: true });
   });
 
+  it('should derive completedTasks and totalTasks from PRD, not progress', async () => {
+    tempDir = join(__dirname, `temp-ralph-${Date.now()}`);
+    await mkdir(tempDir, { recursive: true });
+
+    const prdContent = `- [x] **US-001** Done task
+- [ ] **US-002** Not done
+- [x] **US-003** Done task
+`;
+
+    const progressContent = `current_task=US-099
+iteration=99
+max_iterations=999
+status=running
+`;
+
+    const prdPath = join(tempDir, 'PRD_TEST.md');
+    const progressPath = join(tempDir, 'progress_test.txt');
+    await writeFile(prdPath, prdContent);
+    await writeFile(progressPath, progressContent);
+
+    const originalWorkspace = process.env.WORKSPACE_PATH;
+    process.env.WORKSPACE_PATH = tempDir;
+
+    const modulePath = `../../services/ralph-service.js?t=${Date.now()}`;
+    ralphService = await import(modulePath);
+
+    const status = await ralphService.default.getRalphStatus(prdPath, progressPath);
+
+    assert.equal(status.completedTasks, 2);
+    assert.equal(status.totalTasks, 3);
+    assert.deepEqual(status.prdProgress, { done: 2, total: 3 });
+    assert.equal(status.currentIteration, 99);
+    assert.equal(status.maxIterations, 999);
+
+    process.env.WORKSPACE_PATH = originalWorkspace;
+    await rm(tempDir, { recursive: true, force: true });
+  });
+
   it('should handle missing PRD file gracefully', async () => {
     tempDir = join(__dirname, `temp-ralph-${Date.now()}`);
     await mkdir(tempDir, { recursive: true });
