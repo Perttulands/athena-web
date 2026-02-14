@@ -32,7 +32,7 @@ Extend athena-web from swarm dashboard into Perttu's portal to Athena's filesyst
 - Test: root listing, tree enumeration, doc read, path traversal blocked, unknown root rejected
 - Verify: `node --test "tests/services/artifact-service.test.js"`
 
-- [ ] **Task 2: Artifact API routes**
+- [x] **Task 2: Artifact API routes**
 - File: `routes/artifacts.js`, `tests/routes/artifacts.test.js`
 - `GET /api/artifacts/roots` → root aliases with labels and read/write flags
 - `GET /api/artifacts/tree?root=<alias>&path=<subpath>` → directory listing

@@ -1,60 +1,101 @@
 import express from 'express';
-import { getArtifacts, readArtifact } from '../services/artifacts-service.js';
+import config from '../config.js';
+import { ArtifactService } from '../services/artifact-service.js';
 import { asyncHandler } from '../middleware/error-handler.js';
 
 const router = express.Router();
-const BASE64URL_PATH_PATTERN = /^[A-Za-z0-9_-]{1,4096}$/;
+const artifactService = new ArtifactService({
+  workspaceRoot: config.workspacePath,
+  repoRoots: [config.workspacePath]
+});
 
-function decodeArtifactPath(encodedPath) {
-  if (typeof encodedPath !== 'string' || !BASE64URL_PATH_PATTERN.test(encodedPath)) {
-    return null;
+function getSingleQueryParam(req, key, fallback = '') {
+  const value = req.query[key];
+  if (Array.isArray(value)) {
+    return value[0] ?? fallback;
   }
-
-  try {
-    const decoded = Buffer.from(encodedPath, 'base64url').toString('utf-8');
-    if (!decoded || decoded.includes('\u0000')) {
-      return null;
-    }
-    return decoded;
-  } catch {
-    return null;
-  }
+  return value ?? fallback;
 }
 
-/**
- * GET /api/artifacts - List all available artifacts
- */
-router.get('/', asyncHandler(async (req, res) => {
-  const artifacts = await getArtifacts();
-  res.json({ artifacts });
+function sendArtifactError(res, error) {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+
+  if (typeof error.status === 'number' && typeof error.code === 'string' && error.code.startsWith('EARTIFACT_')) {
+    res.status(error.status).json({
+      error: error.message,
+      code: error.code,
+      status: error.status
+    });
+    return true;
+  }
+
+  return false;
+}
+
+router.get('/roots', asyncHandler(async (req, res) => {
+  const roots = artifactService.listRoots();
+  res.json({ roots });
 }));
 
-/**
- * GET /api/artifacts/:path - Read a specific artifact by path
- * The path is base64-encoded to safely transmit file paths with special characters
- */
-router.get('/:encodedPath', asyncHandler(async (req, res) => {
-  const { encodedPath } = req.params;
-  const artifactPath = decodeArtifactPath(encodedPath);
-  if (!artifactPath) {
-    res.status(400).json({ error: 'Invalid path encoding' });
+router.get('/tree', asyncHandler(async (req, res) => {
+  const root = getSingleQueryParam(req, 'root', '');
+  const relativePath = getSingleQueryParam(req, 'path', '');
+
+  if (!root) {
+    res.status(400).json({
+      error: 'Query parameter "root" is required',
+      status: 400
+    });
     return;
   }
 
   try {
-    const content = await readArtifact(artifactPath);
-    res.json({ path: artifactPath, content });
+    const tree = await artifactService.getTree(root, relativePath);
+    res.json({
+      root,
+      path: relativePath,
+      tree
+    });
   } catch (error) {
-    if (error.code === 'EARTIFACT_ACCESS') {
-      res.status(403).json({ error: 'Access denied' });
+    if (sendArtifactError(res, error)) {
       return;
     }
-    if (error.code === 'EARTIFACT_INVALID') {
-      res.status(400).json({ error: error.message });
-      return;
-    }
-    if (error.code === 'ENOENT') {
-      res.status(404).json({ error: 'Artifact not found' });
+    throw error;
+  }
+}));
+
+router.get('/doc', asyncHandler(async (req, res) => {
+  const root = getSingleQueryParam(req, 'root', '');
+  const relativePath = getSingleQueryParam(req, 'path', '');
+
+  if (!root) {
+    res.status(400).json({
+      error: 'Query parameter "root" is required',
+      status: 400
+    });
+    return;
+  }
+
+  if (!relativePath) {
+    res.status(400).json({
+      error: 'Query parameter "path" is required',
+      status: 400
+    });
+    return;
+  }
+
+  try {
+    const { content, metadata } = await artifactService.readDocWithMetadata(root, relativePath);
+    res.json({
+      root,
+      path: relativePath,
+      content,
+      metadata
+    });
+  } catch (error) {
+    if (sendArtifactError(res, error)) {
       return;
     }
     throw error;

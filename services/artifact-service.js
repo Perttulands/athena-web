@@ -192,12 +192,38 @@ export class ArtifactService {
   }
 
   async readDoc(rootAlias, relativeDocPath) {
+    const { content } = await this.readDocWithMetadata(rootAlias, relativeDocPath);
+    return content;
+  }
+
+  async readDocWithMetadata(rootAlias, relativeDocPath) {
     const root = this.#getRoot(rootAlias);
 
     const docPath = root.type === 'prds'
       ? this.#resolvePrdDocPath(root.repoRoots, relativeDocPath)
       : resolveWithinRoot(root.path, relativeDocPath);
 
+    const stats = await this.#getExistingFileStats(docPath);
+
+    const content = await fs.readFile(docPath, 'utf8');
+    return {
+      content,
+      metadata: {
+        mtime: stats.mtime.toISOString(),
+        size: stats.size
+      }
+    };
+  }
+
+  #getRoot(rootAlias) {
+    const root = this.roots.get(rootAlias);
+    if (!root) {
+      throw createArtifactError('EARTIFACT_UNKNOWN_ROOT', `Unknown artifact root: ${rootAlias}`, 404);
+    }
+    return root;
+  }
+
+  async #getExistingFileStats(docPath) {
     let stats;
     try {
       stats = await fs.stat(docPath);
@@ -212,15 +238,7 @@ export class ArtifactService {
       throw createArtifactError('EARTIFACT_NOT_FOUND', 'Document not found', 404);
     }
 
-    return fs.readFile(docPath, 'utf8');
-  }
-
-  #getRoot(rootAlias) {
-    const root = this.roots.get(rootAlias);
-    if (!root) {
-      throw createArtifactError('EARTIFACT_UNKNOWN_ROOT', `Unknown artifact root: ${rootAlias}`, 404);
-    }
-    return root;
+    return stats;
   }
 
   async #listPrdFiles(repoRoots) {
