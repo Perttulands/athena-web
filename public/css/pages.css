@@ -43,6 +43,51 @@
 }
 
 /* ============================================
+   PORTAL PAGE
+   ============================================ */
+
+.page-portal .portal-layout {
+  padding: var(--space-md);
+  display: grid;
+  gap: var(--space-md);
+}
+
+.portal-tabs {
+  display: flex;
+  width: 100%;
+  gap: var(--space-xs);
+}
+
+.portal-tab {
+  flex: 1;
+  min-height: 44px;
+  border: 1px solid rgba(212, 165, 116, 0.25);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.portal-tab.active,
+.portal-tab[aria-selected='true'] {
+  color: var(--gold-bright);
+  border-color: rgba(212, 165, 116, 0.55);
+  background: rgba(212, 165, 116, 0.12);
+}
+
+.portal-tab:focus-visible {
+  outline: 2px solid var(--gold-bright);
+  outline-offset: 2px;
+}
+
+.portal-tab-panel {
+  min-height: 220px;
+}
+
+/* ============================================
    ORACLE PAGE
    ============================================ */
 

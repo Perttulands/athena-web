@@ -9,10 +9,15 @@ const routes = {
   '/oracle': () => import('./pages/oracle.js'),
   '/beads': () => import('./pages/beads.js'),
   '/agents': () => import('./pages/agents.js'),
-  '/scrolls': () => import('./pages/scrolls.js'),
+  '/portal': () => import('./pages/portal.js'),
+  '/scrolls': () => import('./pages/portal.js'),
   '/artifacts': () => import('./pages/artifacts.js'),
   '/inbox': () => import('./pages/inbox.js'),
   '/chronicle': () => import('./pages/chronicle.js')
+};
+
+const routeAliases = {
+  '/scrolls': '/portal'
 };
 
 let currentUnmount = null;
@@ -99,8 +104,9 @@ export async function navigate() {
   if (typeof window === 'undefined') return;
 
   const hash = normalizeHash(window.location.hash.slice(1) || '/oracle');
-  const loader = routes[hash] || routes['/oracle'];
-  const resolvedHash = routes[hash] ? hash : '/oracle';
+  const canonicalHash = routeAliases[hash] || hash;
+  const loader = routes[canonicalHash] || routes['/oracle'];
+  const resolvedHash = routes[canonicalHash] ? canonicalHash : '/oracle';
 
   const appEl = document.querySelector('#app');
   if (!appEl) return;
@@ -155,7 +161,7 @@ export async function navigate() {
 export function updateActiveNav(hash) {
   if (typeof document === 'undefined') return;
 
-  const pageName = hash.slice(1);
+  const pageName = (routeAliases[hash] || hash).slice(1);
   const navItems = document.querySelectorAll('#bottom-nav [data-page]');
 
   navItems.forEach((item) => {

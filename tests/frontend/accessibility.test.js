@@ -112,7 +112,7 @@ describe('Accessibility and UX Polish', () => {
           <a href="#/oracle" data-page="oracle" aria-label="Oracle dashboard">Oracle</a>
           <a href="#/beads" data-page="beads" aria-label="Beads">Beads</a>
           <a href="#/agents" data-page="agents" aria-label="Agents">Agents</a>
-          <a href="#/scrolls" data-page="scrolls" aria-label="Scrolls">Scrolls</a>
+          <a href="#/portal" data-page="portal" aria-label="Portal">Portal</a>
           <a href="#/chronicle" data-page="chronicle" aria-label="Chronicle">Chronicle</a>
         </nav>
         <div id="status-indicator"></div>

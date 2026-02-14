@@ -36,7 +36,7 @@ describe('Router', () => {
             <a href="#/oracle" data-page="oracle">Oracle</a>
             <a href="#/beads" data-page="beads">Beads</a>
             <a href="#/agents" data-page="agents">Agents</a>
-            <a href="#/scrolls" data-page="scrolls">Scrolls</a>
+            <a href="#/portal" data-page="portal">Portal</a>
             <a href="#/artifacts" data-page="artifacts">Artifacts</a>
             <a href="#/inbox" data-page="inbox">Inbox</a>
             <a href="#/chronicle" data-page="chronicle">Chronicle</a>
@@ -99,7 +99,8 @@ describe('Router', () => {
     for (const [hash, title] of [
       ['#/beads', 'Beads'],
       ['#/agents', 'Agents'],
-      ['#/scrolls', 'Scrolls'],
+      ['#/portal', 'Portal'],
+      ['#/scrolls', 'Portal'],
       ['#/artifacts', 'Artifacts'],
       ['#/inbox', 'Inbox'],
       ['#/chronicle', 'Chronicle']

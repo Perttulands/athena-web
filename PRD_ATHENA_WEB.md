@@ -75,7 +75,7 @@ Extend athena-web from swarm dashboard into Perttu's portal to Athena's filesyst
 
 ## Phase 3: Portal Frontend
 
-- [ ] **Task 6: Portal page shell — tab navigation**
+- [x] **Task 6: Portal page shell — tab navigation**
 - File: `public/js/pages/portal.js`, `public/css/pages.css` (extend)
 - New hash route `#/portal` (also keep `#/scrolls` as alias)
 - Three internal tabs: Artifacts | Inbox | Workspace (existing scrolls content)
