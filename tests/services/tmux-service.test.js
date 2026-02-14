@@ -1,11 +1,18 @@
-import { describe, it } from 'node:test';
+import { describe, it, after } from 'node:test';
 import assert from 'node:assert';
+import { createHandleTracker } from '../setup.js';
 
 // These tests verify the tmux service with real tmux commands
 // Since we can't reliably mock exec in ES modules, we test the actual behavior
 // The service gracefully handles when tmux is not available
 
 describe('tmux-service', () => {
+  const handles = createHandleTracker();
+
+  after(async () => {
+    await handles.cleanup();
+  });
+
   describe('listAgents', () => {
     it('should return empty array when no sessions exist', async () => {
       const { listAgents } = await import('../../services/tmux-service.js');
