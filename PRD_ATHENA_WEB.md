@@ -63,7 +63,7 @@ Extend athena-web from swarm dashboard into Perttu's portal to Athena's filesyst
 - Test: file submit, text submit, list by status, size limit enforced, atomic write (no partial files)
 - Verify: `node --test "tests/services/inbox-service.test.js"`
 
-- [ ] **Task 5: Inbox API routes**
+- [x] **Task 5: Inbox API routes**
 - File: `routes/inbox.js`, `tests/routes/inbox.test.js`
 - `POST /api/inbox/upload` — multipart via multer, calls InboxService.submitFile
 - `POST /api/inbox/text` — JSON body `{title, text, format}`, calls InboxService.submitText

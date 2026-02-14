@@ -30,3 +30,9 @@
 - Learnings for future iterations: when evolving a shared service contract, keep a compatibility layer during phase transitions so route-level behavior remains stable while new class APIs are introduced.
 **Summary:** Task: [US-TASK4] | Files: [services/inbox-service.js, tests/services/inbox-service.test.js, PRD_ATHENA_WEB.md, progress_athena_web.txt] | Tests: [PASS] | Review: [PASSED] | Next: [Task 5: Inbox API routes]
 ---
+## Iteration 5 - Inbox API routes
+- Implemented inbox API updates in `routes/inbox.js`: added `GET /api/inbox/list?status=...`, switched `POST /api/inbox/text` to `{title,text,format}` (with `content` fallback), wired `POST /api/inbox/upload` to `InboxService.submitFile`, and added a shared in-memory rate limiter (10 submissions/minute).
+- Replaced route tests in `tests/routes/inbox.test.js` with TDD coverage for upload flow, text submit flow, status list endpoint, rate-limit `429`, and oversized upload rejection `413`.
+- Learnings for future iterations: when adding cross-request controls like rate limits, keep route tests ordered to avoid shared-state interference and assert endpoint contracts directly (`status`, payload shape) instead of only existence checks.
+**Summary:** Task: [US-TASK5] | Files: [routes/inbox.js, tests/routes/inbox.test.js, PRD_ATHENA_WEB.md, progress_athena_web.txt] | Tests: [PASS] | Review: [PASSED] | Next: [Task 6: Portal page shell — tab navigation]
+---
