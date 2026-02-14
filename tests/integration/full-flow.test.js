@@ -50,7 +50,7 @@ describe('Integration: Full Flow', () => {
     const port = server.address().port;
     const base = `http://localhost:${port}`;
 
-    const traversal = await fetch(`${base}/api/docs/../../../etc/passwd`);
+    const traversal = await fetch(`${base}/api/docs/..%2F..%2F..%2Fetc%2Fpasswd`);
     assert.strictEqual(traversal.status, 400);
 
     const invalidKill = await fetch(`${base}/api/agents/not-valid/kill`, {
