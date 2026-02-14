@@ -60,39 +60,60 @@ export async function canListen() {
  * Makes a request to the test server
  */
 export async function request(app, path, options = {}) {
-  if (!(await canListen())) {
-    return { response: null, data: null, status: null, skipped: true };
-  }
-
-  const server = app.listen(0); // Random port
-  const port = server.address().port;
-
-  const url = `http://localhost:${port}${path}`;
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers
-    }
+  const skippedResult = (error = null) => ({
+    response: null,
+    data: null,
+    status: null,
+    skipped: true,
+    error
   });
 
-  const data = await response.json().catch(() => ({}));
-  server.close();
+  if (!(await canListen())) {
+    return skippedResult();
+  }
 
-  return { response, data, status: response.status };
+  let server;
+  try {
+    server = app.listen(0); // Random port
+  } catch (error) {
+    return skippedResult(error);
+  }
+
+  try {
+    const port = server.address().port;
+
+    const url = `http://localhost:${port}${path}`;
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+      }
+    });
+
+    const data = await response.json().catch(() => ({}));
+    return { response, data, status: response.status, skipped: false };
+  } catch (error) {
+    return skippedResult(error);
+  } finally {
+    await new Promise((resolve) => server.close(() => resolve()));
+  }
 }
 
 /**
  * Assert that response has expected status and data
  */
 export function assertResponse(result, expectedStatus, expectedData) {
-  assert.equal(result.skipped, false,
+  assert.ok(result && typeof result === 'object',
+    'Request did not return a response object');
+
+  assert.equal(result.skipped ?? false, false,
     'Request skipped because sockets are unavailable in this environment');
 
   assert.equal(result.status, expectedStatus,
     `Expected status ${expectedStatus}, got ${result.status}`);
 
-  if (expectedData) {
+  if (expectedData !== undefined) {
     assert.deepEqual(result.data, expectedData,
       `Response data doesn't match expected`);
   }

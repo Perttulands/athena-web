@@ -84,7 +84,7 @@ describe('Agents Routes', () => {
 
       const server = app.listen(0);
       const port = server.address().port;
-      const response = await fetch(`http://localhost:${port}/api/agents/../../bad/kill`, {
+      const response = await fetch(`http://localhost:${port}/api/agents/not-valid/kill`, {
         method: 'POST'
       });
 

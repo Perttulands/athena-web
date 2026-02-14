@@ -142,7 +142,7 @@ describe('Docs Routes', () => {
       const server = app.listen(0);
       const port = server.address().port;
 
-      const response = await fetch(`http://localhost:${port}/api/docs/../../../etc/passwd`);
+      const response = await fetch(`http://localhost:${port}/api/docs/..%2F..%2F..%2Fetc%2Fpasswd`);
 
       assert.strictEqual(response.status, 400);
 
@@ -215,7 +215,7 @@ describe('Docs Routes', () => {
       const server = app.listen(0);
       const port = server.address().port;
 
-      const response = await fetch(`http://localhost:${port}/api/docs/../../../tmp/malicious.txt`, {
+      const response = await fetch(`http://localhost:${port}/api/docs/..%2F..%2F..%2Ftmp%2Fmalicious.txt`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: 'bad' })
