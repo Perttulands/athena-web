@@ -109,7 +109,7 @@ Extend athena-web from swarm dashboard into Perttu's portal to Athena's filesyst
 
 ## Phase 4: Real-time Updates
 
-- [ ] **Task 9: File watcher service**
+- [x] **Task 9: File watcher service**
 - File: `services/artifact-watch-service.js`, `tests/services/artifact-watch-service.test.js`
 - Uses chokidar to watch artifact roots + inbox subdirs
 - Debounce: 300ms
