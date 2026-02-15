@@ -399,4 +399,90 @@ describe('Portal Page Shell', () => {
 
     unmount?.();
   });
+
+  it('SSE artifact_update event triggers tree refresh', async () => {
+    let fetchCount = 0;
+    global.fetch = async (url) => {
+      const requestUrl = String(url);
+
+      if (requestUrl.includes('/api/artifacts/roots')) {
+        return jsonResponse({
+          roots: [{ alias: 'research', label: 'Research' }]
+        });
+      }
+
+      if (requestUrl.includes('/api/artifacts/tree')) {
+        fetchCount++;
+        return jsonResponse({
+          root: 'research',
+          path: '',
+          tree: [{ path: 'file.md', type: 'file' }]
+        });
+      }
+
+      if (requestUrl.includes('/api/inbox')) {
+        return jsonResponse({ items: [] });
+      }
+
+      if (requestUrl.includes('/api/docs')) {
+        return jsonResponse({ tree: [] });
+      }
+
+      return jsonResponse({});
+    };
+
+    // Mock the SSE module with a dispatchable listener system
+    const sseListeners = {};
+    const mockSSE = {
+      on(type, cb) {
+        if (!sseListeners[type]) sseListeners[type] = [];
+        sseListeners[type].push(cb);
+      },
+      off(type, cb) {
+        if (sseListeners[type]) {
+          sseListeners[type] = sseListeners[type].filter((h) => h !== cb);
+        }
+      }
+    };
+
+    // Inject the mock SSE into the module system
+    // Since sse.js exports a singleton, we need to use the actual module
+    const sseMod = await import('../../../public/js/sse.js');
+    const originalOn = sseMod.default?.on;
+    const originalOff = sseMod.default?.off;
+    if (sseMod.default) {
+      sseMod.default.on = mockSSE.on;
+      sseMod.default.off = mockSSE.off;
+    }
+
+    const apiMod = await import('../../../public/js/api.js');
+    apiMod.default?.clearCache();
+
+    const app = document.querySelector('#app');
+    app.innerHTML = module.render();
+    const unmount = await module.mount(app);
+
+    await new Promise((resolve) => setTimeout(resolve, 80));
+
+    const initialFetchCount = fetchCount;
+
+    // Simulate an SSE artifact_update event
+    if (sseListeners['artifact_update']) {
+      sseListeners['artifact_update'].forEach((cb) =>
+        cb({ source: 'artifact', root: 'research', eventType: 'change', file: 'file.md' })
+      );
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 120));
+
+    assert.ok(fetchCount > initialFetchCount, 'tree was refreshed after SSE event');
+
+    unmount?.();
+
+    // Restore original SSE methods
+    if (sseMod.default) {
+      sseMod.default.on = originalOn;
+      sseMod.default.off = originalOff;
+    }
+  });
 });

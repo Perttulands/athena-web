@@ -40,7 +40,7 @@ class SSEClient {
     };
 
     // Register listeners for known event types
-    ['agent_status', 'bead_update', 'ralph_progress', 'activity', 'heartbeat'].forEach(type => {
+    ['agent_status', 'bead_update', 'ralph_progress', 'activity', 'heartbeat', 'artifact_update', 'inbox_update'].forEach(type => {
       this.eventSource.addEventListener(type, (event) => {
         let data = {};
         if (event.data) {

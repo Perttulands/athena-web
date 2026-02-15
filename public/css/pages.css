@@ -162,6 +162,11 @@
   border-radius: var(--radius-md);
   padding: var(--space-md);
   background: rgba(8, 9, 13, 0.65);
+  transition: border-color 0.3s ease;
+}
+
+.portal-artifacts-sidebar.sse-flash {
+  border-color: var(--gold-bright);
 }
 
 .portal-artifacts-tree-toggle {

@@ -119,7 +119,7 @@ Extend athena-web from swarm dashboard into Perttu's portal to Athena's filesyst
 - Test: file change triggers event, debounce works, watcher cleanup on close
 - Verify: `node --test "tests/services/artifact-watch-service.test.js"`
 
-- [ ] **Task 10: Wire SSE to portal UI**
+- [x] **Task 10: Wire SSE to portal UI**
 - File: `public/js/pages/portal.js` (extend)
 - Listen for `artifact_update` → refresh tree/doc if viewing affected root
 - Listen for `inbox_update` → refresh inbox queue
