@@ -24,9 +24,11 @@ import docsRouter from './routes/docs.js';
 import runsRouter from './routes/runs.js';
 import ralphRouter from './routes/ralph.js';
 import statusRouter from './routes/status.js';
-import streamRouter from './routes/stream.js';
+import streamRouter, { sseService } from './routes/stream.js';
 import artifactsRouter from './routes/artifacts.js';
 import inboxRouter from './routes/inbox.js';
+import { ArtifactWatchService } from './services/artifact-watch-service.js';
+import { ArtifactService } from './services/artifact-service.js';
 
 const app = express();
 const serverDir = dirname(fileURLToPath(import.meta.url));
@@ -140,6 +142,16 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.log(`📂 Workspace: ${config.workspacePath}`);
     console.log(`📊 State: ${config.statePath}`);
     console.log(`🔧 Beads CLI: ${config.beadsCli}`);
+
+    // Start artifact/inbox file watcher for real-time SSE updates
+    const artifactService = new ArtifactService({
+      workspaceRoot: config.workspacePath,
+      repoRoots: config.artifactRoots
+    });
+    const watchRoots = Array.from(artifactService.roots.values())
+      .filter((root) => root.type === 'filesystem' && root.path);
+    const watcher = new ArtifactWatchService({ sseService });
+    watcher.start(watchRoots, config.inboxPath);
   });
 }
 

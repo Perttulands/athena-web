@@ -10,14 +10,13 @@ const routes = {
   '/beads': () => import('./pages/beads.js'),
   '/agents': () => import('./pages/agents.js'),
   '/portal': () => import('./pages/portal.js'),
-  '/scrolls': () => import('./pages/portal.js'),
-  '/artifacts': () => import('./pages/artifacts.js'),
-  '/inbox': () => import('./pages/inbox.js'),
   '/chronicle': () => import('./pages/chronicle.js')
 };
 
 const routeAliases = {
-  '/scrolls': '/portal'
+  '/scrolls': '/portal',
+  '/artifacts': '/portal',
+  '/inbox': '/portal'
 };
 
 let currentUnmount = null;

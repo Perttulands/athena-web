@@ -78,12 +78,23 @@ function enforceSubmissionRateLimit(req, res, next) {
   next();
 }
 
+function normalizeInboxItem(item) {
+  return {
+    name: item.metadata?.original_filename || item.filename || 'Untitled',
+    filename: item.filename,
+    size: item.size_bytes || item.metadata?.size_bytes || 0,
+    created: item.metadata?.created_at || item.mtime || new Date().toISOString(),
+    status: item.status || 'incoming',
+    metadata: item.metadata || null
+  };
+}
+
 /**
  * GET /api/inbox - List all inbox items
  */
 router.get('/', asyncHandler(async (req, res) => {
   const items = await inboxService.list('incoming');
-  res.json({ items });
+  res.json({ items: items.map(normalizeInboxItem) });
 }));
 
 /**
@@ -93,7 +104,7 @@ router.get('/list', asyncHandler(async (req, res) => {
   try {
     const status = req.query.status || 'incoming';
     const items = await inboxService.list(status);
-    res.json({ items });
+    res.json({ items: items.map(normalizeInboxItem) });
   } catch (error) {
     if (error.code === 'EINBOX_INVALID_STATUS') {
       res.status(error.status || 400).json({ error: error.message });

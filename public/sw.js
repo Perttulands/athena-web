@@ -1,4 +1,4 @@
-const STATIC_CACHE = 'athena-static-v2';
+const STATIC_CACHE = 'athena-static-v3';
 const OFFLINE_URL = '/offline.html';
 const STATIC_ASSETS = [
   '/',
@@ -20,6 +20,7 @@ const STATIC_ASSETS = [
   '/js/pages/oracle.js',
   '/js/pages/beads.js',
   '/js/pages/agents.js',
+  '/js/pages/portal.js',
   '/js/pages/scrolls.js',
   '/js/pages/artifacts.js',
   '/js/pages/inbox.js',

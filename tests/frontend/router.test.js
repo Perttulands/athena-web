@@ -37,8 +37,6 @@ describe('Router', () => {
             <a href="#/beads" data-page="beads">Beads</a>
             <a href="#/agents" data-page="agents">Agents</a>
             <a href="#/portal" data-page="portal">Portal</a>
-            <a href="#/artifacts" data-page="artifacts">Artifacts</a>
-            <a href="#/inbox" data-page="inbox">Inbox</a>
             <a href="#/chronicle" data-page="chronicle">Chronicle</a>
           </nav>
         </body>
@@ -68,6 +66,14 @@ describe('Router', () => {
 
       if (String(url).includes('/api/docs')) {
         return jsonResponse({ tree: [] });
+      }
+
+      if (String(url).includes('/api/artifacts/roots')) {
+        return jsonResponse({ roots: [] });
+      }
+
+      if (String(url).includes('/api/inbox')) {
+        return jsonResponse({ items: [] });
       }
 
       return jsonResponse([]);
@@ -101,8 +107,8 @@ describe('Router', () => {
       ['#/agents', 'Agents'],
       ['#/portal', 'Portal'],
       ['#/scrolls', 'Portal'],
-      ['#/artifacts', 'Artifacts'],
-      ['#/inbox', 'Inbox'],
+      ['#/artifacts', 'Portal'],
+      ['#/inbox', 'Portal'],
       ['#/chronicle', 'Chronicle']
     ]) {
       window.location.hash = hash;
