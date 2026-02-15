@@ -58,7 +58,23 @@ function enforceSubmissionRateLimit(req, res, next) {
   }
 
   recentAttempts.push(now);
-  submissionRateByIp.set(key, recentAttempts);
+
+  if (recentAttempts.length > 0) {
+    submissionRateByIp.set(key, recentAttempts);
+  } else {
+    submissionRateByIp.delete(key);
+  }
+
+  // Periodically prune stale IPs to prevent unbounded Map growth
+  if (submissionRateByIp.size > 100) {
+    for (const [ip, timestamps] of submissionRateByIp) {
+      const fresh = timestamps.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+      if (fresh.length === 0) {
+        submissionRateByIp.delete(ip);
+      }
+    }
+  }
+
   next();
 }
 

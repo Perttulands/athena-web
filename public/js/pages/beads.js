@@ -67,9 +67,11 @@ function calculateCounts(beads) {
   };
 
   beads.forEach((bead) => {
-    const status = String(bead?.status || '').toLowerCase();
-    if (status in counts) {
-      counts[status] += 1;
+    // Use canonicalStatus (set by server) for accurate filter counts,
+    // falling back to raw status for beads without canonical mapping
+    const canonical = String(bead?.canonicalStatus || bead?.status || '').toLowerCase();
+    if (canonical in counts) {
+      counts[canonical] += 1;
     }
   });
 

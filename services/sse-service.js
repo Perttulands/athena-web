@@ -72,8 +72,9 @@ class SSEService extends EventEmitter {
   broadcast(type, data) {
     const message = `event: ${type}\ndata: ${JSON.stringify(data)}\n\n`;
 
-    // Send to all clients, removing any that fail
-    for (const client of this.clients) {
+    // Snapshot clients before iterating — removeClient mutates the Set
+    const snapshot = [...this.clients];
+    for (const client of snapshot) {
       try {
         client.write(message);
       } catch (error) {
@@ -90,7 +91,8 @@ class SSEService extends EventEmitter {
   sendHeartbeat() {
     const heartbeat = ':heartbeat\n\n';
 
-    for (const client of this.clients) {
+    const snapshot = [...this.clients];
+    for (const client of snapshot) {
       try {
         client.write(heartbeat);
       } catch (error) {

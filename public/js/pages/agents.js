@@ -146,11 +146,18 @@ function renderEmptyState(container) {
 
   const empty = document.createElement('div');
   empty.className = 'empty-state agents-empty-state';
-  empty.innerHTML = `
-    <img src="/assets/owl.svg" alt="Athena owl" class="empty-owl" width="64" height="64">
-    <p>No agents running. The swarm rests.</p>
-  `;
 
+  const img = document.createElement('img');
+  img.src = '/assets/owl.svg';
+  img.alt = 'Athena owl';
+  img.className = 'empty-owl';
+  img.width = 64;
+  img.height = 64;
+
+  const text = document.createElement('p');
+  text.textContent = 'No agents running. The swarm rests.';
+
+  empty.append(img, text);
   container.appendChild(empty);
 }
 

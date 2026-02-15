@@ -320,10 +320,16 @@ function renderSearchResults(scope, state) {
     button.dataset.portalResultRoot = result.root;
     button.dataset.portalResultPath = result.path;
     button.setAttribute('aria-label', `Open ${result.path}`);
-    button.innerHTML = `
-      <div class="portal-search-result-path">${result.root} / ${result.path}</div>
-      <div class="portal-search-result-snippet">line ${result.line}: ${result.snippet}</div>
-    `;
+
+    const pathDiv = document.createElement('div');
+    pathDiv.className = 'portal-search-result-path';
+    pathDiv.textContent = `${result.root} / ${result.path}`;
+
+    const snippetDiv = document.createElement('div');
+    snippetDiv.className = 'portal-search-result-snippet';
+    snippetDiv.textContent = `line ${result.line}: ${result.snippet}`;
+
+    button.append(pathDiv, snippetDiv);
     list.appendChild(button);
   });
 }

@@ -325,6 +325,7 @@ export async function mount(root) {
       state.selectedFile = null;
       fileInput.value = '';
       uploadBtn.disabled = true;
+      resetDropZoneContent(dropZone);
       await loadItems();
     } catch (error) {
       createToast({ type: 'error', message: error?.message || 'Failed to upload file' });
