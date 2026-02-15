@@ -137,7 +137,7 @@ Extend athena-web from swarm dashboard into Perttu's portal to Athena's filesyst
 - Test: CORS rejects cross-origin, memory write attempt returns 403, malicious filename sanitized
 - Verify: `node --test "tests/**/*.test.js"`
 
-- [ ] **Task 12: Integration test — full portal flow**
+- [x] **Task 12: Integration test — full portal flow**
 - File: `tests/integration/portal.test.js`
 - End-to-end: browse roots → open tree → read doc → search → submit text to inbox → verify in queue
 - Regression: verify all existing endpoints still respond correctly
