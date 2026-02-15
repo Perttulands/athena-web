@@ -96,7 +96,7 @@ Extend athena-web from swarm dashboard into Perttu's portal to Athena's filesyst
 - Test: tree renders, doc loads, search works, empty states shown
 - Verify: `node --test "tests/**/*.test.js"`
 
-- [ ] **Task 8: Inbox UI**
+- [x] **Task 8: Inbox UI**
 - File: `public/js/pages/portal.js` (extend)
 - Drag-drop zone for file upload + file picker button
 - Large textarea for text/code paste with title input + format selector (md/txt)

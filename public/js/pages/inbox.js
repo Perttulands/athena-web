@@ -145,15 +145,25 @@ function renderInboxItems(scope, items) {
     const card = document.createElement('div');
     card.className = 'inbox-item card card-compact';
 
+    const header = document.createElement('div');
+    header.className = 'inbox-item-header';
+
     const name = document.createElement('div');
     name.className = 'inbox-item-name';
     name.textContent = item.name;
+
+    const badge = document.createElement('span');
+    const status = item.status || 'incoming';
+    badge.className = `badge badge-${status === 'done' ? 'done' : status === 'failed' ? 'failed' : 'active'}`;
+    badge.textContent = status;
+
+    header.append(name, badge);
 
     const meta = document.createElement('div');
     meta.className = 'inbox-item-meta text-secondary';
     meta.textContent = `${formatFileSize(item.size)} • ${formatDate(item.created)}`;
 
-    card.append(name, meta);
+    card.append(header, meta);
     listEl.appendChild(card);
   });
 }
@@ -171,6 +181,13 @@ export function render() {
           <div class="card">
             <h2 class="section-title">Submit Text</h2>
             <form id="inbox-text-form" class="inbox-text-form">
+              <input
+                id="inbox-title-input"
+                class="inbox-title-input"
+                type="text"
+                placeholder="Title (optional)"
+                aria-label="Title for text submission"
+              />
               <textarea
                 id="inbox-text-input"
                 class="inbox-text-area"
@@ -178,9 +195,15 @@ export function render() {
                 rows="8"
                 aria-label="Text content to submit"
               ></textarea>
-              <button type="submit" class="btn btn-primary">
-                Submit Text
-              </button>
+              <div class="inbox-text-controls">
+                <select id="inbox-format-select" class="inbox-format-select" aria-label="Text format">
+                  <option value="md">Markdown</option>
+                  <option value="txt">Plain text</option>
+                </select>
+                <button type="submit" class="btn btn-primary">
+                  Send to Athena
+                </button>
+              </div>
             </form>
           </div>
 
@@ -235,7 +258,9 @@ export async function mount(root) {
   };
 
   const textForm = scope.querySelector('#inbox-text-form');
+  const titleInput = scope.querySelector('#inbox-title-input');
   const textInput = scope.querySelector('#inbox-text-input');
+  const formatSelect = scope.querySelector('#inbox-format-select');
   const uploadForm = scope.querySelector('#inbox-upload-form');
   const uploadBtn = scope.querySelector('#inbox-upload-btn');
   const fileInput = scope.querySelector('#inbox-file-input');
@@ -260,10 +285,14 @@ export async function mount(root) {
       return;
     }
 
+    const title = titleInput?.value?.trim() || 'text';
+    const format = formatSelect?.value || 'txt';
+
     try {
-      await api.post('/inbox/text', { content });
+      await api.post('/inbox/text', { title, text: content, format });
       createToast({ type: 'success', message: 'Text submitted to inbox' });
       textInput.value = '';
+      if (titleInput) titleInput.value = '';
       await loadItems();
     } catch (error) {
       createToast({ type: 'error', message: error?.message || 'Failed to submit text' });
