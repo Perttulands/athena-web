@@ -56,8 +56,18 @@ if (config.nodeEnv !== 'production') {
   app.use(memoryMonitor);
 }
 
-// Core middleware
-app.use(cors());
+// Core middleware — restrict CORS to same-origin
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (same-origin, curl, mobile apps)
+    if (!origin) return callback(null, true);
+    // In production, only allow same-origin
+    if (config.isProduction) return callback(new Error('CORS not allowed'), false);
+    // In development, allow localhost origins
+    callback(null, true);
+  },
+  credentials: false
+}));
 app.use(express.json());
 app.use(requestLogger);
 

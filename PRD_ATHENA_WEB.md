@@ -129,7 +129,7 @@ Extend athena-web from swarm dashboard into Perttu's portal to Athena's filesyst
 
 ## Phase 5: Hardening
 
-- [ ] **Task 11: Security hardening**
+- [x] **Task 11: Security hardening**
 - Tighten CORS to same-origin only (update existing `cors()` call)
 - Ensure `memory/` root rejects all write attempts at API and service layer
 - Filename sanitization on inbox uploads (strip special chars, limit length)

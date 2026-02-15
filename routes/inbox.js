@@ -100,8 +100,10 @@ router.post('/text', enforceSubmissionRateLimit, asyncHandler(async (req, res) =
 
   try {
     const result = await inboxService.submitText(title || 'text', text, format || 'txt');
+    console.log(`[inbox] text submitted ip=${req.ip} size=${Buffer.byteLength(text, 'utf8')} sha256=${result.metadata?.sha256 || '-'} outcome=ok`);
     res.json({ saved: true, ...result });
   } catch (error) {
+    console.log(`[inbox] text submit failed ip=${req.ip} outcome=error code=${error.code || '-'}`);
     if (error.code === 'EINBOX_SIZE_LIMIT' || error.code === 'EINBOX_INVALID_TEXT') {
       res.status(error.status || 400).json({ error: error.message });
       return;
@@ -122,8 +124,10 @@ router.post('/upload', enforceSubmissionRateLimit, uploadSingle, asyncHandler(as
   try {
     const validatedFile = validateUploadFile(req.file);
     const result = await inboxService.submitFile(validatedFile);
+    console.log(`[inbox] file uploaded ip=${req.ip} size=${result.metadata?.size_bytes || 0} sha256=${result.metadata?.sha256 || '-'} file=${result.filename} outcome=ok`);
     res.json({ saved: true, ...result });
   } catch (error) {
+    console.log(`[inbox] file upload failed ip=${req.ip} outcome=error code=${error.code || '-'}`);
     if (error.code === 'EUPLOAD_VALIDATION' || error.code === 'EINBOX_SIZE_LIMIT') {
       res.status(error.status || 400).json({ error: error.message });
       return;
