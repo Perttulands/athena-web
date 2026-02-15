@@ -85,7 +85,7 @@ Extend athena-web from swarm dashboard into Perttu's portal to Athena's filesyst
 - Test: route renders, tab switching works, scrolls alias works
 - Verify: `node --test "tests/**/*.test.js"` (ensure no regressions)
 
-- [ ] **Task 7: Artifact browser UI**
+- [x] **Task 7: Artifact browser UI**
 - File: `public/js/pages/portal.js` (extend)
 - Left panel: root selector dropdown + file tree (collapsible on mobile)
 - Center: markdown reader with heading anchors, code block styling, table rendering
