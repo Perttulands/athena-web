@@ -1,16 +1,17 @@
 import express from 'express';
 import multer from 'multer';
+import config from '../config.js';
 import {
   InboxService,
-  MAX_UPLOAD_BYTES,
   validateUploadFile
 } from '../services/inbox-service.js';
 import { asyncHandler } from '../middleware/error-handler.js';
 
 const router = express.Router();
 const inboxService = new InboxService({
-  inboxPath: process.env.INBOX_PATH,
-  maxFileBytes: MAX_UPLOAD_BYTES
+  inboxPath: config.inboxPath,
+  maxFileBytes: config.maxUploadBytes,
+  maxTextBytes: config.maxTextBytes
 });
 
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
@@ -21,7 +22,7 @@ const submissionRateByIp = new Map();
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: MAX_UPLOAD_BYTES
+    fileSize: config.maxUploadBytes
   }
 });
 

@@ -32,6 +32,10 @@ npm test
 - Agents: live monitor, output bottom sheet, kill action
 - Scrolls: docs tree browser + markdown viewer + edit/save/cancel
 - Chronicle: run history, filters, expandable verification details
+- Portal: tabbed interface with three panels:
+  - **Artifacts**: browse artifact roots (research, results, PRDs, memory), file tree with markdown viewer (headings, tables, anchors), full-text search with `/` keyboard shortcut
+  - **Inbox**: submit text (with title and format selector) or upload files, status badges on queued items, live SSE updates on new submissions
+  - **Workspace**: docs tree browser
 
 ## API
 
@@ -46,6 +50,28 @@ npm test
 - `PUT /api/docs/:path`
 - `GET /api/runs`
 - `GET /api/stream`
+- `GET /api/artifacts/roots`
+- `GET /api/artifacts/tree?root=<alias>`
+- `GET /api/artifacts/doc?root=<alias>&path=<file>`
+- `GET /api/artifacts/search?q=<query>`
+- `GET /api/inbox`
+- `GET /api/inbox/list?status=<status>`
+- `POST /api/inbox/text`
+- `POST /api/inbox/upload`
+
+## Configuration
+
+All settings have sensible defaults and work out of the box. Override via environment variables or `/etc/athena-web/env`:
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `WORKSPACE_PATH` | `~/.openclaw/workspace` | Root workspace directory |
+| `INBOX_PATH` | `$WORKSPACE_PATH/inbox` | Inbox submission directory |
+| `ARTIFACT_ROOTS` | `$WORKSPACE_PATH` | Comma-separated repo paths for PRD scanning |
+| `MAX_UPLOAD_BYTES` | `10485760` (10 MB) | Max file upload size |
+| `MAX_TEXT_BYTES` | `2097152` (2 MB) | Max text submission size |
+| `PORT` | `9000` | Server port |
+| `NODE_ENV` | `development` | Environment (`production` restricts CORS) |
 
 ## Security Notes
 

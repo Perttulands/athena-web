@@ -144,7 +144,7 @@ Extend athena-web from swarm dashboard into Perttu's portal to Athena's filesyst
 - Test: full lifecycle, no regressions
 - Verify: `node --test "tests/**/*.test.js"`
 
-- [ ] **Task 13: Config and deployment**
+- [x] **Task 13: Config and deployment**
 - File: `config.js` (extend), update `athena-web.service` if needed
 - Add config fields: `artifactRoots`, `inboxPath`, `maxUploadBytes`, `maxTextBytes`
 - Defaults work out of the box (no config changes required to run)

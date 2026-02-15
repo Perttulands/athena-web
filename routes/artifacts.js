@@ -9,7 +9,7 @@ import { asyncHandler } from '../middleware/error-handler.js';
 const router = express.Router();
 const artifactService = new ArtifactService({
   workspaceRoot: config.workspacePath,
-  repoRoots: [config.workspacePath]
+  repoRoots: config.artifactRoots
 });
 
 const DEFAULT_SEARCH_LIMIT = 50;

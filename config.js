@@ -16,6 +16,28 @@ const config = {
     return process.env.STATE_PATH || join(this.workspacePath, 'state');
   },
 
+  // Inbox path: ${workspacePath}/inbox
+  get inboxPath() {
+    return process.env.INBOX_PATH || join(this.workspacePath, 'inbox');
+  },
+
+  // Upload/text size limits
+  maxUploadBytes: process.env.MAX_UPLOAD_BYTES
+    ? parseInt(process.env.MAX_UPLOAD_BYTES, 10)
+    : 10 * 1024 * 1024, // 10MB
+
+  maxTextBytes: process.env.MAX_TEXT_BYTES
+    ? parseInt(process.env.MAX_TEXT_BYTES, 10)
+    : 2 * 1024 * 1024, // 2MB
+
+  // Artifact roots: repo directories to scan for PRDs
+  get artifactRoots() {
+    if (process.env.ARTIFACT_ROOTS) {
+      return process.env.ARTIFACT_ROOTS.split(',').map((p) => p.trim()).filter(Boolean);
+    }
+    return [this.workspacePath];
+  },
+
   // Beads CLI command
   beadsCli: process.env.BEADS_CLI || 'br',
 
