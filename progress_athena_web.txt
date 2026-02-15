@@ -36,3 +36,10 @@
 - Learnings for future iterations: when adding cross-request controls like rate limits, keep route tests ordered to avoid shared-state interference and assert endpoint contracts directly (`status`, payload shape) instead of only existence checks.
 **Summary:** Task: [US-TASK5] | Files: [routes/inbox.js, tests/routes/inbox.test.js, PRD_ATHENA_WEB.md, progress_athena_web.txt] | Tests: [PASS] | Review: [PASSED] | Next: [Task 6: Portal page shell — tab navigation]
 ---
+## Iteration 6 - Portal page shell - tab navigation
+- Implemented `public/js/pages/portal.js` as a tabbed shell page with internal tabs (Artifacts, Inbox, Workspace) and delegated mount/unmount wiring to existing page modules so Workspace uses current Scrolls content.
+- Updated router and nav wiring in `public/js/app.js` and `public/index.html` to add `#/portal`, keep `#/scrolls` as alias, and canonicalize active nav to the Portal tab; extended `public/css/pages.css` with mobile-first full-width tab styles.
+- Added TDD coverage in `tests/frontend/pages/portal.test.js` and updated `tests/frontend/router.test.js` (plus nav fixture in `tests/frontend/accessibility.test.js`) for route rendering, tab switching, and scrolls alias behavior.
+- Learnings for future iterations: when introducing route aliases, canonicalize both loader resolution and active-nav state in one place to avoid drift between URL compatibility and visible navigation.
+**Summary:** Task: [US-TASK6] | Files: [public/js/pages/portal.js, public/js/app.js, public/index.html, public/css/pages.css, tests/frontend/pages/portal.test.js, tests/frontend/router.test.js, tests/frontend/accessibility.test.js, PRD_ATHENA_WEB.md] | Tests: [PASS] | Review: [PASSED] | Next: [Task 7: Artifact browser UI]
+---
