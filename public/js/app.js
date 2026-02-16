@@ -28,6 +28,23 @@ function normalizeHash(hash) {
   return hash.startsWith('/') ? hash : `/${hash}`;
 }
 
+function getRequestedPath() {
+  if (typeof window === 'undefined') {
+    return '/oracle';
+  }
+
+  if (window.location.hash) {
+    return normalizeHash(window.location.hash.slice(1));
+  }
+
+  const pathname = window.location.pathname || '/';
+  if (pathname !== '/' && pathname !== '/index.html') {
+    return normalizeHash(pathname);
+  }
+
+  return '/oracle';
+}
+
 function decodePathSegment(segment) {
   try {
     return decodeURIComponent(segment);
@@ -144,7 +161,7 @@ function registerServiceWorker() {
 export async function navigate() {
   if (typeof window === 'undefined') return;
 
-  const resolvedRoute = resolveRoute(window.location.hash.slice(1) || '/oracle');
+  const resolvedRoute = resolveRoute(getRequestedPath());
   const loader = resolvedRoute.loader;
 
   const appEl = document.querySelector('#app');
@@ -265,7 +282,12 @@ export function init() {
 
   registerServiceWorker();
   if (!window.location.hash) {
-    window.location.hash = '#/oracle';
+    const requestedPath = getRequestedPath();
+    if (requestedPath !== '/oracle') {
+      window.location.hash = `#${requestedPath}`;
+    } else {
+      window.location.hash = '#/oracle';
+    }
   }
   navigate();
 }
