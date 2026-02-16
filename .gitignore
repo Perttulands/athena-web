@@ -1,1 +1,7 @@
 node_modules/
+
+ralph-*.log
+state/runs/
+state/results/
+*.pyc
+__pycache__/
