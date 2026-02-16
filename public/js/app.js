@@ -10,13 +10,14 @@ const routes = {
   '/beads': () => import('./pages/beads.js'),
   '/agents': () => import('./pages/agents.js'),
   '/portal': () => import('./pages/portal.js'),
+  '/artifacts': () => import('./pages/artifacts.js'),
+  '/artifacts/:id': () => import('./pages/artifacts.js'),
+  '/inbox': () => import('./pages/inbox.js'),
   '/chronicle': () => import('./pages/chronicle.js')
 };
 
 const routeAliases = {
-  '/scrolls': '/portal',
-  '/artifacts': '/portal',
-  '/inbox': '/portal'
+  '/scrolls': '/portal'
 };
 
 let currentUnmount = null;
@@ -25,6 +26,47 @@ let installPromptEvent = null;
 function normalizeHash(hash) {
   if (!hash) return '/oracle';
   return hash.startsWith('/') ? hash : `/${hash}`;
+}
+
+function decodePathSegment(segment) {
+  try {
+    return decodeURIComponent(segment);
+  } catch {
+    return segment;
+  }
+}
+
+function resolveRoute(pathname) {
+  const normalizedPath = normalizeHash(pathname);
+  const canonicalPath = routeAliases[normalizedPath] || normalizedPath;
+
+  if (routes[canonicalPath]) {
+    return {
+      loader: routes[canonicalPath],
+      path: canonicalPath,
+      navPath: canonicalPath,
+      params: {}
+    };
+  }
+
+  const artifactMatch = canonicalPath.match(/^\/artifacts\/([^/]+)$/);
+  if (artifactMatch) {
+    return {
+      loader: routes['/artifacts/:id'],
+      path: canonicalPath,
+      navPath: '/artifacts',
+      params: {
+        id: decodePathSegment(artifactMatch[1])
+      }
+    };
+  }
+
+  return {
+    loader: routes['/oracle'],
+    path: '/oracle',
+    navPath: '/oracle',
+    params: {}
+  };
 }
 
 function setMainFocus(scope) {
@@ -102,10 +144,8 @@ function registerServiceWorker() {
 export async function navigate() {
   if (typeof window === 'undefined') return;
 
-  const hash = normalizeHash(window.location.hash.slice(1) || '/oracle');
-  const canonicalHash = routeAliases[hash] || hash;
-  const loader = routes[canonicalHash] || routes['/oracle'];
-  const resolvedHash = routes[canonicalHash] ? canonicalHash : '/oracle';
+  const resolvedRoute = resolveRoute(window.location.hash.slice(1) || '/oracle');
+  const loader = resolvedRoute.loader;
 
   const appEl = document.querySelector('#app');
   if (!appEl) return;
@@ -122,7 +162,12 @@ export async function navigate() {
 
   try {
     const pageModule = await loader();
-    const html = typeof pageModule.render === 'function' ? pageModule.render() : '';
+    const routeContext = {
+      path: resolvedRoute.path,
+      navPath: resolvedRoute.navPath,
+      params: resolvedRoute.params
+    };
+    const html = typeof pageModule.render === 'function' ? pageModule.render(routeContext) : '';
 
     if (typeof html === 'string') {
       appEl.innerHTML = html;
@@ -131,7 +176,7 @@ export async function navigate() {
     }
 
     if (typeof pageModule.mount === 'function') {
-      const unmount = await pageModule.mount(appEl);
+      const unmount = await pageModule.mount(appEl, routeContext);
       if (typeof unmount === 'function') {
         currentUnmount = unmount;
       }
@@ -144,7 +189,7 @@ export async function navigate() {
     applyPageEnterAnimation(pageScope);
     setMainFocus(pageScope || appEl);
 
-    updateActiveNav(resolvedHash);
+    updateActiveNav(resolvedRoute.navPath);
     renderInstallPrompt();
   } catch (error) {
     console.error('Failed to load route:', error);
@@ -160,7 +205,14 @@ export async function navigate() {
 export function updateActiveNav(hash) {
   if (typeof document === 'undefined') return;
 
-  const pageName = (routeAliases[hash] || hash).slice(1);
+  const canonicalHash = routeAliases[hash] || hash;
+  const navPath = canonicalHash.startsWith('/artifacts/')
+    ? '/artifacts'
+    : canonicalHash.startsWith('/inbox/')
+      ? '/inbox'
+      : canonicalHash;
+
+  const pageName = navPath.slice(1);
   const navItems = document.querySelectorAll('#bottom-nav [data-page]');
 
   navItems.forEach((item) => {

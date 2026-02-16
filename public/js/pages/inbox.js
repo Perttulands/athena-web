@@ -54,6 +54,17 @@ function formatDate(date) {
   return d.toLocaleString();
 }
 
+function normalizeMessageBadge(level) {
+  const normalized = String(level || '').toLowerCase();
+  if (normalized === 'urgent' || normalized === 'high' || normalized === 'error') {
+    return 'badge-failed';
+  }
+  if (normalized === 'low' || normalized === 'info') {
+    return 'badge-todo';
+  }
+  return 'badge-active';
+}
+
 function resetDropZoneContent(dropZone) {
   if (!dropZone) return;
 
@@ -168,6 +179,56 @@ function renderInboxItems(scope, items) {
   });
 }
 
+function renderInboxMessages(scope, messages, source) {
+  const listEl = scope.querySelector('#inbox-messages-list');
+  const sourceEl = scope.querySelector('#inbox-messages-source');
+  if (!listEl) return;
+
+  if (sourceEl) {
+    sourceEl.textContent = source ? `Source: ${source}` : 'Source: default store';
+  }
+
+  listEl.innerHTML = '';
+
+  if (!Array.isArray(messages) || messages.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.textContent = 'No agent messages in the store.';
+    listEl.appendChild(empty);
+    return;
+  }
+
+  messages.forEach((message) => {
+    const card = document.createElement('article');
+    card.className = 'inbox-message card card-compact';
+
+    const header = document.createElement('div');
+    header.className = 'inbox-item-header';
+
+    const title = document.createElement('div');
+    title.className = 'inbox-item-name';
+    title.textContent = message.title || 'Notification';
+
+    const badge = document.createElement('span');
+    badge.className = `badge ${normalizeMessageBadge(message.level)}`;
+    badge.textContent = message.level || 'normal';
+
+    header.append(title, badge);
+
+    const meta = document.createElement('div');
+    meta.className = 'inbox-item-meta text-secondary';
+    const sender = message.from || 'agent';
+    meta.textContent = `${sender} • ${formatDate(message.createdAt)}`;
+
+    const body = document.createElement('p');
+    body.className = 'inbox-message-body';
+    body.textContent = message.body || '(no message body)';
+
+    card.append(header, meta, body);
+    listEl.appendChild(card);
+  });
+}
+
 export function render() {
   return `
     <div class="container page-shell page-inbox">
@@ -178,6 +239,17 @@ export function render() {
 
       <section class="inbox-layout">
         <div class="inbox-input-section">
+          <div class="card">
+            <div class="inbox-messages-header">
+              <h2 class="section-title">Agent Messages</h2>
+              <button id="inbox-refresh-messages" class="btn btn-ghost btn-sm" type="button">Refresh</button>
+            </div>
+            <p id="inbox-messages-source" class="inbox-message-source text-secondary">Source: loading…</p>
+            <div id="inbox-messages-list" class="inbox-messages-list" aria-live="polite">
+              <div class="skeleton skeleton-card"></div>
+            </div>
+          </div>
+
           <div class="card">
             <h2 class="section-title">Submit Text</h2>
             <form id="inbox-text-form" class="inbox-text-form">
@@ -254,9 +326,12 @@ export async function mount(root) {
 
   const state = {
     items: [],
+    messages: [],
+    messageSource: null,
     selectedFile: null
   };
 
+  const refreshMessagesBtn = scope.querySelector('#inbox-refresh-messages');
   const textForm = scope.querySelector('#inbox-text-form');
   const titleInput = scope.querySelector('#inbox-title-input');
   const textInput = scope.querySelector('#inbox-text-input');
@@ -265,6 +340,18 @@ export async function mount(root) {
   const uploadBtn = scope.querySelector('#inbox-upload-btn');
   const fileInput = scope.querySelector('#inbox-file-input');
   const dropZone = scope.querySelector('#inbox-drop-zone');
+
+  async function loadMessages() {
+    try {
+      const response = await api.get('/inbox/messages');
+      state.messages = Array.isArray(response?.messages) ? response.messages : [];
+      state.messageSource = response?.source || null;
+      renderInboxMessages(scope, state.messages, state.messageSource);
+    } catch (error) {
+      createToast({ type: 'error', message: error?.message || 'Failed to load inbox messages' });
+      renderInboxMessages(scope, [], null);
+    }
+  }
 
   async function loadItems() {
     try {
@@ -398,6 +485,12 @@ export async function mount(root) {
     }
   }
 
+  function onRefreshMessages() {
+    api.clearCache();
+    loadMessages();
+  }
+
+  refreshMessagesBtn?.addEventListener('click', onRefreshMessages);
   textForm?.addEventListener('submit', submitText);
   uploadForm?.addEventListener('submit', uploadFile);
   fileInput?.addEventListener('change', onFileInputChange);
@@ -408,9 +501,11 @@ export async function mount(root) {
   dropZone?.addEventListener('drop', onDrop);
   resetDropZoneContent(dropZone);
 
+  await loadMessages();
   await loadItems();
 
   return () => {
+    refreshMessagesBtn?.removeEventListener('click', onRefreshMessages);
     textForm?.removeEventListener('submit', submitText);
     uploadForm?.removeEventListener('submit', uploadFile);
     fileInput?.removeEventListener('change', onFileInputChange);

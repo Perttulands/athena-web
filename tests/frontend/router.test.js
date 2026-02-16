@@ -36,6 +36,8 @@ describe('Router', () => {
             <a href="#/oracle" data-page="oracle">Oracle</a>
             <a href="#/beads" data-page="beads">Beads</a>
             <a href="#/agents" data-page="agents">Agents</a>
+            <a href="#/artifacts" data-page="artifacts">Artifacts</a>
+            <a href="#/inbox" data-page="inbox">Inbox</a>
             <a href="#/portal" data-page="portal">Portal</a>
             <a href="#/chronicle" data-page="chronicle">Chronicle</a>
           </nav>
@@ -68,8 +70,25 @@ describe('Router', () => {
         return jsonResponse({ tree: [] });
       }
 
-      if (String(url).includes('/api/artifacts/roots')) {
-        return jsonResponse({ roots: [] });
+      if (String(url).includes('/api/artifacts/results/')) {
+        return jsonResponse({
+          artifact: { id: 'bd-1nn', title: 'bd-1nn' },
+          markdown: '```diff\\n+line\\n```'
+        });
+      }
+
+      if (String(url).includes('/api/artifacts/results')) {
+        return jsonResponse({
+          artifacts: [
+            {
+              id: 'bd-1nn',
+              title: 'bd-1nn',
+              status: 'done',
+              agent: 'codex',
+              finishedAt: '2026-02-13T10:00:00Z'
+            }
+          ]
+        });
       }
 
       if (String(url).includes('/api/inbox')) {
@@ -107,8 +126,9 @@ describe('Router', () => {
       ['#/agents', 'Agents'],
       ['#/portal', 'Portal'],
       ['#/scrolls', 'Portal'],
-      ['#/artifacts', 'Portal'],
-      ['#/inbox', 'Portal'],
+      ['#/artifacts', 'Artifacts'],
+      ['#/artifacts/bd-1nn', 'Artifacts'],
+      ['#/inbox', 'Inbox'],
       ['#/chronicle', 'Chronicle']
     ]) {
       window.location.hash = hash;

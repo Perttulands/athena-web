@@ -14,6 +14,8 @@ const artifactService = new ArtifactService({
 
 const DEFAULT_SEARCH_LIMIT = 50;
 const MAX_SEARCH_LIMIT = 200;
+const RESULT_ID_PATTERN = /^[a-zA-Z0-9._-]+$/;
+const SUMMARY_PREVIEW_MAX_CHARS = 260;
 
 function getSingleQueryParam(req, key, fallback = '') {
   const value = req.query[key];
@@ -259,6 +261,250 @@ async function runRipgrepSearch(scope, query, limit) {
   return results;
 }
 
+function getResultsRootPath() {
+  const resultsRoot = artifactService.roots.get('results');
+  if (!resultsRoot || resultsRoot.type !== 'filesystem') {
+    const error = new Error('Artifact results root is not configured');
+    error.status = 500;
+    throw error;
+  }
+
+  return resultsRoot.path;
+}
+
+function sanitizeArtifactId(rawId) {
+  const id = String(rawId || '')
+    .trim()
+    .replace(/\.json$/i, '');
+
+  if (!id || !RESULT_ID_PATTERN.test(id)) {
+    const error = new Error('Artifact id must contain only letters, numbers, ".", "_" or "-"');
+    error.status = 400;
+    throw error;
+  }
+
+  return id;
+}
+
+function parseArtifactTimestamp(value, fallbackIso) {
+  if (typeof value !== 'string' || value.trim() === '') {
+    return fallbackIso;
+  }
+
+  const parsed = Date.parse(value);
+  if (Number.isNaN(parsed)) {
+    return fallbackIso;
+  }
+
+  return new Date(parsed).toISOString();
+}
+
+function pickFirstString(payload, keys) {
+  for (const key of keys) {
+    if (typeof payload?.[key] === 'string' && payload[key].trim() !== '') {
+      return payload[key];
+    }
+  }
+
+  return '';
+}
+
+function pickFirstValue(payload, keys) {
+  for (const key of keys) {
+    if (payload && Object.prototype.hasOwnProperty.call(payload, key)) {
+      return payload[key];
+    }
+  }
+
+  return null;
+}
+
+function previewText(value, maxChars = SUMMARY_PREVIEW_MAX_CHARS) {
+  const compact = String(value || '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (compact.length <= maxChars) {
+    return compact;
+  }
+
+  return `${compact.slice(0, maxChars - 1)}…`;
+}
+
+function normalizeResultRecord(fileName, payload, stats) {
+  const id = path.basename(fileName, '.json');
+  const fallbackIso = stats?.mtime?.toISOString?.() || new Date().toISOString();
+  const startedAt = parseArtifactTimestamp(payload.started_at, fallbackIso);
+  const finishedAt = parseArtifactTimestamp(payload.finished_at || payload.completed_at, fallbackIso);
+  const summary = pickFirstString(payload, ['output_summary', 'summary', 'report', 'notes']);
+  const diff = pickFirstString(payload, ['diff', 'code_diff', 'patch']);
+  const logOutput = pickFirstString(payload, ['logs', 'log', 'stdout', 'stderr', 'output']);
+  const tests = pickFirstValue(payload, ['test_results', 'tests']);
+  const verification = pickFirstValue(payload, ['verification']);
+
+  return {
+    id,
+    file: fileName,
+    title: payload.bead || payload.run_id || payload.id || id,
+    bead: payload.bead || null,
+    agent: payload.agent || null,
+    model: payload.model || null,
+    status: payload.status || 'unknown',
+    startedAt,
+    finishedAt,
+    durationSeconds: Number.isFinite(payload.duration_seconds)
+      ? payload.duration_seconds
+      : null,
+    exitCode: Number.isFinite(payload.exit_code)
+      ? payload.exit_code
+      : null,
+    reason: payload.reason || null,
+    summary,
+    summaryPreview: previewText(summary),
+    diff,
+    logOutput,
+    tests,
+    verification,
+    updatedAt: finishedAt,
+    payload
+  };
+}
+
+async function readResultRecordById(rawId) {
+  const id = sanitizeArtifactId(rawId);
+  const resultsRoot = getResultsRootPath();
+  const fileName = `${id}.json`;
+  const filePath = path.join(resultsRoot, fileName);
+
+  let content;
+  let stats;
+
+  try {
+    [content, stats] = await Promise.all([
+      fs.readFile(filePath, 'utf8'),
+      fs.stat(filePath)
+    ]);
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      const notFound = new Error(`Artifact not found: ${id}`);
+      notFound.status = 404;
+      throw notFound;
+    }
+    throw error;
+  }
+
+  if (!stats.isFile()) {
+    const notFound = new Error(`Artifact not found: ${id}`);
+    notFound.status = 404;
+    throw notFound;
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(content);
+  } catch (error) {
+    const invalid = new Error(`Artifact JSON is invalid: ${fileName}`);
+    invalid.status = 500;
+    throw invalid;
+  }
+
+  return normalizeResultRecord(fileName, payload, stats);
+}
+
+async function listResultRecords() {
+  const resultsRoot = getResultsRootPath();
+
+  let entries;
+  try {
+    entries = await fs.readdir(resultsRoot, { withFileTypes: true });
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return [];
+    }
+    throw error;
+  }
+
+  const jsonFiles = entries
+    .filter((entry) => entry.isFile() && entry.name.endsWith('.json'))
+    .map((entry) => entry.name)
+    .sort((a, b) => a.localeCompare(b));
+
+  const artifacts = await Promise.all(jsonFiles.map(async (fileName) => {
+    const filePath = path.join(resultsRoot, fileName);
+
+    try {
+      const [content, stats] = await Promise.all([
+        fs.readFile(filePath, 'utf8'),
+        fs.stat(filePath)
+      ]);
+      const payload = JSON.parse(content);
+      return normalizeResultRecord(fileName, payload, stats);
+    } catch {
+      return null;
+    }
+  }));
+
+  return artifacts
+    .filter(Boolean)
+    .sort((left, right) => (
+      Date.parse(right.updatedAt || 0) - Date.parse(left.updatedAt || 0)
+    ));
+}
+
+function stringifyObjectBlock(value, fallback = '{}') {
+  if (value === null || value === undefined) {
+    return fallback;
+  }
+
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  try {
+    return JSON.stringify(value, null, 2);
+  } catch {
+    return fallback;
+  }
+}
+
+function buildResultMarkdown(record) {
+  const sections = [
+    `# Artifact ${record.title || record.id}`,
+    '',
+    `- **ID:** \`${record.id}\``,
+    `- **Status:** \`${record.status || 'unknown'}\``,
+    `- **Agent:** ${record.agent || 'unknown'}`,
+    `- **Bead:** ${record.bead || 'n/a'}`,
+    `- **Started:** ${record.startedAt || 'n/a'}`,
+    `- **Finished:** ${record.finishedAt || 'n/a'}`,
+    `- **Exit Code:** ${record.exitCode ?? 'n/a'}`
+  ];
+
+  if (record.summary) {
+    sections.push('', '## Summary', '', record.summary);
+  }
+
+  if (record.diff) {
+    sections.push('', '## Code Diff', '', '```diff', record.diff, '```');
+  }
+
+  if (record.tests !== null) {
+    sections.push('', '## Test Results', '', '```json', stringifyObjectBlock(record.tests, '{}'), '```');
+  }
+
+  if (record.verification !== null) {
+    sections.push('', '## Verification', '', '```json', stringifyObjectBlock(record.verification, '{}'), '```');
+  }
+
+  if (record.logOutput) {
+    sections.push('', '## Logs', '', '```text', record.logOutput, '```');
+  }
+
+  sections.push('', '## Raw JSON', '', '```json', stringifyObjectBlock(record.payload, '{}'), '```');
+
+  return sections.join('\n');
+}
+
 router.get('/roots', asyncHandler(async (req, res) => {
   const roots = artifactService.listRoots();
   res.json({ roots });
@@ -325,6 +571,51 @@ router.get('/doc', asyncHandler(async (req, res) => {
     }
     throw error;
   }
+}));
+
+router.get('/results', asyncHandler(async (req, res) => {
+  const records = await listResultRecords();
+  const artifacts = records.map((record) => ({
+    id: record.id,
+    title: record.title,
+    bead: record.bead,
+    agent: record.agent,
+    model: record.model,
+    status: record.status,
+    startedAt: record.startedAt,
+    finishedAt: record.finishedAt,
+    durationSeconds: record.durationSeconds,
+    exitCode: record.exitCode,
+    reason: record.reason,
+    summaryPreview: record.summaryPreview,
+    updatedAt: record.updatedAt
+  }));
+
+  res.json({ artifacts });
+}));
+
+router.get('/results/:id', asyncHandler(async (req, res) => {
+  const record = await readResultRecordById(req.params.id);
+  const markdown = buildResultMarkdown(record);
+
+  res.json({
+    artifact: {
+      id: record.id,
+      title: record.title,
+      bead: record.bead,
+      agent: record.agent,
+      model: record.model,
+      status: record.status,
+      startedAt: record.startedAt,
+      finishedAt: record.finishedAt,
+      durationSeconds: record.durationSeconds,
+      exitCode: record.exitCode,
+      reason: record.reason,
+      summaryPreview: record.summaryPreview,
+      updatedAt: record.updatedAt
+    },
+    markdown
+  });
 }));
 
 router.get('/search', asyncHandler(async (req, res) => {

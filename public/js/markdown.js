@@ -50,6 +50,7 @@ export function renderMarkdown(markdown) {
   let blockquote = null;
   let codePre = null;
   let codeBuffer = [];
+  let codeLanguage = '';
 
   function closeList() {
     list = null;
@@ -63,10 +64,18 @@ export function renderMarkdown(markdown) {
     if (!codePre) return;
     const code = document.createElement('code');
     code.textContent = codeBuffer.join('\n');
+    if (codeLanguage) {
+      const normalizedLanguage = codeLanguage.replace(/[^a-zA-Z0-9_+-]/g, '').toLowerCase();
+      if (normalizedLanguage) {
+        code.dataset.language = normalizedLanguage;
+        code.classList.add(`language-${normalizedLanguage}`);
+      }
+    }
     codePre.appendChild(code);
     root.appendChild(codePre);
     codePre = null;
     codeBuffer = [];
+    codeLanguage = '';
   }
 
   for (const rawLine of lines) {
@@ -80,6 +89,7 @@ export function renderMarkdown(markdown) {
         closeCodeBlock();
       } else {
         codePre = document.createElement('pre');
+        codeLanguage = line.slice(3).trim().split(/\s+/)[0] || '';
       }
       continue;
     }

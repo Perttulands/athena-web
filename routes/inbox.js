@@ -1,5 +1,7 @@
 import express from 'express';
 import multer from 'multer';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import config from '../config.js';
 import {
   InboxService,
@@ -89,6 +91,118 @@ function normalizeInboxItem(item) {
   };
 }
 
+function normalizeMessageDate(value, fallbackIso) {
+  if (typeof value !== 'string' || value.trim() === '') {
+    return fallbackIso;
+  }
+
+  const parsed = Date.parse(value);
+  if (Number.isNaN(parsed)) {
+    return fallbackIso;
+  }
+
+  return new Date(parsed).toISOString();
+}
+
+function normalizeMessageEntry(entry, index = 0) {
+  const fallbackIso = new Date(0).toISOString();
+  const createdAt = normalizeMessageDate(
+    entry?.createdAt
+      || entry?.created_at
+      || entry?.timestamp
+      || entry?.time
+      || entry?.ts,
+    fallbackIso
+  );
+
+  return {
+    id: String(entry?.id || entry?.message_id || `msg-${index + 1}`),
+    title: String(entry?.title || entry?.subject || entry?.type || 'Notification'),
+    body: String(entry?.body || entry?.message || entry?.text || ''),
+    from: String(entry?.from || entry?.agent || entry?.sender || 'agent'),
+    level: String(entry?.level || entry?.severity || entry?.importance || 'normal').toLowerCase(),
+    read: Boolean(entry?.read),
+    createdAt,
+    type: String(entry?.type || 'message')
+  };
+}
+
+function extractMessages(payload) {
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+
+  if (!payload || typeof payload !== 'object') {
+    return [];
+  }
+
+  if (Array.isArray(payload.messages)) {
+    return payload.messages;
+  }
+
+  if (Array.isArray(payload.notifications)) {
+    return payload.notifications;
+  }
+
+  if (Array.isArray(payload.items)) {
+    return payload.items;
+  }
+
+  return [];
+}
+
+function getMessageStoreCandidates() {
+  const candidates = [
+    process.env.MESSAGES_PATH,
+    path.join(config.statePath, 'messages.json'),
+    path.join(config.workspacePath, 'messages.json'),
+    path.join(config.inboxPath, 'messages.json')
+  ].filter(Boolean);
+
+  return [...new Set(candidates.map((candidate) => path.resolve(candidate)))];
+}
+
+async function readMessageStore() {
+  const candidates = getMessageStoreCandidates();
+
+  for (const candidate of candidates) {
+    try {
+      const stats = await fs.stat(candidate);
+      if (!stats.isFile()) {
+        continue;
+      }
+
+      const raw = await fs.readFile(candidate, 'utf8');
+      const payload = JSON.parse(raw);
+      const messages = extractMessages(payload)
+        .map((entry, index) => normalizeMessageEntry(entry, index))
+        .sort((left, right) => Date.parse(right.createdAt) - Date.parse(left.createdAt));
+
+      return {
+        source: candidate,
+        messages
+      };
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        continue;
+      }
+
+      if (error instanceof SyntaxError) {
+        const invalid = new Error(`Invalid JSON in message store: ${candidate}`);
+        invalid.status = 500;
+        throw invalid;
+      }
+
+      throw error;
+    }
+  }
+
+  return {
+    source: null,
+    messages: []
+  };
+}
+
 /**
  * GET /api/inbox - List all inbox items
  */
@@ -112,6 +226,21 @@ router.get('/list', asyncHandler(async (req, res) => {
     }
     throw error;
   }
+}));
+
+/**
+ * GET /api/inbox/messages - List agent messages/notifications
+ */
+router.get('/messages', asyncHandler(async (req, res) => {
+  const payload = await readMessageStore();
+  const source = payload.source
+    ? path.relative(config.workspacePath, payload.source).replace(/\\/g, '/')
+    : null;
+
+  res.json({
+    source,
+    messages: payload.messages
+  });
 }));
 
 /**

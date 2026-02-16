@@ -1273,6 +1273,36 @@
   background: rgba(212, 165, 116, 0.08);
 }
 
+.artifact-item.active {
+  border-color: var(--gold-bright);
+  box-shadow: inset 0 0 0 1px rgba(240, 201, 140, 0.3);
+}
+
+.artifact-item-head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  align-items: flex-start;
+}
+
+.artifact-item-title {
+  color: var(--gold-bright);
+  font-family: var(--font-mono);
+}
+
+.artifact-item-meta {
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.artifact-item-summary {
+  margin-top: var(--space-xs);
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+  line-height: 1.4;
+}
+
 .artifacts-content {
   min-height: 60vh;
 }
@@ -1300,8 +1330,61 @@
   word-break: break-all;
 }
 
+.artifacts-meta {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.artifact-meta-pill {
+  border: 1px solid rgba(212, 165, 116, 0.28);
+  border-radius: var(--radius-full);
+  padding: 4px 10px;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
 .artifacts-viewer {
   min-height: 50vh;
+}
+
+.artifacts-viewer pre {
+  border: 1px solid rgba(212, 165, 116, 0.3);
+  border-radius: var(--radius-sm);
+  background: rgba(2, 3, 6, 0.92);
+  padding: var(--space-md);
+  overflow: auto;
+}
+
+.artifacts-viewer .code-highlighted {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  line-height: 1.6;
+  white-space: pre;
+}
+
+.artifacts-viewer .code-token-keyword {
+  color: #e2bb73;
+}
+
+.artifacts-viewer .code-token-string {
+  color: #a4cf90;
+}
+
+.artifacts-viewer .code-token-number {
+  color: #8fc8ff;
+}
+
+.artifacts-viewer .code-token-comment {
+  color: #8f96a8;
+}
+
+.artifacts-viewer .code-token-add {
+  color: #88d39f;
+}
+
+.artifacts-viewer .code-token-del {
+  color: #e9a09b;
 }
 
 /* ============================================
@@ -1316,6 +1399,31 @@
 .inbox-input-section {
   display: grid;
   gap: var(--space-md);
+}
+
+.inbox-messages-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.inbox-message-source {
+  margin: 0 0 var(--space-sm);
+  font-size: var(--font-size-xs);
+}
+
+.inbox-messages-list {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.inbox-message-body {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  line-height: 1.45;
+  white-space: pre-wrap;
 }
 
 .inbox-text-form,
