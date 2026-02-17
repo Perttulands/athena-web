@@ -152,7 +152,7 @@ Default environment variables:
 - `NODE_ENV=production`
 - `PORT=9000`
 - `WORKSPACE_PATH=$HOME/.openclaw/workspace`
-- `BEADS_CLI=br`
+- `BEADS_CLI=bd`
 
 ### 6. Configure Systemd Service
 

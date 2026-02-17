@@ -69,7 +69,7 @@ athena-web/
 │   ├── ralph.js               # GET /api/ralph
 │   └── stream.js              # GET /api/stream (SSE)
 ├── services/
-│   ├── beads-service.js       # br CLI integration
+│   ├── beads-service.js       # bd CLI integration
 │   ├── tmux-service.js        # tmux session queries
 │   ├── docs-service.js        # Filesystem doc reader/writer
 │   ├── runs-service.js        # state/runs/ + state/results/ reader
@@ -265,7 +265,7 @@ Goal: Working Express server with all API endpoints returning real data. Tests f
 
   **Scope:** Initialize npm project, install dependencies (express, cors), create `server.js` entry point, `config.js` for environment variables and paths, basic health check at `GET /api/health`. Server listens on port 9000.
 
-  **Config values:** workspace path (`~/.openclaw/workspace`), state path (`~/.openclaw/workspace/state`), beads CLI path (`br`), port (9000).
+  **Config values:** workspace path (`~/.openclaw/workspace`), state path (`~/.openclaw/workspace/state`), beads CLI path (`bd`), port (9000).
 
   **TDD Phases:**
   - **RED:** Write test that `GET /api/health` returns `{ status: "ok" }` with 200. Write test that server loads config from environment. Tests fail (no server exists).
@@ -294,9 +294,9 @@ Goal: Working Express server with all API endpoints returning real data. Tests f
   **Scope:** Service that calls `br list --json` and parses output. Route `GET /api/beads` with query params for filtering (`status`, `priority`, `sort`). Handle CLI not found gracefully (return empty array + warning). Parse bead fields: id, title, status, priority, created, updated.
 
   **TDD Phases:**
-  - **RED:** Write tests for `beads-service.js`: mock `child_process.exec` to return sample `br list --json` output, verify parsing. Test filtering by status. Test graceful handling when `br` is not found. Write route test for `GET /api/beads`.
+  - **RED:** Write tests for `beads-service.js`: mock `child_process.exec` to return sample `bd list --json` output, verify parsing. Test filtering by status. Test graceful handling when `bd` is not found. Write route test for `GET /api/beads`.
   - **GREEN:** Create `services/beads-service.js` with `listBeads(filters)`. Create `routes/beads.js`. Register in `server.js`.
-  - **VERIFY:** `npm test` passes. If `br` is installed, `curl localhost:9000/api/beads` returns real bead data.
+  - **VERIFY:** `npm test` passes. If `bd` is installed, `curl localhost:9000/api/beads` returns real bead data.
 
   **Files:** `services/beads-service.js`, `routes/beads.js`, `tests/services/beads-service.test.js`, `tests/routes/beads.test.js`
 
@@ -981,7 +981,7 @@ A user story is complete when:
 
 | Risk | Mitigation |
 |------|-----------|
-| `br` CLI not installed or different output format | Graceful degradation — return empty data with warning |
+| `bd` CLI not installed or different output format | Graceful degradation — return empty data with warning |
 | tmux not running or no agent sessions | Empty states with meaningful messages |
 | State directory doesn't exist yet | Auto-create on first access or return empty |
 | Large number of beads/runs (1000+) | Pagination on API endpoints (limit/offset) |

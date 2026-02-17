@@ -17,5 +17,5 @@
 ## Paths
 - Workspace: $HOME/.openclaw/workspace (beads, state, docs)
 - Tmux socket: /tmp/openclaw-coding-agents.sock (agent sessions)
-- Beads CLI: br (list/create/close)
+- Beads CLI: bd (list/create/close)
 - Port: 9000

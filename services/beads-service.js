@@ -1,4 +1,4 @@
-// Service for interacting with beads CLI (br)
+// Service for interacting with beads CLI (bd)
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import config from '../config.js';
@@ -56,7 +56,7 @@ async function runBeadsList() {
 }
 
 /**
- * List beads from br CLI
+ * List beads from bd CLI
  * @param {Object} filters - Filters to apply
  * @param {string} filters.status - Filter by status (todo, active, done, failed)
  * @param {number} filters.priority - Filter by priority
@@ -65,7 +65,7 @@ async function runBeadsList() {
  */
 export async function listBeads(filters = {}) {
   try {
-    // Execute br list --json using no-db mode to avoid readonly-db writes under systemd.
+    // Execute bd list --json using no-db mode to avoid readonly-db writes under systemd.
     const { stdout } = await runBeadsList();
 
     // Parse JSON output
@@ -77,11 +77,11 @@ export async function listBeads(filters = {}) {
       } else if (Array.isArray(parsed?.issues)) {
         beads = parsed.issues;
       } else {
-        console.warn('br list output is not an array');
+        console.warn('bd list output is not an array');
         return [];
       }
     } catch (parseError) {
-      console.warn('Failed to parse br list output:', parseError.message);
+      console.warn('Failed to parse bd list output:', parseError.message);
       return [];
     }
 
@@ -132,18 +132,18 @@ export async function listBeads(filters = {}) {
   } catch (error) {
     // Check if error is due to command not found
     if (error.code === 'ENOENT' || error.message.includes('not found')) {
-      console.warn('br CLI not found - returning empty beads array');
+      console.warn('bd CLI not found - returning empty beads array');
       return [];
     }
 
     // Check for timeout
     if (error.killed) {
-      console.warn('br list command timed out');
+      console.warn('bd list command timed out');
       return [];
     }
 
     // Other errors - log and return empty
-    console.warn('Error executing br list:', error.message);
+    console.warn('Error executing bd list:', error.message);
     return [];
   }
 }

@@ -90,8 +90,8 @@ fi
 echo -e "${GREEN}✓ Dependencies installed${NC}"
 
 # Check beads CLI
-if ! command -v br &> /dev/null; then
-    echo -e "${RED}✗ Beads CLI (br) not found in PATH${NC}"
+if ! command -v bd &> /dev/null; then
+    echo -e "${RED}✗ Beads CLI (bd) not found in PATH${NC}"
     exit 1
 fi
 echo -e "${GREEN}✓ Beads CLI available${NC}"

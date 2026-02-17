@@ -8,8 +8,8 @@ const execAsync = promisify(exec);
 
 describe('beads-service', () => {
   describe('listBeads', () => {
-    it('should parse br list --json output', async () => {
-      // Mock JSON output from br list
+    it('should parse bd list --json output', async () => {
+      // Mock JSON output from bd list
       const mockOutput = JSON.stringify([
         {
           id: 'bd-279',
@@ -29,11 +29,11 @@ describe('beads-service', () => {
         }
       ]);
 
-      // Note: This test will use real br if available
+      // Note: This test will use real bd if available
       // For now, we'll test the actual behavior
       const beads = await listBeads();
 
-      // Should return an array (empty if br not found, populated if it is)
+      // Should return an array (empty if bd not found, populated if it is)
       assert.ok(Array.isArray(beads));
     });
 
@@ -77,9 +77,9 @@ describe('beads-service', () => {
       }
     });
 
-    it('should return empty array with warning when br is not found', async () => {
+    it('should return empty array with warning when bd is not found', async () => {
       // Test graceful degradation
-      // We'll modify PATH to make br unavailable temporarily
+      // We'll modify PATH to make bd unavailable temporarily
       const originalPath = process.env.PATH;
       process.env.PATH = '/nonexistent';
 
@@ -92,7 +92,7 @@ describe('beads-service', () => {
     });
 
     it('should handle invalid JSON gracefully', async () => {
-      // If br returns invalid JSON, should return empty array
+      // If bd returns invalid JSON, should return empty array
       // This is a graceful degradation test
       const beads = await listBeads();
       assert.ok(Array.isArray(beads));

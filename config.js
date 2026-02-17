@@ -17,7 +17,7 @@ const config = {
   },
 
   // Beads CLI command
-  beadsCli: process.env.BEADS_CLI || 'br',
+  beadsCli: process.env.BEADS_CLI || 'bd',
 
   // tmux CLI command and socket path for coding agents
   tmuxCli: process.env.TMUX_CLI || 'tmux',
