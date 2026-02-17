@@ -4,7 +4,7 @@ _Where all the threads become visible._
 
 ---
 
-Athena was the goddess of weaving, among other things. This is her web — literally. A mobile-first dashboard where you can see every agent, every bead of work, every document, and every run across the entire Forge. One screen to watch the loom.
+Athena was the goddess of weaving, among other things. This is her web — literally. A mobile-first dashboard where you can see every agent, every bead of work, every document, and every run across the entire Agora. One screen to watch the loom.
 
 Athena Web is an SPA + Express API for monitoring and controlling AI coding agents. No build step, no framework churn, no webpack config that's older than your dependencies. Vanilla JS, vanilla CSS, server-sent events for real-time updates. It loads fast and stays out of your way.
 
@@ -107,9 +107,9 @@ deployment/         # nginx, systemd, deployment scripts
 tests/              # Backend, frontend, and integration suites
 ```
 
-## Part of [Athena's Forge](https://github.com/Perttulands/athena-workspace)
+## Part of [Athena's Agora](https://github.com/Perttulands/athena-workspace)
 
-Athena Web is the visual layer of the Forge — an autonomous coding system built around AI agents. See the [mythology](https://github.com/Perttulands/athena-workspace/blob/main/mythology.md) for the full story.
+Athena Web is the visual layer of the Agora — an autonomous coding system built around AI agents. See the [mythology](https://github.com/Perttulands/athena-workspace/blob/main/mythology.md) for the full story.
 
 ## License
 
