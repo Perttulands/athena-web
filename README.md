@@ -1,5 +1,8 @@
 # 🏛️ Athena Web — The Portal
 
+![Banner](banner.jpg)
+
+
 _Where all the threads become visible._
 
 ---
