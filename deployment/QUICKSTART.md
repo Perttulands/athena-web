@@ -8,7 +8,7 @@ Fast deployment guide for $HOSTNAME server. For detailed instructions, see INSTA
 node --version  # Must be 24.x
 nginx -v        # Must be installed
 tailscale status # Must be connected
-ls $HOME/.openclaw/workspace # Must exist
+ls $HOME/athena # Must exist
 ```
 
 ## 5-Minute Deployment

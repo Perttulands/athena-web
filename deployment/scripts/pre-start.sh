@@ -11,7 +11,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 APP_DIR="${APP_DIR:-$HOME/athena-web}"
-WORKSPACE_PATH="${WORKSPACE_PATH:-$HOME/.openclaw/workspace}"
+WORKSPACE_PATH="${WORKSPACE_PATH:-$HOME/athena}"
 LOG_DIR="$APP_DIR/logs"
 BACKUP_DIR="$APP_DIR/backups"
 EXPECTED_USER="${SERVICE_USER:-${USER:-$(id -un)}}"

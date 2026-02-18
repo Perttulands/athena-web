@@ -9,7 +9,7 @@ Step-by-step installation instructions for deploying Athena Web to the $HOSTNAME
 - Nginx installed
 - Sudo/root access
 - Tailscale configured
-- OpenClaw workspace at `$HOME/.openclaw/workspace`
+- OpenClaw workspace at `$HOME/athena`
 
 ## Installation Steps
 
@@ -53,7 +53,7 @@ mkdir -p logs backups
 
 # Set permissions
 chmod 755 $HOME/athena-web
-chmod 755 $HOME/.openclaw/workspace
+chmod 755 $HOME/athena
 ```
 
 ### 3. Environment Configuration
@@ -349,8 +349,8 @@ sudo chown -R $USER:$USER $HOME/athena-web
 chmod 755 $HOME/athena-web
 
 # Fix workspace permissions
-sudo chown -R $USER:$USER $HOME/.openclaw/workspace
-chmod 755 $HOME/.openclaw/workspace
+sudo chown -R $USER:$USER $HOME/athena
+chmod 755 $HOME/athena
 
 # Fix log directory
 mkdir -p $HOME/athena-web/logs

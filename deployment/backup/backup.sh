@@ -13,7 +13,7 @@ NC='\033[0m'
 
 # Configuration
 APP_DIR="$HOME/athena-web"
-WORKSPACE_PATH="$HOME/.openclaw/workspace"
+WORKSPACE_PATH="$HOME/athena"
 BACKUP_BASE="$HOME/athena-web/backups"
 RETENTION_DAYS=30
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)

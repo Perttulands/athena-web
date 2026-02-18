@@ -80,7 +80,7 @@ All settings have sensible defaults. Override via environment variables:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `WORKSPACE_PATH` | `~/.openclaw/workspace` | Root workspace directory |
+| `WORKSPACE_PATH` | `~/athena` | Root workspace directory |
 | `INBOX_PATH` | `$WORKSPACE_PATH/inbox` | Inbox submission directory |
 | `ARTIFACT_ROOTS` | `$WORKSPACE_PATH` | Comma-separated paths for artifact scanning |
 | `MAX_UPLOAD_BYTES` | `10485760` (10 MB) | Max file upload size |

@@ -151,7 +151,7 @@ sudo nano /etc/athena-web/env
 Default environment variables:
 - `NODE_ENV=production`
 - `PORT=9000`
-- `WORKSPACE_PATH=$HOME/.openclaw/workspace`
+- `WORKSPACE_PATH=$HOME/athena`
 - `BEADS_CLI=br`
 
 ### 6. Configure Systemd Service
@@ -356,7 +356,7 @@ sudo journalctl -u athena-web -n 100 --no-pager
 sudo ss -tlnp | grep :9000
 
 # 2. Workspace path doesn't exist
-ls -la $HOME/.openclaw/workspace
+ls -la $HOME/athena
 
 # 3. Permission issues
 sudo chown -R $USER:$USER $HOME/athena-web
@@ -441,7 +441,7 @@ sudo ss -tan | grep :9000
 ```bash
 # Backup workspace
 tar -czf athena-backup-$(date +%Y%m%d).tar.gz \
-  $HOME/.openclaw/workspace
+  $HOME/athena
 
 # Backup configuration
 sudo tar -czf athena-config-$(date +%Y%m%d).tar.gz \

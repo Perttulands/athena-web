@@ -347,11 +347,11 @@ sudo systemctl reload nginx
 
 ```bash
 # Check permissions
-ls -la $HOME/.openclaw/workspace
+ls -la $HOME/athena
 
 # Fix permissions
-sudo chown -R $USER:$USER $HOME/.openclaw/workspace
-sudo chmod -R 755 $HOME/.openclaw/workspace
+sudo chown -R $USER:$USER $HOME/athena
+sudo chmod -R 755 $HOME/athena
 ```
 
 ## Performance Tuning

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PORT="${SMOKE_PORT:-9000}"
-WORKSPACE_PATH="${WORKSPACE_PATH:-$HOME/.openclaw/workspace}"
+WORKSPACE_PATH="${WORKSPACE_PATH:-$HOME/athena}"
 TMUX_SOCKET="${TMUX_SOCKET:-/tmp/openclaw-coding-agents.sock}"
 BASE_URL="http://127.0.0.1:${PORT}"
 

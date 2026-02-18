@@ -7,9 +7,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const config = {
-  // Workspace path: default to ~/.openclaw/workspace
+  // Workspace path: default to ~/athena
   workspacePath: process.env.WORKSPACE_PATH ||
-    join(homedir(), '.openclaw', 'workspace'),
+    join(homedir(), 'athena'),
 
   // State path: ${workspacePath}/state (can be overridden for testing)
   get statePath() {

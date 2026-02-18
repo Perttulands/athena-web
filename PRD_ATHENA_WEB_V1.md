@@ -265,7 +265,7 @@ Goal: Working Express server with all API endpoints returning real data. Tests f
 
   **Scope:** Initialize npm project, install dependencies (express, cors), create `server.js` entry point, `config.js` for environment variables and paths, basic health check at `GET /api/health`. Server listens on port 9000.
 
-  **Config values:** workspace path (`~/.openclaw/workspace`), state path (`~/.openclaw/workspace/state`), beads CLI path (`br`), port (9000).
+  **Config values:** workspace path (`~/athena`), state path (`~/athena/state`), beads CLI path (`br`), port (9000).
 
   **TDD Phases:**
   - **RED:** Write test that `GET /api/health` returns `{ status: "ok" }` with 200. Write test that server loads config from environment. Tests fail (no server exists).

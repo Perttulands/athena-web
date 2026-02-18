@@ -21,7 +21,7 @@ Add three new services:
 
 - `services/inbox-service.js`
   - Handles file uploads and long-text submissions.
-  - Writes to configurable inbox root (default: `$HOME/.openclaw/workspace/inbox/incoming`).
+  - Writes to configurable inbox root (default: `$HOME/athena/inbox/incoming`).
   - Uses atomic write pattern (`.tmp` then rename), metadata sidecars, size/type validation.
 
 - `services/artifact-watch-service.js`
@@ -40,7 +40,7 @@ Register in `server.js` without touching existing route contracts.
 Add explicit portal paths and limits:
 
 - `artifactRoots` map (resolved absolute paths)
-- `inboxPath` (default `$HOME/.openclaw/workspace/inbox`)
+- `inboxPath` (default `$HOME/athena/inbox`)
 - `maxUploadBytes` (e.g. `25 * 1024 * 1024`)
 - `maxTextBytes` (e.g. `2 * 1024 * 1024`)
 - `allowedUploadExtensions` (configurable allowlist)

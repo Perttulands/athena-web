@@ -15,7 +15,7 @@
 - Docs describe what IS, never what WAS.
 
 ## Paths
-- Workspace: $HOME/.openclaw/workspace (beads, state, docs)
+- Workspace: $HOME/athena (beads, state, docs)
 - Tmux socket: /tmp/openclaw-coding-agents.sock (agent sessions)
 - Beads CLI: br (list/create/close)
 - Port: 9000

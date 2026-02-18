@@ -146,7 +146,7 @@ Uses real HTTP server on random port, temp workspace with seeded files, `canList
 
 | Field | Env var | Default | Type |
 |-------|---------|---------|------|
-| `workspacePath` | `WORKSPACE_PATH` | `~/.openclaw/workspace` | `string` |
+| `workspacePath` | `WORKSPACE_PATH` | `~/athena` | `string` |
 | `statePath` | `STATE_PATH` | `$workspacePath/state` | `string` (getter) |
 | `inboxPath` | `INBOX_PATH` | `$workspacePath/inbox` | `string` (getter) |
 | `maxUploadBytes` | `MAX_UPLOAD_BYTES` | `10485760` (10 MB) | `number` |
