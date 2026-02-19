@@ -1,5 +1,2 @@
 [scan]
-exclude_dirs = ["node_modules", "deployment"]
-
-[rules]
-disable = ["silent-fallback.hidden-failure-bash", "bad-defaults.no-timeout-fetch", "bad-defaults.missing-pipefail"]
+exclude_dirs = ["vendor", "node_modules", "testdata", ".beads"]
