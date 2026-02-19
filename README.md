@@ -1,17 +1,18 @@
-# 🏛️ Athena Web — The Portal
+# 🏛️ Athena Web — The Loom Room
 
 ![Banner](banner.jpg)
-
 
 _Where all the threads become visible._
 
 ---
 
-Athena was the goddess of weaving, among other things. This is her web — literally. A mobile-first dashboard where you can see every agent, every bead of work, every document, and every run across the entire Agora. One screen to watch the loom.
+Deep in the Agora, there's a vast room with a great loom at its center. Threads glow in different colours — gold for open work, blue for in progress, green for done, red for blocked. Glass and bronze beads are strung on each thread. Where threads split and merge, you can see the git branches. A golden thread runs from the loom to Athena's wrist, connected to every piece of work in progress.
 
-Athena Web is an SPA + Express API for monitoring and controlling AI coding agents. No build step, no framework churn, no webpack config that's older than your dependencies. Vanilla JS, vanilla CSS, server-sent events for real-time updates. It loads fast and stays out of your way.
+This is that room, rendered in vanilla JS and Express. Athena was the goddess of weaving, among other things. This is her web — literally. A mobile-first dashboard where you can see every agent, every bead of work, every document, and every run across the entire Agora. One screen to watch the loom.
 
-## What You Can Do
+No build step, no framework churn, no webpack config that's older than your dependencies. It loads fast and stays out of your way.
+
+## How It Works
 
 | View | Purpose |
 |------|---------|
@@ -22,17 +23,9 @@ Athena Web is an SPA + Express API for monitoring and controlling AI coding agen
 | **Chronicle** | Run history with filters and verification details |
 | **Portal** | Three-panel workspace: Artifacts browser, Inbox, Docs |
 
-The Portal's **Artifacts** panel deserves a mention — it lets you browse research reports, PRDs, memory files, and results with full-text search. Hit `/` to search. It's the closest thing to Athena's actual memory you can browse with your hands.
+The Portal's **Artifacts** panel lets you browse research reports, PRDs, memory files, and results with full-text search. Hit `/` to search. It's the closest thing to Athena's actual memory you can browse with your hands.
 
-## Stack
-
-- **Backend:** Node.js + Express 5
-- **Frontend:** Vanilla JS/CSS (no build step, no bundler)
-- **Real-time:** Server-Sent Events (`/api/stream`)
-- **PWA:** Manifest + service worker + offline fallback
-- **Deployment:** systemd + nginx
-
-## Quick Start
+## Install
 
 ```bash
 git clone https://github.com/Perttulands/athena-web.git
@@ -52,8 +45,6 @@ npm test
 224 tests. They all pass.
 
 ## API
-
-The API is RESTful and predictable:
 
 ```
 GET  /api/health              # Health check
@@ -79,8 +70,6 @@ POST /api/inbox/upload        # Upload a file
 
 ## Configuration
 
-All settings have sensible defaults. Override via environment variables:
-
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `WORKSPACE_PATH` | `~/athena` | Root workspace directory |
@@ -91,6 +80,14 @@ All settings have sensible defaults. Override via environment variables:
 | `PORT` | `9000` | Server port |
 | `NODE_ENV` | `development` | Environment |
 
+## Stack
+
+- **Backend:** Node.js + Express 5
+- **Frontend:** Vanilla JS/CSS (no build step, no bundler)
+- **Real-time:** Server-Sent Events (`/api/stream`)
+- **PWA:** Manifest + service worker + offline fallback
+- **Deployment:** systemd + nginx
+
 ## Security
 
 - Path traversal blocked on all file-serving routes
@@ -98,21 +95,9 @@ All settings have sensible defaults. Override via environment variables:
 - Markdown rendering escapes HTML (no injection)
 - CSP + security headers set in Express and nginx
 
-## Project Layout
-
-```
-server.js           # Express app entry
-routes/             # API routes
-services/           # Backend domain logic
-middleware/         # Error handling, performance, security
-public/             # SPA — JS, CSS, page modules, PWA assets
-deployment/         # nginx, systemd, deployment scripts
-tests/              # Backend, frontend, and integration suites
-```
-
 ## For Agents
 
-### Install
+This repo includes `AGENTS.md`. Your agent knows what to do.
 
 ```bash
 cd /home/perttu/athena-web
@@ -121,39 +106,13 @@ npm install
 
 Dependencies: Node.js 18+, npm. No build step. No bundler. No webpack config to debug at 3am.
 
-### What This Is
+## 🏛️ Part of the Agora
 
-Athena Web is the visual dashboard for the entire Agora — a mobile-first SPA where you can monitor agents, browse beads, read documentation, view run history, and search artifacts. It's the one place where all the threads become visible. For agents, the API is the important part: RESTful endpoints for beads, agents, docs, runs, and a SSE stream for real-time events. If you need to check system state programmatically, this is your interface.
+Athena Web was forged in **[Athena's Agora](https://github.com/Perttulands/athena-workspace)** — the autonomous coding system where marble meets circuit board.
 
-### Runtime Usage
+This is the Loom Room — where you stand to see the whole tapestry. Every other tool in the Agora feeds data here: [Argus](https://github.com/Perttulands/argus) reports health, [Relay](https://github.com/Perttulands/relay) carries messages, [Oathkeeper](https://github.com/Perttulands/oathkeeper) tracks promises, [Truthsayer](https://github.com/Perttulands/truthsayer) enforces quality. The Loom shows it all.
 
-```bash
-# Start the dev server
-cd /home/perttu/athena-web && npm run dev
-
-# Service management (production)
-sudo systemctl status athena-web
-sudo systemctl restart athena-web
-
-# Quick health check
-curl -s http://localhost:9000/api/health | jq
-
-# Get system status
-curl -s http://localhost:9000/api/status | jq
-
-# List beads
-curl -s http://localhost:9000/api/beads | jq
-
-# Check running agents
-curl -s http://localhost:9000/api/agents | jq
-
-# Search artifacts
-curl -s 'http://localhost:9000/api/artifacts/search?q=relay' | jq
-```
-
-## Part of [Athena's Agora](https://github.com/Perttulands/athena-workspace)
-
-Athena Web is the visual layer of the Agora — an autonomous coding system built around AI agents. See the [mythology](https://github.com/Perttulands/athena-workspace/blob/main/mythology.md) for the full story.
+Read the [mythology](https://github.com/Perttulands/athena-workspace/blob/main/mythology.md) if you want the full story.
 
 ## License
 

@@ -6,6 +6,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Changed
+- README: mythology-forward rewrite — each README now reads like discovering a character in a world
+
 ### Added
 - "For Agents" section in README: install, what-this-is, and runtime usage for agent consumers
 
