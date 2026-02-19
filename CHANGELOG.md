@@ -6,6 +6,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ## [Unreleased]
 
+### Added
+- "For Agents" section in README: install, what-this-is, and runtime usage for agent consumers
+
 ### Planned
 - UX redesign (Sprint 5): 10 user stories, beads backlog as star feature, mobile-first, agent monitoring improvements
 

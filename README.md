@@ -110,6 +110,47 @@ deployment/         # nginx, systemd, deployment scripts
 tests/              # Backend, frontend, and integration suites
 ```
 
+## For Agents
+
+### Install
+
+```bash
+cd /home/perttu/athena-web
+npm install
+```
+
+Dependencies: Node.js 18+, npm. No build step. No bundler. No webpack config to debug at 3am.
+
+### What This Is
+
+Athena Web is the visual dashboard for the entire Agora — a mobile-first SPA where you can monitor agents, browse beads, read documentation, view run history, and search artifacts. It's the one place where all the threads become visible. For agents, the API is the important part: RESTful endpoints for beads, agents, docs, runs, and a SSE stream for real-time events. If you need to check system state programmatically, this is your interface.
+
+### Runtime Usage
+
+```bash
+# Start the dev server
+cd /home/perttu/athena-web && npm run dev
+
+# Service management (production)
+sudo systemctl status athena-web
+sudo systemctl restart athena-web
+
+# Quick health check
+curl -s http://localhost:9000/api/health | jq
+
+# Get system status
+curl -s http://localhost:9000/api/status | jq
+
+# List beads
+curl -s http://localhost:9000/api/beads | jq
+
+# Check running agents
+curl -s http://localhost:9000/api/agents | jq
+
+# Search artifacts
+curl -s 'http://localhost:9000/api/artifacts/search?q=relay' | jq
+```
+
 ## Part of [Athena's Agora](https://github.com/Perttulands/athena-workspace)
 
 Athena Web is the visual layer of the Agora — an autonomous coding system built around AI agents. See the [mythology](https://github.com/Perttulands/athena-workspace/blob/main/mythology.md) for the full story.
