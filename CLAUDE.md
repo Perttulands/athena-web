@@ -13,6 +13,7 @@
 - No deprecated packages. Check npm before adding anything.
 - ES module syntax throughout (import/export, not require).
 - Docs describe what IS, never what WAS.
+- Every user-facing change gets a `CHANGELOG.md` entry ([Keep a Changelog](https://keepachangelog.com/en/1.1.0/)). No entry = no merge.
 
 ## Paths
 - Workspace: $HOME/athena (beads, state, docs)
