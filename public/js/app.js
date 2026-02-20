@@ -14,7 +14,8 @@ const routes = {
   '/artifacts/:id': () => import('./pages/artifacts.js'),
   '/inbox': () => import('./pages/inbox.js'),
   '/chronicle': () => import('./pages/chronicle.js'),
-  '/health': () => import('./pages/health.js')
+  '/health': () => import('./pages/health.js'),
+  '/tapestry': () => import('./pages/tapestry.js')
 };
 
 const routeAliases = {
