@@ -1127,6 +1127,45 @@
    BREAKPOINTS
    ============================================ */
 
+@media (max-width: 480px) {
+  .oracle-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-sm);
+  }
+
+  .chronicle-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .chronicle-filters {
+    flex-direction: column;
+  }
+
+  .chronicle-filters label {
+    width: 100%;
+  }
+
+  .chronicle-input {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .page-beads .filter-bar,
+  .page-beads .filter-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .stat-box {
+    min-height: 90px;
+  }
+
+  .stat-value {
+    font-size: var(--font-size-2xl);
+  }
+}
+
 @media (min-width: 768px) {
   .oracle-hero-content {
     padding-left: var(--space-xl);
@@ -1144,6 +1183,10 @@
   }
 
   .bead-detail-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page-agents .agents-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -1541,6 +1584,157 @@
 
 .inbox-item-meta {
   font-size: var(--font-size-xs);
+}
+
+/* ============================================
+   TAPESTRY PAGE
+   ============================================ */
+
+.page-tapestry #tapestry-content {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.tapestry-summary {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.tapestry-summary-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--text-dim);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+}
+
+.tapestry-lanes {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+@media (min-width: 768px) {
+  .tapestry-lanes {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tapestry-lanes {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.tapestry-lane {
+  display: grid;
+  gap: var(--space-sm);
+  align-content: start;
+}
+
+.tapestry-lane-header {
+  border-bottom: 2px solid rgba(212, 165, 116, 0.2);
+  padding-bottom: var(--space-xs);
+}
+
+.tapestry-lane-title {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-family: var(--font-mono);
+}
+
+.tapestry-lane-grid {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.tapestry-node {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-sm);
+  border: 1px solid var(--node-color, var(--text-dim));
+  border-left-width: 4px;
+  border-radius: var(--radius-sm);
+  background: rgba(8, 9, 13, 0.72);
+  cursor: pointer;
+  text-align: left;
+  color: var(--text-primary);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.tapestry-node:hover {
+  background: rgba(212, 165, 116, 0.08);
+  border-color: var(--gold);
+}
+
+.tapestry-node-lg {
+  padding: var(--space-md);
+  font-size: var(--font-size-base);
+}
+
+.tapestry-node-md {
+  padding: var(--space-sm);
+  font-size: var(--font-size-sm);
+}
+
+.tapestry-node-sm {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-size-xs);
+}
+
+.tapestry-node-id {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--text-dim);
+}
+
+.tapestry-node-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tapestry-node-assignee {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   HEALTH PAGE
+   ============================================ */
+
+.page-health #health-content {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.health-overall {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.health-services-list {
+  display: grid;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.health-service-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.health-service-name {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  min-width: 100px;
 }
 
 /* Inbox/Artifacts layout breakpoints */

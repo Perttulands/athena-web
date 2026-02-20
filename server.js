@@ -18,6 +18,9 @@ import {
   requestTimeout,
   memoryMonitor
 } from './middleware/performance.js';
+import { authMiddleware } from './middleware/auth.js';
+import { activityRecorder } from './middleware/activity.js';
+import activityService from './services/activity-service.js';
 import beadsRouter from './routes/beads.js';
 import agentsRouter from './routes/agents.js';
 import docsRouter from './routes/docs.js';
@@ -27,6 +30,10 @@ import statusRouter from './routes/status.js';
 import streamRouter, { sseService } from './routes/stream.js';
 import artifactsRouter from './routes/artifacts.js';
 import inboxRouter from './routes/inbox.js';
+import tapestryRouter from './routes/tapestry.js';
+import timelineRouter from './routes/timeline.js';
+import healthDashRouter from './routes/health-dashboard.js';
+import activityRouter from './routes/activity.js';
 import { ArtifactWatchService } from './services/artifact-watch-service.js';
 import { ArtifactService } from './services/artifact-service.js';
 
@@ -58,6 +65,9 @@ if (config.nodeEnv !== 'production') {
   app.use(memoryMonitor);
 }
 
+// Authentication (optional, enabled via ATHENA_AUTH_TOKEN env var)
+app.use(authMiddleware);
+
 // Core middleware — restrict CORS to same-origin
 app.use(cors({
   origin: (origin, callback) => {
@@ -72,6 +82,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(requestLogger);
+app.use(activityRecorder);
 
 // ETag support for API responses
 app.use('/api', apiETag);
@@ -98,6 +109,10 @@ app.use('/api/runs', runsRouter);
 app.use('/api/ralph', ralphRouter);
 app.use('/api/artifacts', artifactsRouter);
 app.use('/api/inbox', inboxRouter);
+app.use('/api/tapestry', tapestryRouter);
+app.use('/api/timeline', timelineRouter);
+app.use('/api/health-dashboard', healthDashRouter);
+app.use('/api/activity', activityRouter);
 app.use('/api', streamRouter);
 
 // SPA fallback for non-API routes without a file extension.
@@ -135,23 +150,91 @@ app.use(notFoundHandler);
 // Global error handler (must be last)
 app.use(errorHandler);
 
+// Graceful shutdown handler
+function gracefulShutdown(server, watcher) {
+  let shuttingDown = false;
+  const SHUTDOWN_TIMEOUT_MS = 10000;
+
+  return (signal) => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+
+    console.log(`\nReceived ${signal}. Shutting down gracefully...`);
+
+    // Stop accepting new connections
+    server.close(() => {
+      console.log('HTTP server closed.');
+    });
+
+    // Close SSE clients
+    sseService.cleanup();
+
+    // Stop artifact watcher
+    if (watcher) {
+      watcher.stop();
+    }
+
+    // Force exit after timeout
+    const forceExit = setTimeout(() => {
+      console.warn('Graceful shutdown timed out. Forcing exit.');
+      process.exit(1);
+    }, SHUTDOWN_TIMEOUT_MS);
+    forceExit.unref();
+
+    // Close remaining connections
+    server.closeAllConnections?.();
+
+    // Allow event loop to drain
+    setTimeout(() => {
+      console.log('Shutdown complete.');
+      process.exit(0);
+    }, 500).unref();
+  };
+}
+
 // Start server only if this is the main module
 if (import.meta.url === `file://${process.argv[1]}`) {
-  app.listen(config.port, () => {
+  const server = app.listen(config.port, () => {
     console.log(`🦉 Athena Web listening on port ${config.port}`);
     console.log(`📂 Workspace: ${config.workspacePath}`);
     console.log(`📊 State: ${config.statePath}`);
     console.log(`🔧 Beads CLI: ${config.beadsCli}`);
+  });
 
-    // Start artifact/inbox file watcher for real-time SSE updates
-    const artifactService = new ArtifactService({
-      workspaceRoot: config.workspacePath,
-      repoRoots: config.artifactRoots
+  // Start artifact/inbox file watcher for real-time SSE updates
+  const artifactService = new ArtifactService({
+    workspaceRoot: config.workspacePath,
+    repoRoots: config.artifactRoots
+  });
+  const watchRoots = Array.from(artifactService.roots.values())
+    .filter((root) => root.type === 'filesystem' && root.path);
+  const watcher = new ArtifactWatchService({ sseService });
+  watcher.start(watchRoots, config.inboxPath);
+
+  // Register shutdown handlers
+  const shutdown = gracefulShutdown(server, watcher);
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
+
+  // Process-level error recovery: log and continue rather than crash
+  process.on('uncaughtException', (err) => {
+    console.error('Uncaught exception (recovered):', err);
+    activityService.record({
+      type: 'server_error',
+      error: err.message,
+      stack: (err.stack || '').slice(0, 1000)
     });
-    const watchRoots = Array.from(artifactService.roots.values())
-      .filter((root) => root.type === 'filesystem' && root.path);
-    const watcher = new ArtifactWatchService({ sseService });
-    watcher.start(watchRoots, config.inboxPath);
+  });
+
+  process.on('unhandledRejection', (reason) => {
+    const message = reason instanceof Error ? reason.message : String(reason);
+    const stack = reason instanceof Error ? (reason.stack || '').slice(0, 1000) : '';
+    console.error('Unhandled rejection (recovered):', message);
+    activityService.record({
+      type: 'server_rejection',
+      error: message,
+      stack
+    });
   });
 }
 

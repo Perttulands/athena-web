@@ -124,8 +124,8 @@ describe('SSE Client', () => {
     const initialLength = MockEventSource.instances.length;
     currentInstance.simulateError();
 
-    // Wait for reconnection attempt (1s backoff)
-    await new Promise(resolve => setTimeout(resolve, 1100));
+    // Wait for reconnection attempt (1s base backoff with jitter 0.5..1.5x)
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     assert.strictEqual(MockEventSource.instances.length, initialLength + 1);
   });

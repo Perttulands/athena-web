@@ -4,6 +4,7 @@ import { listBeads } from '../services/beads-service.js';
 import { listAgents } from '../services/tmux-service.js';
 import runsService from '../services/runs-service.js';
 import ralphService from '../services/ralph-service.js';
+import cache from '../services/cache-service.js';
 
 const router = Router();
 
@@ -15,8 +16,9 @@ function isCanonicalStatus(bead, wanted) {
 
 /**
  * GET /api/status
- * Dashboard aggregate data from all services
- * Returns partial data with warnings if any service fails
+ * Dashboard aggregate data from all services.
+ * Fetches beads, agents, runs, and ralph in parallel via Promise.allSettled.
+ * Uses cache layer to avoid redundant CLI/fs calls within the TTL window.
  */
 router.get('/', asyncHandler(async (req, res) => {
   const status = {
@@ -50,9 +52,17 @@ router.get('/', asyncHandler(async (req, res) => {
 
   const warnings = [];
 
-  // Fetch beads data
-  try {
-    const beads = await listBeads();
+  // Fetch all data sources in parallel, with caching
+  const [beadsResult, agentsResult, runsResult, ralphResult] = await Promise.allSettled([
+    cache.getOrFetch('beads', () => listBeads(), 5000),
+    cache.getOrFetch('agents', () => listAgents(), 3000),
+    cache.getOrFetch('runs', () => runsService.listRuns(), 5000),
+    cache.getOrFetch('ralph', () => ralphService.getRalphStatus('PRD_ATHENA_WEB.md', 'progress_athena_web.txt'), 10000)
+  ]);
+
+  // Process beads
+  if (beadsResult.status === 'fulfilled') {
+    const beads = beadsResult.value;
     status.beads.todo = beads.filter(bead => isCanonicalStatus(bead, 'todo')).length;
     status.beads.active = beads.filter(bead => isCanonicalStatus(bead, 'active')).length;
     status.beads.done = beads.filter(bead => isCanonicalStatus(bead, 'done')).length;
@@ -60,30 +70,26 @@ router.get('/', asyncHandler(async (req, res) => {
     status.beads.open = beads.filter(bead => String(bead?.status || '').toLowerCase() === 'open').length;
     status.beads.closed = beads.filter(bead => String(bead?.status || '').toLowerCase() === 'closed').length;
     status.beads.total = beads.length;
-  } catch (error) {
-    warnings.push({ service: 'beads', error: error.message });
+  } else {
+    warnings.push({ service: 'beads', error: beadsResult.reason?.message || 'unknown' });
   }
 
-  // Fetch agents data
-  try {
-    const agents = await listAgents();
+  // Process agents
+  if (agentsResult.status === 'fulfilled') {
+    const agents = agentsResult.value;
     status.agents.total = agents.length;
     status.agents.running = agents.filter(a => a.status === 'running').length;
-  } catch (error) {
-    warnings.push({ service: 'agents', error: error.message });
+  } else {
+    warnings.push({ service: 'agents', error: agentsResult.reason?.message || 'unknown' });
   }
 
-  // Fetch runs data for success rate and recent activity
-  try {
-    const runs = await runsService.listRuns();
-
-    // Calculate success rate
+  // Process runs
+  if (runsResult.status === 'fulfilled') {
+    const runs = runsResult.value;
     if (runs.length > 0) {
       const successfulRuns = runs.filter(r => r.exit_code === 0).length;
       status.agents.successRate = parseFloat((successfulRuns / runs.length).toFixed(2));
     }
-
-    // Get recent activity (last 10 runs)
     status.recentActivity = runs.slice(0, 10).map(run => ({
       time: run.started_at,
       type: run.exit_code === 0 ? 'agent_complete' : 'agent_failed',
@@ -92,16 +98,13 @@ router.get('/', asyncHandler(async (req, res) => {
           ` (lint: ${run.verification.lint || 'unknown'}, tests: ${run.verification.tests || 'unknown'})`
           : '')
     }));
-  } catch (error) {
-    warnings.push({ service: 'runs', error: error.message });
+  } else {
+    warnings.push({ service: 'runs', error: runsResult.reason?.message || 'unknown' });
   }
 
-  // Fetch Ralph status
-  try {
-    // PRD and progress files are in the project root
-    const prdPath = 'PRD_ATHENA_WEB.md';
-    const progressPath = 'progress_athena_web.txt';
-    const ralph = await ralphService.getRalphStatus(prdPath, progressPath);
+  // Process Ralph
+  if (ralphResult.status === 'fulfilled') {
+    const ralph = ralphResult.value;
     status.ralph.currentTask = ralph.activeTask;
     status.ralph.iteration = ralph.currentIteration;
     status.ralph.maxIterations = ralph.maxIterations;
@@ -110,7 +113,6 @@ router.get('/', asyncHandler(async (req, res) => {
       total: ralph.tasks.length
     };
 
-    // Update Athena's last message based on Ralph progress
     if (ralph.tasks.length > 0) {
       const completedTasks = ralph.tasks.filter(t => t.done).length;
       const totalTasks = ralph.tasks.length;
@@ -122,8 +124,8 @@ router.get('/', asyncHandler(async (req, res) => {
         status.athena.lastMessage = `${completedTasks}/${totalTasks} tasks done.`;
       }
     }
-  } catch (error) {
-    warnings.push({ service: 'ralph', error: error.message });
+  } else {
+    warnings.push({ service: 'ralph', error: ralphResult.reason?.message || 'unknown' });
   }
 
   // Set default Athena message if not set
@@ -137,12 +139,19 @@ router.get('/', asyncHandler(async (req, res) => {
     }
   }
 
-  // Include warnings if any service failed
   if (warnings.length > 0) {
     status._warnings = warnings;
   }
 
   res.json(status);
 }));
+
+/**
+ * GET /api/status/cache
+ * Cache statistics for monitoring
+ */
+router.get('/cache', (req, res) => {
+  res.json(cache.stats());
+});
 
 export default router;
