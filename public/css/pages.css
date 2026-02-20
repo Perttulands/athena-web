@@ -1543,6 +1543,41 @@
   font-size: var(--font-size-xs);
 }
 
+/* ============================================
+   HEALTH PAGE
+   ============================================ */
+
+.page-health #health-content {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.health-overall {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.health-services-list {
+  display: grid;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.health-service-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.health-service-name {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  min-width: 100px;
+}
+
 /* Inbox/Artifacts layout breakpoints */
 @media (min-width: 1024px) {
   .page-artifacts .artifacts-layout {

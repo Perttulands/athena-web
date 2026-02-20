@@ -13,7 +13,8 @@ const routes = {
   '/artifacts': () => import('./pages/artifacts.js'),
   '/artifacts/:id': () => import('./pages/artifacts.js'),
   '/inbox': () => import('./pages/inbox.js'),
-  '/chronicle': () => import('./pages/chronicle.js')
+  '/chronicle': () => import('./pages/chronicle.js'),
+  '/health': () => import('./pages/health.js')
 };
 
 const routeAliases = {
