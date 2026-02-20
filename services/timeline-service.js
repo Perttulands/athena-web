@@ -77,8 +77,31 @@ function groupByDay(events) {
 }
 
 /**
+ * Compute per-bead duration breakdown from events.
+ */
+function beadDurationBreakdown(events) {
+  const byBead = {};
+  for (const e of events) {
+    if (!e.bead || e.durationMs == null) continue;
+    if (!byBead[e.bead]) byBead[e.bead] = { totalMs: 0, runs: 0, successes: 0 };
+    byBead[e.bead].totalMs += e.durationMs;
+    byBead[e.bead].runs++;
+    if (e.type === 'success') byBead[e.bead].successes++;
+  }
+  return Object.entries(byBead).map(([bead, data]) => ({
+    bead,
+    totalMs: data.totalMs,
+    totalFormatted: formatDuration(data.totalMs),
+    avgMs: Math.round(data.totalMs / data.runs),
+    avgFormatted: formatDuration(Math.round(data.totalMs / data.runs)),
+    runs: data.runs,
+    successRate: data.runs > 0 ? parseFloat((data.successes / data.runs).toFixed(3)) : 0
+  })).sort((a, b) => b.totalMs - a.totalMs);
+}
+
+/**
  * Get timeline data. Supports optional filters:
- *   limit, status ('success'|'failure'), bead, agent
+ *   limit, offset, status ('success'|'failure'), bead, agent, since, until
  */
 export async function getTimeline(filters = {}) {
   const runs = await cache.getOrFetch('runs', () => runsService.listRuns(), 5000);
@@ -94,9 +117,22 @@ export async function getTimeline(filters = {}) {
   if (filters.agent) {
     events = events.filter((e) => e.agent === filters.agent);
   }
+  if (filters.since) {
+    const sinceMs = new Date(filters.since).getTime();
+    if (!Number.isNaN(sinceMs)) {
+      events = events.filter((e) => e.startedAt && new Date(e.startedAt).getTime() >= sinceMs);
+    }
+  }
+  if (filters.until) {
+    const untilMs = new Date(filters.until).getTime();
+    if (!Number.isNaN(untilMs)) {
+      events = events.filter((e) => e.startedAt && new Date(e.startedAt).getTime() <= untilMs);
+    }
+  }
 
+  const offset = Math.max(parseInt(filters.offset, 10) || 0, 0);
   const limit = Math.min(parseInt(filters.limit, 10) || 50, 200);
-  const limited = events.slice(0, limit);
+  const limited = events.slice(offset, offset + limit);
 
   // Stats
   const successCount = events.filter((e) => e.type === 'success').length;
@@ -110,6 +146,7 @@ export async function getTimeline(filters = {}) {
     timestamp: new Date().toISOString(),
     total: events.length,
     returned: limited.length,
+    offset,
     stats: {
       success: successCount,
       failure: failCount,
@@ -119,9 +156,10 @@ export async function getTimeline(filters = {}) {
       avgDurationMs: avgDuration,
       avgDurationFormatted: formatDuration(avgDuration)
     },
+    beadBreakdown: beadDurationBreakdown(events),
     events: limited,
     byDay: groupByDay(limited)
   };
 }
 
-export { toTimelineEvent, formatDuration };
+export { toTimelineEvent, formatDuration, beadDurationBreakdown, groupByDay };
