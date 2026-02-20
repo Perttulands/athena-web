@@ -50,7 +50,8 @@ class SSEClient {
     // Register listeners for known event types
     const eventTypes = [
       'agent_status', 'bead_update', 'ralph_progress',
-      'activity', 'heartbeat', 'artifact_update', 'inbox_update'
+      'activity', 'heartbeat', 'artifact_update', 'inbox_update',
+      'agent_output', 'agent_error'
     ];
     for (const type of eventTypes) {
       this.eventSource.addEventListener(type, (event) => {
