@@ -18,6 +18,7 @@ import {
   requestTimeout,
   memoryMonitor
 } from './middleware/performance.js';
+import { authMiddleware } from './middleware/auth.js';
 import beadsRouter from './routes/beads.js';
 import agentsRouter from './routes/agents.js';
 import docsRouter from './routes/docs.js';
@@ -60,6 +61,9 @@ app.use(requestTimeout(30000)); // 30 second timeout
 if (config.nodeEnv !== 'production') {
   app.use(memoryMonitor);
 }
+
+// Authentication (optional, enabled via ATHENA_AUTH_TOKEN env var)
+app.use(authMiddleware);
 
 // Core middleware — restrict CORS to same-origin
 app.use(cors({
