@@ -20,6 +20,7 @@ import {
 } from './middleware/performance.js';
 import { authMiddleware } from './middleware/auth.js';
 import { activityRecorder } from './middleware/activity.js';
+import activityService from './services/activity-service.js';
 import beadsRouter from './routes/beads.js';
 import agentsRouter from './routes/agents.js';
 import docsRouter from './routes/docs.js';
@@ -214,6 +215,27 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const shutdown = gracefulShutdown(server, watcher);
   process.on('SIGTERM', () => shutdown('SIGTERM'));
   process.on('SIGINT', () => shutdown('SIGINT'));
+
+  // Process-level error recovery: log and continue rather than crash
+  process.on('uncaughtException', (err) => {
+    console.error('Uncaught exception (recovered):', err);
+    activityService.record({
+      type: 'server_error',
+      error: err.message,
+      stack: (err.stack || '').slice(0, 1000)
+    });
+  });
+
+  process.on('unhandledRejection', (reason) => {
+    const message = reason instanceof Error ? reason.message : String(reason);
+    const stack = reason instanceof Error ? (reason.stack || '').slice(0, 1000) : '';
+    console.error('Unhandled rejection (recovered):', message);
+    activityService.record({
+      type: 'server_rejection',
+      error: message,
+      stack
+    });
+  });
 }
 
 export default app;
