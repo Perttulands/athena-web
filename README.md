@@ -17,9 +17,44 @@ No React. No Vue. No Svelte. No build step. No framework churn. No `node_modules
 ## Stack
 
 - **Node.js 24.x** with ES modules
-- **Express 5.x** 
+- **Express 5.x**
 - **Vanilla HTML/CSS/JS** frontend (no build step, no transpilation, no regrets)
 - **SSE** for real-time updates
+
+## Features
+
+| Feature | Description |
+|---------|-------------|
+| **Tapestry** | Visual bead overview grouped by status, colored by priority |
+| **Timeline** | Run history with duration, day grouping, success stats |
+| **Health Dashboard** | Process metrics, service checks, cache stats |
+| **Agent Monitoring** | Live agent status via tmux session inspection |
+| **Artifact Viewer** | Browse PRDs, research docs, and memory files |
+| **Inbox** | File upload and text submission portal |
+| **Authentication** | Optional token-based auth via `ATHENA_AUTH_TOKEN` env var |
+| **Activity Persistence** | JSONL-based API activity logging that survives restarts |
+| **Error Boundary** | Frontend error catching with recovery UI, server-side reporting |
+| **Process Recovery** | Uncaught exception/rejection handlers prevent crashes |
+| **SSE Reconnection** | Exponential backoff with jitter, visibility-aware reconnect |
+
+## API Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/status` | Dashboard aggregate data |
+| `GET /api/beads` | Bead list from beads CLI |
+| `GET /api/agents` | Running agents from tmux |
+| `GET /api/runs` | Run history from state files |
+| `GET /api/tapestry` | Beads grouped by status for tapestry view |
+| `GET /api/timeline` | Run timeline with grouping |
+| `GET /api/health-dashboard` | System health metrics |
+| `GET /api/activity` | Recent activity events (supports `?type=`, `?since=`, `?limit=`) |
+| `GET /api/activity/stats` | Activity statistics |
+| `POST /api/activity/report` | Client error reports from frontend |
+| `GET /api/artifacts` | Document tree from workspace |
+| `GET /api/inbox` | Inbox messages |
+| `GET /api/stream` | SSE event stream |
+| `GET /api/health` | Health check |
 
 ## Install
 
@@ -34,7 +69,7 @@ npm install
 ```bash
 # Start the server
 node server.js
-# → http://localhost:9000
+# -> http://localhost:9000
 
 # Or as a service
 sudo cp deployment/systemd/athena-web.service /etc/systemd/system/
@@ -42,12 +77,17 @@ sudo systemctl enable --now athena-web
 
 # Check it's alive
 curl http://localhost:9000
+
+# Enable authentication (optional)
+export ATHENA_AUTH_TOKEN=your-secret-token
+node server.js
+# Then: curl -H "Authorization: Bearer your-secret-token" http://localhost:9000/api/status
 ```
 
 ## Development
 
 ```bash
-# Run tests (224 of them)
+# Run tests
 npm test
 
 # Watch mode

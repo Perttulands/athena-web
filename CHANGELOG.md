@@ -15,18 +15,19 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Tapestry data model and `/api/tapestry` endpoint: beads grouped by status, colored and sized by priority (AW-010)
 - Timeline view and `/api/timeline` endpoint: run history with duration, day grouping, and success stats (AW-011)
 - Health dashboard and `/api/health-dashboard` endpoint: process metrics, service checks, cache stats (AW-012)
+- Authentication middleware: optional token-based auth via `ATHENA_AUTH_TOKEN` env var, Bearer/X-Auth-Token headers, constant-time comparison with Node crypto (AW-030)
+- Activity persistence: JSONL-based event logging to `state/activity/`, auto-records API requests, query with type/since/limit filters, file rotation at 512KB, `GET /api/activity` and `GET /api/activity/stats` endpoints (AW-031)
+- Error boundary: frontend global error/rejection catching with recovery banner and server-side error reporting via `POST /api/activity/report` (AW-032)
+- Process recovery: `uncaughtException` and `unhandledRejection` handlers log errors to activity service instead of crashing (AW-032)
+- Playwright browser tests: 4 specs (home, beads, agents, mobile responsive) in `tests/browser/`
+- "For Agents" section in README: install, what-this-is, and runtime usage for agent consumers
 
 ### Changed
 - README: mythology-forward rewrite — each README now reads like discovering a character in a world
-
-### Added
-- "For Agents" section in README: install, what-this-is, and runtime usage for agent consumers
+- Documentation updated to reflect all current features, endpoints, and architecture (AW-033)
 
 ### Planned
 - UX redesign (Sprint 5): 10 user stories, beads backlog as star feature, mobile-first, agent monitoring improvements
-
-### Added
-- Playwright browser tests: 4 specs (home, beads, agents, mobile responsive) in `tests/browser/`
 
 ## [0.2.0] - 2026-02-13
 
