@@ -19,6 +19,7 @@ import {
   memoryMonitor
 } from './middleware/performance.js';
 import { authMiddleware } from './middleware/auth.js';
+import { activityRecorder } from './middleware/activity.js';
 import beadsRouter from './routes/beads.js';
 import agentsRouter from './routes/agents.js';
 import docsRouter from './routes/docs.js';
@@ -31,6 +32,7 @@ import inboxRouter from './routes/inbox.js';
 import tapestryRouter from './routes/tapestry.js';
 import timelineRouter from './routes/timeline.js';
 import healthDashRouter from './routes/health-dashboard.js';
+import activityRouter from './routes/activity.js';
 import { ArtifactWatchService } from './services/artifact-watch-service.js';
 import { ArtifactService } from './services/artifact-service.js';
 
@@ -79,6 +81,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(requestLogger);
+app.use(activityRecorder);
 
 // ETag support for API responses
 app.use('/api', apiETag);
@@ -108,6 +111,7 @@ app.use('/api/inbox', inboxRouter);
 app.use('/api/tapestry', tapestryRouter);
 app.use('/api/timeline', timelineRouter);
 app.use('/api/health-dashboard', healthDashRouter);
+app.use('/api/activity', activityRouter);
 app.use('/api', streamRouter);
 
 // SPA fallback for non-API routes without a file extension.
