@@ -307,3 +307,49 @@ pre code {
   background: var(--gold);
   color: var(--bg-deep);
 }
+
+/* ============================================
+   MOBILE RESPONSIVE ENHANCEMENTS (AW-020)
+   ============================================ */
+
+/* Fluid typography on small screens */
+@media (max-width: 480px) {
+  h1 {
+    font-size: clamp(1.5rem, 6vw, var(--font-size-3xl));
+  }
+
+  h2 {
+    font-size: clamp(1.25rem, 5vw, var(--font-size-2xl));
+  }
+
+  .container {
+    padding: 0 var(--space-sm);
+  }
+}
+
+/* Ensure all interactive elements meet 44px touch target */
+@media (pointer: coarse) {
+  button,
+  .btn,
+  a.nav-item,
+  select,
+  input[type="date"],
+  .filter-tab,
+  .portal-tab {
+    min-height: var(--touch-target-min);
+    min-width: var(--touch-target-min);
+  }
+}
+
+/* Prevent horizontal overflow */
+img, video, pre, table {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Safe area padding for notched devices */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .page-shell {
+    padding-bottom: calc(var(--space-xl) + var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
+  }
+}

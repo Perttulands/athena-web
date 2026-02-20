@@ -1127,6 +1127,45 @@
    BREAKPOINTS
    ============================================ */
 
+@media (max-width: 480px) {
+  .oracle-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-sm);
+  }
+
+  .chronicle-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .chronicle-filters {
+    flex-direction: column;
+  }
+
+  .chronicle-filters label {
+    width: 100%;
+  }
+
+  .chronicle-input {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .page-beads .filter-bar,
+  .page-beads .filter-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .stat-box {
+    min-height: 90px;
+  }
+
+  .stat-value {
+    font-size: var(--font-size-2xl);
+  }
+}
+
 @media (min-width: 768px) {
   .oracle-hero-content {
     padding-left: var(--space-xl);
@@ -1144,6 +1183,10 @@
   }
 
   .bead-detail-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .page-agents .agents-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
